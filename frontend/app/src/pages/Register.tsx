@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -12,7 +13,7 @@ const Login: React.FC = () => {
     return re.test(email);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateEmail(email)) {
@@ -25,15 +26,15 @@ const Login: React.FC = () => {
       return;
     }
 
-    // ログイン処理（仮）
-    navigate("/");
+    // 新規登録処理（仮）
+    navigate("/"); // 登録後にホームページへリダイレクト
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
+    <div className="register-container">
+      <h2>Register</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleRegister}>
         <div className="input-group">
           <label>Email:</label>
           <input
@@ -52,16 +53,20 @@ const Login: React.FC = () => {
             required
           />
         </div>
-        <button type="submit" className="login-button">
-          Log In
+        <div className="input-group">
+          <label>Nickname (Optional):</label>
+          <input
+            type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+          />
+        </div>
+        <button type="submit" className="register-button">
+          Register
         </button>
       </form>
-
-      <p>
-        Don't have an account? <Link to="/register">Register here</Link>
-      </p>
     </div>
   );
 };
 
-export default Login;
+export default Register;
