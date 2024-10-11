@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import CalendarView from "../components/CalendarView";
 
-// サンプルデータ
+// サンプルイベントデータ
 const sampleEvent = {
   id: 1,
   name: "Sample Event 1",
   description: "This is a sample event description.",
-  start_date: "2024-10-15",
-  end_date: "2024-10-18",
+  start_date: "2024-11-01",
+  end_date: "2024-11-03",
+  stages: [
+    { id: 1, date: "2024-11-01", time: "19:00" },
+    { id: 2, date: "2024-11-02", time: "11:00" },
+    { id: 3, date: "2024-11-02", time: "16:00" },
+    { id: 4, date: "2024-11-03", time: "11:00" },
+    { id: 5, date: "2024-11-03", time: "16:00" },
+  ],
 };
 
 const EventDetail: React.FC = () => {
@@ -32,7 +40,9 @@ const EventDetail: React.FC = () => {
       <p>Description: {event.description}</p>
       <p>Start Date: {new Date(event.start_date).toLocaleDateString()}</p>
       <p>End Date: {new Date(event.end_date).toLocaleDateString()}</p>
-      {/* カレンダーなどを後で追加可能 */}
+
+      {/* カレンダービューコンポーネントにイベントとステージ情報を渡す */}
+      <CalendarView stages={event.stages} />
     </div>
   );
 };

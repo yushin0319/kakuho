@@ -1,0 +1,52 @@
+.calendar-container {
+  margin: 0 auto;
+  max-width: 900px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.rbc-toolbar {
+  background-color: #ff8c00;
+  color: white;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.rbc-event-content {
+  white-space: nowrap; /* 時刻をすべて表示 */
+  overflow: visible; /* コンテンツが切れないようにする */
+}
+
+.rbc-event {
+  background-color: #ff8c00;
+  color: white;
+  padding: 0px 3px;
+  border-radius: 5px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.rbc-month-view {
+  border-color: #ddd;
+}
+
+.rbc-header {
+  font-weight: bold;
+  color: #333;
+}
+
+.rbc-date-cell {
+  padding: auto;
+  //text-align: center;
+  background-color: #f4f4f4;
+}
+
+.rbc-today {
+  background-color: #ffe4b5;
+}
+
+.rbc-off-range-bg {
+  background-color: #f0f0f0;
+}
