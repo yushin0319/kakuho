@@ -27,9 +27,9 @@ $border-color: #ccc;
   width: 100%;
 }
 
-/* ヘッダー */
+/* ヘッダーのスタイル */
 header {
-  background-color: $primary-color;
+  background-color: #ff8c00;
   padding: 10px;
   text-align: center;
 
@@ -43,9 +43,15 @@ header {
       display: inline;
 
       a {
-        color: $white;
+        color: #fff;
         text-decoration: none;
         font-weight: bold;
+
+        &.active {
+          background-color: #e07c00; /* アクティブ時の背景色 */
+          padding: 5px 10px;
+          border-radius: 5px;
+        }
 
         &:hover {
           text-decoration: underline;
