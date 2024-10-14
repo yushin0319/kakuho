@@ -3,8 +3,8 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from config import engine, get_db
-from models import Base
-import schemas
+from model import Base
+import schema
 import crud
 
 app = FastAPI()
@@ -28,7 +28,7 @@ app.add_middleware(
 
 # ルーティング
 @app.post("/events")
-def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
+def create_event(event: schema.EventCreate, db: Session = Depends(get_db)):
     return crud.Event(db).create(event)
 
 
@@ -44,7 +44,7 @@ def read_events(db: Session = Depends(get_db)):
 
 @app.put("/events/{event_id}")
 def update_event(
-    event_id: int, event: schemas.EventUpdate, db: Session = Depends(get_db)
+    event_id: int, event: schema.EventUpdate, db: Session = Depends(get_db)
 ):
     return crud.Event(db).update(event_id, event)
 
