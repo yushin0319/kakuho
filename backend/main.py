@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from config import engine, get_db
 from model import Base
 import schema
-import crud
 
 app = FastAPI()
 
@@ -24,31 +23,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# ルーティング
-@app.post("/events")
-def create_event(event: schema.EventCreate, db: Session = Depends(get_db)):
-    return crud.Event(db).create(event)
-
-
-@app.get("/events/{event_id}")
-def read_event(event_id: int, db: Session = Depends(get_db)):
-    return crud.Event(db).read(event_id)
-
-
-@app.get("/events")
-def read_events(db: Session = Depends(get_db)):
-    return crud.Event(db).read_all()
-
-
-@app.put("/events/{event_id}")
-def update_event(
-    event_id: int, event: schema.EventUpdate, db: Session = Depends(get_db)
-):
-    return crud.Event(db).update(event_id, event)
-
-
-@app.delete("/events/{event_id}")
-def delete_event(event_id: int, db: Session = Depends(get_db)):
-    return crud.Event(db).delete(event_id)

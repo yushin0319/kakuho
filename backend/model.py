@@ -23,7 +23,6 @@ class Stage(Base):
 
     id = Column(Integer, primary_key=True)
     event_id = Column(Integer, ForeignKey("events.id"), nullable=False)
-    date = Column(DateTime, nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
     capacity = Column(Integer, nullable=False)
