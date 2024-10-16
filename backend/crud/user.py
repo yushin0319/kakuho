@@ -21,10 +21,17 @@ class CrudUser(BaseCRUD[User, UserResponse]):
             raise HTTPException(status_code=404, detail="User not found")
         return UserResponse.from_attributes(user)
 
+    # パスワードの検証を行う関数
+    def authenticate_user(self, email: str, password: str) -> UserResponse:
+        user = self.read_by_email(email)
+        if not pwd_context.verify(password, user.password_hash):
+            raise HTTPException(status_code=400, detail="Incorrect email or password")
+        return UserResponse.from_attributes(user)
+
     def create(self, data: UserCreate) -> UserResponse:
         hashed_password = pwd_context.hash(data.password)
         user_data = data.model_dump()
-        user_data["pass_hash"] = hashed_password
+        user_data["password_hash"] = hashed_password
         user = User(**user_data)
         self.db.add(user)
         self.db.commit()

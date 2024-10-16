@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from config import engine, get_db
 from model import Base
 import schema
+import crud
+from auth import router as auth_router
 
 app = FastAPI()
 
@@ -23,3 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ルーターの追加
+app.include_router(auth_router)

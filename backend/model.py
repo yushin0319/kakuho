@@ -68,7 +68,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     email = Column(String, nullable=False, unique=True)
-    pass_hash = Column(String, nullable=False)
+    password_hash = Column(String, nullable=False)
     nickname = Column(String)
     is_admin = Column(Boolean, default=False)
 
