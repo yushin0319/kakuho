@@ -52,7 +52,7 @@ class Reservation(Base):
     __tablename__ = "reservations"
 
     id = Column(Integer, primary_key=True)
-    tickettype_id = Column(Integer, ForeignKey("ticket_types.id"), nullable=False)
+    ticket_type_id = Column(Integer, ForeignKey("ticket_types.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     num_attendees = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc))

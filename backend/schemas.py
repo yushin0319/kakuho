@@ -80,7 +80,7 @@ class TicketTypeResponse(TicketTypeBase):
 
 # 予約のスキーマ
 class ReservationBase(BaseModel):
-    tickettype_id: int
+    ticket_type_id: int
     user_id: int
     num_attendees: int
 
@@ -90,7 +90,7 @@ class ReservationCreate(ReservationBase):
 
 
 class ReservationUpdate(ReservationBase):
-    tickettype_id: int | None = None
+    ticket_type_id: int | None = None
     num_attendees: int | None = None
 
 
@@ -110,6 +110,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str  # パスワードはハッシュ化して保存するため、ハッシュ化前のパスワードを受け取る
+    is_admin: bool = False
 
 
 class UserUpdate(UserBase):

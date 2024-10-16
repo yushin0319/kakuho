@@ -1,10 +1,10 @@
 from typing import TypeVar, Generic
 from sqlalchemy.orm import Session
-from sqlalchemy.ext.declarative import Declarative_base
+from sqlalchemy.ext.declarative import declarative_base
 from fastapi import HTTPException
 from pydantic import BaseModel
 
-ModelType = TypeVar("ModelType", bound=Declarative_base)
+ModelType = TypeVar("ModelType", bound=declarative_base)
 ResponseSchemaType = TypeVar("ResponseSchemaType", bound=BaseModel)
 
 
@@ -14,20 +14,20 @@ class BaseCRUD(Generic[ModelType, ResponseSchemaType]):
         self.model = model
         self.schema = schema
 
-    # read_by_id
+    # idによる読み取り
     def read_by_id(self, id: int) -> ResponseSchemaType:
         obj = self.db.query(self.model).filter(self.model.id == id).first()
         if obj is None:
             raise HTTPException(status_code=404, detail="Item not found")
         return self.schema.from_attributes(obj)
 
-    # read_all
+    # 全てのデータを読み取り
     def read_all(self) -> list[ResponseSchemaType]:
         return [
             self.schema.from_attributes(obj) for obj in self.db.query(self.model).all()
         ]
 
-    # delete
+    # データの削除
     def delete(self, id: int) -> dict:
         obj = self.db.query(self.model).filter(self.model.id == id).first()
         if obj is None:

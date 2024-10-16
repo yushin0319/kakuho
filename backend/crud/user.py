@@ -1,8 +1,9 @@
+# backend/crud/user.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from base import BaseCRUD
-from model import User
-from schema import UserCreate, UserUpdate, UserResponse
+from crud.base import BaseCRUD
+from models import User
+from schemas import UserCreate, UserUpdate, UserResponse
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(
@@ -43,7 +44,8 @@ class CrudUser(BaseCRUD[User, UserResponse]):
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
         if data.password is not None:
-            data.pass_hash = pwd_context.hash(data.password)
+            hashed_password = pwd_context.hash(data.password)
+            user.password_hash = hashed_password
             del data.password
         for key, value in data.model_dump().items():
             if value is not None:

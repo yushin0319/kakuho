@@ -1,8 +1,9 @@
+# backend/crud/ticket_type.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from base import BaseCRUD
-from model import TicketType
-from schema import TicketTypeCreate, TicketTypeUpdate, TicketTypeResponse
+from crud.base import BaseCRUD
+from models import TicketType
+from schemas import TicketTypeCreate, TicketTypeUpdate, TicketTypeResponse
 
 
 class CrudTicketType(BaseCRUD[TicketType, TicketTypeResponse]):

@@ -1,8 +1,9 @@
+# backend/crud/stage.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from base import BaseCRUD
-from model import Stage
-from schema import StageCreate, StageUpdate, StageResponse
+from crud.base import BaseCRUD
+from models import Stage
+from schemas import StageCreate, StageUpdate, StageResponse
 
 
 class CrudStage(BaseCRUD[Stage, StageResponse]):

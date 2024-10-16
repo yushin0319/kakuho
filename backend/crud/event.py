@@ -1,8 +1,9 @@
+# backend/crud/event.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from base import BaseCRUD
-from model import Event
-from schema import EventCreate, EventUpdate, EventResponse
+from crud.base import BaseCRUD
+from models import Event
+from schemas import EventCreate, EventUpdate, EventResponse
 
 
 class CrudEvent(BaseCRUD[Event, EventResponse]):

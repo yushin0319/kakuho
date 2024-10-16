@@ -1,8 +1,9 @@
+# backend/crud/reservation.py
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from base import BaseCRUD
-from model import Reservation
-from schema import ReservationCreate, ReservationUpdate, ReservationResponse
+from crud.base import BaseCRUD
+from models import Reservation
+from schemas import ReservationCreate, ReservationUpdate, ReservationResponse
 
 
 class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
@@ -10,10 +11,10 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
         super().__init__(db, Reservation, ReservationResponse)
 
     # チケットタイプIDで読み取り
-    def read_by_ticket_type_id(self, tickettype_id: int) -> list[ReservationResponse]:
+    def read_by_ticket_type_id(self, ticket_type_id: int) -> list[ReservationResponse]:
         reservations = (
             self.db.query(Reservation)
-            .filter(Reservation.tickettype_id == tickettype_id)
+            .filter(Reservation.ticket_type_id == ticket_type_id)
             .all()
         )
         return [
@@ -25,6 +26,21 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
     def read_by_user_id(self, user_id: int) -> list[ReservationResponse]:
         reservations = (
             self.db.query(Reservation).filter(Reservation.user_id == user_id).all()
+        )
+        return [
+            ReservationResponse.from_attributes(reservation)
+            for reservation in reservations
+        ]
+
+    # ユーザーIDとチケットタイプIDで読み取り
+    def read_by_user_and_ticket_type_id(
+        self, user_id: int, ticket_type_id: int
+    ) -> list[ReservationResponse]:
+        reservations = (
+            self.db.query(Reservation)
+            .filter(Reservation.user_id == user_id)
+            .filter(Reservation.ticket_type_id == ticket_type_id)
+            .all()
         )
         return [
             ReservationResponse.from_attributes(reservation)
