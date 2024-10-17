@@ -12,8 +12,6 @@ class Event(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     description = Column(String)
-    start_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
     # リレーション: イベントには複数のステージが紐付く
     stages = relationship("Stage", back_populates="event")
 

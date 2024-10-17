@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
 from config import get_db
@@ -15,6 +15,13 @@ event_router = APIRouter()
 def read_event(event_id: int, db: Session = Depends(get_db)) -> EventResponse:
     event = CrudEvent(db).read_by_id(event_id)
     return EventResponse.from_attributes(event)
+
+
+# Eventの開始・終了時間を取得（管理者・ユーザー共通）
+@event_router.get("/events/{event_id}/duration", response_model=Dict[str, str])
+def read_event_duration(event_id: int, db: Session = Depends(get_db)) -> Dict[str, str]:
+    duration = CrudEvent(db).get_event_time(event_id)
+    return duration
 
 
 # Event一覧取得（管理者・ユーザー共通）
