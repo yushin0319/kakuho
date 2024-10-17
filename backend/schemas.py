@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 
@@ -20,8 +20,7 @@ class EventUpdate(EventBase):
 class EventResponse(EventBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict({"from_attributes": True})
 
 
 # ステージのスキーマ
@@ -45,8 +44,7 @@ class StageUpdate(StageBase):
 class StageResponse(StageBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict({"from_attributes": True})
 
 
 # チケットタイプのスキーマ
@@ -70,8 +68,7 @@ class TicketTypeUpdate(TicketTypeBase):
 class TicketTypeResponse(TicketTypeBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict({"from_attributes": True})
 
 
 # 予約のスキーマ
@@ -94,8 +91,7 @@ class ReservationResponse(ReservationBase):
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict({"from_attributes": True})
 
 
 # ユーザーのスキーマ
@@ -121,5 +117,4 @@ class UserResponse(UserBase):
     id: int
     is_admin: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict({"from_attributes": True})

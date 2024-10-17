@@ -14,7 +14,7 @@ stage_router = APIRouter()
 @stage_router.get("/stages/{stage_id}", response_model=StageResponse)
 def read_stage(stage_id: int, db: Session = Depends(get_db)) -> StageResponse:
     stage = CrudStage(db).read_by_id(stage_id)
-    return StageResponse.from_attributes(stage)
+    return StageResponse.model_validate(stage)
 
 
 # Eventに紐づくStage一覧取得（管理者・ユーザー共通）
@@ -23,7 +23,7 @@ def read_stages_by_event_id(
     event_id: int, db: Session = Depends(get_db)
 ) -> List[StageResponse]:
     stages = CrudStage(db).read_by_event_id(event_id)
-    return [StageResponse.from_attributes(stage) for stage in stages]
+    return [StageResponse.model_validate(stage) for stage in stages]
 
 
 # Stage作成（管理者のみ）
@@ -35,7 +35,7 @@ def create_stage(
     is_admin: bool = Depends(check_admin),
 ) -> StageResponse:
     created_stage = CrudStage(db).create(event_id, stage)
-    return StageResponse.from_attributes(created_stage)
+    return StageResponse.model_validate(created_stage)
 
 
 # Stage更新（管理者のみ）
@@ -47,7 +47,7 @@ def update_stage(
     is_admin: bool = Depends(check_admin),
 ) -> StageResponse:
     updated_stage = CrudStage(db).update(stage_id, stage)
-    return StageResponse.from_attributes(updated_stage)
+    return StageResponse.model_validate(updated_stage)
 
 
 # Stage削除（管理者のみ）

@@ -18,7 +18,7 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
             .all()
         )
         return [
-            ReservationResponse.from_attributes(reservation)
+            ReservationResponse.model_validate(reservation)
             for reservation in reservations
         ]
 
@@ -28,7 +28,7 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
             self.db.query(Reservation).filter(Reservation.user_id == user_id).all()
         )
         return [
-            ReservationResponse.from_attributes(reservation)
+            ReservationResponse.model_validate(reservation)
             for reservation in reservations
         ]
 
@@ -43,7 +43,7 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
             .all()
         )
         return [
-            ReservationResponse.from_attributes(reservation)
+            ReservationResponse.model_validate(reservation)
             for reservation in reservations
         ]
 
@@ -52,7 +52,7 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
         self.db.add(reservation)
         self.db.commit()
         self.db.refresh(reservation)
-        return ReservationResponse.from_attributes(reservation)
+        return ReservationResponse.model_validate(reservation)
 
     def update(
         self, reservation_id: int, data: ReservationUpdate
@@ -65,4 +65,4 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
                 setattr(reservation, key, value)
         self.db.commit()
         self.db.refresh(reservation)
-        return ReservationResponse.from_attributes(reservation)
+        return ReservationResponse.model_validate(reservation)

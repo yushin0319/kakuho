@@ -78,7 +78,7 @@ def get_current_user(
     user = crud_user.read_by_email(token_data.username)
     if user is None:
         raise credentials_exception
-    return UserResponse.from_attributes(user)
+    return UserResponse.model_validate(user)
 
 
 # 現在のユーザー情報を取得するエンドポイント

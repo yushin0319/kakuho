@@ -25,7 +25,7 @@ def read_reservation(
     reservation_id: int, db: Session = Depends(get_db)
 ) -> ReservationResponse:
     reservation = CrudReservation(db).read_by_id(reservation_id)
-    return ReservationResponse.from_attributes(reservation)
+    return ReservationResponse.model_validate(reservation)
 
 
 # Reservation一覧取得（管理者のみ）
@@ -35,7 +35,7 @@ def read_reservations(
 ) -> List[ReservationResponse]:
     reservations = CrudReservation(db).read_all()
     return [
-        ReservationResponse.from_attributes(reservation) for reservation in reservations
+        ReservationResponse.model_validate(reservation) for reservation in reservations
     ]
 
 
@@ -55,7 +55,7 @@ def read_reservations_by_user_id(
     if current_user.is_admin or user_id == current_user.id:
         reservations = CrudReservation(db).read_by_user_id(user_id)
         return [
-            ReservationResponse.from_attributes(reservation)
+            ReservationResponse.model_validate(reservation)
             for reservation in reservations
         ]
     else:
@@ -77,7 +77,7 @@ def read_reservations_by_ticket_type_id(
     if current_user.is_admin:
         reservations = CrudReservation(db).read_by_ticket_type_id(ticket_type_id)
         return [
-            ReservationResponse.from_attributes(reservation)
+            ReservationResponse.model_validate(reservation)
             for reservation in reservations
         ]
     else:
@@ -85,7 +85,7 @@ def read_reservations_by_ticket_type_id(
             current_user.id, ticket_type_id
         )
         return [
-            ReservationResponse.from_attributes(reservation)
+            ReservationResponse.model_validate(reservation)
             for reservation in reservations
         ]
 
@@ -100,7 +100,7 @@ def create_reservation(
     reservation.user_id = current_user.id
     reservation.created_at = datetime.now()
     created_reservation = CrudReservation(db).create(reservation)
-    return ReservationResponse.from_attributes(created_reservation)
+    return ReservationResponse.model_validate(created_reservation)
 
 
 # Reservation更新（管理者・ユーザー共通）
@@ -117,13 +117,13 @@ def update_reservation(
 ) -> ReservationResponse:
     if current_user.is_admin:
         updated_reservation = CrudReservation(db).update(reservation_id, reservation)
-        return ReservationResponse.from_attributes(updated_reservation)
+        return ReservationResponse.model_validate(updated_reservation)
     else:
         reservations = CrudReservation(db).read_by_user_id(current_user.id)
         if reservation_id not in [reservation.id for reservation in reservations]:
             raise HTTPException(status_code=403, detail="Permission denied")
         updated_reservation = CrudReservation(db).update(reservation_id, reservation)
-        return ReservationResponse.from_attributes(updated_reservation)
+        return ReservationResponse.model_validate(updated_reservation)
 
 
 # Reservation削除（管理者・ユーザー共通）

@@ -19,12 +19,12 @@ class BaseCRUD(Generic[ModelType, ResponseSchemaType]):
         obj = self.db.query(self.model).filter(self.model.id == id).first()
         if obj is None:
             raise HTTPException(status_code=404, detail="Item not found")
-        return self.schema.from_attributes(obj)
+        return self.schema.model_validate(obj)
 
     # 全てのデータを読み取り
     def read_all(self) -> list[ResponseSchemaType]:
         return [
-            self.schema.from_attributes(obj) for obj in self.db.query(self.model).all()
+            self.schema.model_validate(obj) for obj in self.db.query(self.model).all()
         ]
 
     # データの削除

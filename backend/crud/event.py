@@ -15,7 +15,7 @@ class CrudEvent(BaseCRUD[Event, EventResponse]):
         self.db.add(event)
         self.db.commit()
         self.db.refresh(event)
-        return EventResponse.from_attributes(event)
+        return EventResponse.model_validate(event)
 
     def update(self, event_id: int, data: EventUpdate) -> EventResponse:
         event = self.read_by_id(event_id)
@@ -26,7 +26,7 @@ class CrudEvent(BaseCRUD[Event, EventResponse]):
                 setattr(event, key, value)
         self.db.commit()
         self.db.refresh(event)
-        return EventResponse.from_attributes(event)
+        return EventResponse.model_validate(event)
 
     # イベント全体の開始・終了時間を取得するメソッド
     def get_event_time(self, event_id: int) -> dict:

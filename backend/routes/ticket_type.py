@@ -19,7 +19,7 @@ def read_ticket_type(
     ticket_type_id: int, db: Session = Depends(get_db)
 ) -> TicketTypeResponse:
     ticket_type = CrudTicketType(db).read_by_id(ticket_type_id)
-    return TicketTypeResponse.from_attributes(ticket_type)
+    return TicketTypeResponse.model_validate(ticket_type)
 
 
 # Stageに紐づくTicketType一覧取得（管理者・ユーザー共通）
@@ -31,7 +31,7 @@ def read_ticket_types_by_stage_id(
 ) -> List[TicketTypeResponse]:
     ticket_types = CrudTicketType(db).read_by_stage_id(stage_id)
     return [
-        TicketTypeResponse.from_attributes(ticket_type) for ticket_type in ticket_types
+        TicketTypeResponse.model_validate(ticket_type) for ticket_type in ticket_types
     ]
 
 
@@ -46,7 +46,7 @@ def create_ticket_type(
     is_admin: bool = Depends(check_admin),
 ) -> TicketTypeResponse:
     created_ticket_type = CrudTicketType(db).create(stage_id, ticket_type)
-    return TicketTypeResponse.from_attributes(created_ticket_type)
+    return TicketTypeResponse.model_validate(created_ticket_type)
 
 
 # TicketType更新（管理者のみ）
@@ -60,7 +60,7 @@ def update_ticket_type(
     is_admin: bool = Depends(check_admin),
 ) -> TicketTypeResponse:
     updated_ticket_type = CrudTicketType(db).update(ticket_type_id, ticket_type)
-    return TicketTypeResponse.from_attributes(updated_ticket_type)
+    return TicketTypeResponse.model_validate(updated_ticket_type)
 
 
 # TicketType削除（管理者のみ）

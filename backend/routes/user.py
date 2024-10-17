@@ -15,10 +15,10 @@ user_router = APIRouter()
 @user_router.post("/signup", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
     # メールアドレスが重複していないかチェック
-    if CrudUser(db).read_by_email(user.email):
+    if CrudUser(db).read_by_email(user.email) is not None:
         raise HTTPException(status_code=400, detail="Email already registered")
     created_user = CrudUser(db).create(user)
-    return UserResponse.from_attributes(created_user)
+    return UserResponse.model_validate(created_user)
 
 
 # User取得（管理者・ユーザー共通）
@@ -32,7 +32,7 @@ def read_user(
         user = CrudUser(db).read_by_id(user_id)
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
-        return UserResponse.from_attributes(user)
+        return UserResponse.model_validate(user)
     else:
         raise HTTPException(status_code=403, detail="Permission denied")
 
@@ -43,7 +43,7 @@ def read_users(
     db: Session = Depends(get_db), is_admin: bool = Depends(check_admin)
 ) -> List[UserResponse]:
     users = CrudUser(db).read_all()
-    return [UserResponse.from_attributes(user) for user in users]
+    return [UserResponse.model_validate(user) for user in users]
 
 
 # User更新（管理者・ユーザー共通）
@@ -58,7 +58,7 @@ def update_user(
 ) -> UserResponse:
     if current_user.is_admin or user_id == current_user.id:
         updated_user = CrudUser(db).update(user_id, user)
-        return UserResponse.from_attributes(updated_user)
+        return UserResponse.model_validate(updated_user)
     else:
         raise HTTPException(status_code=403, detail="Permission denied")
 

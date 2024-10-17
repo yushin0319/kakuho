@@ -16,7 +16,7 @@ class CrudTicketType(BaseCRUD[TicketType, TicketTypeResponse]):
             self.db.query(TicketType).filter(TicketType.event_id == event_id).all()
         )
         return [
-            TicketTypeResponse.from_attributes(ticket_type)
+            TicketTypeResponse.model_validate(ticket_type)
             for ticket_type in ticket_types
         ]
 
@@ -25,7 +25,7 @@ class CrudTicketType(BaseCRUD[TicketType, TicketTypeResponse]):
         self.db.add(ticket_type)
         self.db.commit()
         self.db.refresh(ticket_type)
-        return TicketTypeResponse.from_attributes(ticket_type)
+        return TicketTypeResponse.model_validate(ticket_type)
 
     def update(self, ticket_type_id: int, data: TicketTypeUpdate) -> TicketTypeResponse:
         ticket_type = self.read_by_id(ticket_type_id)
@@ -36,4 +36,4 @@ class CrudTicketType(BaseCRUD[TicketType, TicketTypeResponse]):
                 setattr(ticket_type, key, value)
         self.db.commit()
         self.db.refresh(ticket_type)
-        return TicketTypeResponse.from_attributes(ticket_type)
+        return TicketTypeResponse.model_validate(ticket_type)

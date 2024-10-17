@@ -16,18 +16,19 @@ class CrudUser(BaseCRUD[User, UserResponse]):
         super().__init__(db, User, UserResponse)
 
     # メールアドレスで読み取り
-    def read_by_email(self, email: str) -> UserResponse:
+    def read_by_email(self, email: str) -> User:
         user = self.db.query(User).filter(User.email == email).first()
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
-        return UserResponse.from_attributes(user)
+        return user
 
     # パスワードの検証を行う関数
     def authenticate_user(self, email: str, password: str) -> UserResponse:
+        # モデルのパスワードハッシュと入力されたパスワードを比較
         user = self.read_by_email(email)
         if not pwd_context.verify(password, user.password_hash):
-            raise HTTPException(status_code=400, detail="Incorrect email or password")
-        return UserResponse.from_attributes(user)
+            raise HTTPException(status_code=400, detail="Incorrect password")
+        return UserResponse.model_validate(user)
 
     def create(self, data: UserCreate) -> UserResponse:
         hashed_password = pwd_context.hash(data.password)
@@ -37,7 +38,7 @@ class CrudUser(BaseCRUD[User, UserResponse]):
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
-        return UserResponse.from_attributes(user)
+        return UserResponse.model_validate(user)
 
     def update(self, user_id: int, data: UserUpdate) -> UserResponse:
         user = self.read_by_id(user_id)
@@ -52,4 +53,4 @@ class CrudUser(BaseCRUD[User, UserResponse]):
                 setattr(user, key, value)
         self.db.commit()
         self.db.refresh(user)
-        return UserResponse.from_attributes(user)
+        return UserResponse.model_validate(user)

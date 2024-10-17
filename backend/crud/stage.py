@@ -13,14 +13,14 @@ class CrudStage(BaseCRUD[Stage, StageResponse]):
     # イベントIDで読み取り
     def read_by_event_id(self, event_id: int) -> list[StageResponse]:
         stages = self.db.query(Stage).filter(Stage.event_id == event_id).all()
-        return [StageResponse.from_attributes(stage) for stage in stages]
+        return [StageResponse.model_validate(stage) for stage in stages]
 
     def create(self, data: StageCreate) -> StageResponse:
         stage = Stage(**data.model_dump())
         self.db.add(stage)
         self.db.commit()
         self.db.refresh(stage)
-        return StageResponse.from_attributes(stage)
+        return StageResponse.model_validate(stage)
 
     def update(self, stage_id: int, data: StageUpdate) -> StageResponse:
         stage = self.read_by_id(stage_id)
@@ -31,4 +31,4 @@ class CrudStage(BaseCRUD[Stage, StageResponse]):
                 setattr(stage, key, value)
         self.db.commit()
         self.db.refresh(stage)
-        return StageResponse.from_attributes(stage)
+        return StageResponse.model_validate(stage)

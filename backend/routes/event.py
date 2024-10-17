@@ -14,7 +14,7 @@ event_router = APIRouter()
 @event_router.get("/events/{event_id}", response_model=EventResponse)
 def read_event(event_id: int, db: Session = Depends(get_db)) -> EventResponse:
     event = CrudEvent(db).read_by_id(event_id)
-    return EventResponse.from_attributes(event)
+    return EventResponse.model_validate(event)
 
 
 # Eventの開始・終了時間を取得（管理者・ユーザー共通）
@@ -28,7 +28,7 @@ def read_event_duration(event_id: int, db: Session = Depends(get_db)) -> Dict[st
 @event_router.get("/events", response_model=List[EventResponse])
 def read_events(db: Session = Depends(get_db)) -> List[EventResponse]:
     events = CrudEvent(db).read_all()
-    return [EventResponse.from_attributes(event) for event in events]
+    return [EventResponse.model_validate(event) for event in events]
 
 
 # Event作成（管理者のみ）
@@ -39,7 +39,7 @@ def create_event(
     is_admin: bool = Depends(check_admin),
 ) -> EventResponse:
     created_event = CrudEvent(db).create(event)
-    return EventResponse.from_attributes(created_event)
+    return EventResponse.model_validate(created_event)
 
 
 # Event更新（管理者のみ）
@@ -51,7 +51,7 @@ def update_event(
     is_admin: bool = Depends(check_admin),
 ) -> EventResponse:
     updated_event = CrudEvent(db).update(event_id, event)
-    return EventResponse.from_attributes(updated_event)
+    return EventResponse.model_validate(updated_event)
 
 
 # Event削除（管理者のみ）
