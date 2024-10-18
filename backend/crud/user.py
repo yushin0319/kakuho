@@ -18,8 +18,6 @@ class CrudUser(BaseCRUD[User, UserResponse]):
     # メールアドレスで読み取り
     def read_by_email(self, email: str) -> User:
         user = self.db.query(User).filter(User.email == email).first()
-        if user is None:
-            raise HTTPException(status_code=404, detail="User not found")
         return user
 
     # パスワードの検証を行う関数
@@ -31,9 +29,12 @@ class CrudUser(BaseCRUD[User, UserResponse]):
         return UserResponse.model_validate(user)
 
     def create(self, data: UserCreate) -> UserResponse:
+        if data.password is None:
+            raise HTTPException(status_code=400, detail="Password is required")
         hashed_password = pwd_context.hash(data.password)
         user_data = data.model_dump()
         user_data["password_hash"] = hashed_password
+        del user_data["password"]
         user = User(**user_data)
         self.db.add(user)
         self.db.commit()
@@ -44,13 +45,15 @@ class CrudUser(BaseCRUD[User, UserResponse]):
         user = self.read_by_id(user_id)
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
-        if data.password is not None:
-            hashed_password = pwd_context.hash(data.password)
-            user.password_hash = hashed_password
-            del data.password
-        for key, value in data.model_dump().items():
+        update_data = data.model_dump()
+        if update_data.get("password") is not None:
+            update_data["password_hash"] = pwd_context.hash(update_data["password"])
+            del update_data["password"]
+        for key, value in update_data.items():
             if value is not None:
                 setattr(user, key, value)
         self.db.commit()
         self.db.refresh(user)
+        print(user)
+        print(UserResponse.model_validate(user))
         return UserResponse.model_validate(user)

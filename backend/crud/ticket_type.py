@@ -10,10 +10,10 @@ class CrudTicketType(BaseCRUD[TicketType, TicketTypeResponse]):
     def __init__(self, db: Session):
         super().__init__(db, TicketType, TicketTypeResponse)
 
-    # イベントIDで読み取り
-    def read_by_event_id(self, event_id: int) -> list[TicketTypeResponse]:
+    # StageIDで読み取り
+    def read_by_stage_id(self, stage_id: int) -> list[TicketTypeResponse]:
         ticket_types = (
-            self.db.query(TicketType).filter(TicketType.event_id == event_id).all()
+            self.db.query(TicketType).filter(TicketType.stage_id == stage_id).all()
         )
         return [
             TicketTypeResponse.model_validate(ticket_type)

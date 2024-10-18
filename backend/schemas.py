@@ -1,11 +1,11 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from datetime import datetime
 
 
 # イベントのスキーマ
 class EventBase(BaseModel):
-    name: str
-    description: str
+    name: str = Field(..., min_length=1, max_length=100)
+    description: str = Field(min_length=1, max_length=500)
 
 
 class EventCreate(EventBase):
@@ -13,8 +13,8 @@ class EventCreate(EventBase):
 
 
 class EventUpdate(EventBase):
-    name: str | None = None
-    description: str | None = None
+    name: str | None = Field(None, min_length=1, max_length=100)
+    description: str | None = Field(None, min_length=1, max_length=500)
 
 
 class EventResponse(EventBase):
@@ -74,7 +74,6 @@ class TicketTypeResponse(TicketTypeBase):
 # 予約のスキーマ
 class ReservationBase(BaseModel):
     ticket_type_id: int
-    user_id: int
     num_attendees: int
 
 
@@ -90,26 +89,25 @@ class ReservationUpdate(ReservationBase):
 class ReservationResponse(ReservationBase):
     id: int
     created_at: datetime
+    user_id: int
 
     model_config = ConfigDict({"from_attributes": True})
 
 
 # ユーザーのスキーマ
 class UserBase(BaseModel):
-    email: str
-    nickname: str | None = None
+    email: EmailStr
+    nickname: str | None = Field(None, max_length=50)
 
 
 class UserCreate(UserBase):
-    password: str  # パスワードはハッシュ化して保存するため、ハッシュ化前のパスワードを受け取る
+    password: str = Field(..., min_length=6, max_length=50)
     is_admin: bool = False
 
 
 class UserUpdate(UserBase):
-    email: str | None = None
-    password: str | None = (
-        None  # パスワードはハッシュ化して保存するため、ハッシュ化前のパスワードを受け取る
-    )
+    email: EmailStr | None = None
+    password: str | None = Field(None, min_length=6, max_length=50)
     nickname: str | None = None
 
 

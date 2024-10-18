@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from crud.base import BaseCRUD
 from models import Event, Stage
 from schemas import EventCreate, EventUpdate, EventResponse
+from datetime import datetime
 
 
 class CrudEvent(BaseCRUD[Event, EventResponse]):
@@ -34,6 +35,9 @@ class CrudEvent(BaseCRUD[Event, EventResponse]):
         if event is None:
             raise HTTPException(status_code=404, detail="Event not found")
         stages = self.db.query(Stage).filter(Stage.event_id == event_id).all()
+        if len(stages) == 0:
+            now = datetime.now()
+            return {"start_time": now.isoformat(), "end_time": now.isoformat()}
         start_time = min([stage.start_time for stage in stages])
         end_time = max([stage.end_time for stage in stages])
-        return {"start_time": start_time, "end_time": end_time}
+        return {"start_time": start_time.isoformat(), "end_time": end_time.isoformat()}

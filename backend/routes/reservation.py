@@ -3,7 +3,6 @@ from typing import List
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
-from datetime import datetime
 from schemas import (
     ReservationCreate,
     ReservationUpdate,
@@ -97,9 +96,7 @@ def create_reservation(
     db: Session = Depends(get_db),
     current_user: UserResponse = Depends(check_user),
 ) -> ReservationResponse:
-    reservation.user_id = current_user.id
-    reservation.created_at = datetime.now()
-    created_reservation = CrudReservation(db).create(reservation)
+    created_reservation = CrudReservation(db).create(reservation, current_user.id)
     return ReservationResponse.model_validate(created_reservation)
 
 

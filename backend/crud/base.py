@@ -15,11 +15,11 @@ class BaseCRUD(Generic[ModelType, ResponseSchemaType]):
         self.schema = schema
 
     # idによる読み取り
-    def read_by_id(self, id: int) -> ResponseSchemaType:
+    def read_by_id(self, id: int) -> ModelType:
         obj = self.db.query(self.model).filter(self.model.id == id).first()
         if obj is None:
             raise HTTPException(status_code=404, detail="Item not found")
-        return self.schema.model_validate(obj)
+        return obj
 
     # 全てのデータを読み取り
     def read_all(self) -> list[ResponseSchemaType]:

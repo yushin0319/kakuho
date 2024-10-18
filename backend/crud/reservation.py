@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from crud.base import BaseCRUD
 from models import Reservation
+from datetime import datetime
 from schemas import ReservationCreate, ReservationUpdate, ReservationResponse
 
 
@@ -47,8 +48,10 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
             for reservation in reservations
         ]
 
-    def create(self, data: ReservationCreate) -> ReservationResponse:
+    def create(self, data: ReservationCreate, user_id: int) -> ReservationResponse:
         reservation = Reservation(**data.model_dump())
+        reservation.created_at = datetime.now()
+        reservation.user_id = user_id
         self.db.add(reservation)
         self.db.commit()
         self.db.refresh(reservation)
