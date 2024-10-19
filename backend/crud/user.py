@@ -22,20 +22,17 @@ class CrudUser(BaseCRUD[User, UserResponse]):
 
     # パスワードの検証を行う関数
     def authenticate_user(self, email: str, password: str) -> UserResponse:
-        # モデルのパスワードハッシュと入力されたパスワードを比較
         user = self.read_by_email(email)
         if not pwd_context.verify(password, user.password_hash):
             raise HTTPException(status_code=400, detail="Incorrect password")
         return UserResponse.model_validate(user)
 
     def create(self, data: UserCreate) -> UserResponse:
-        if data.password is None:
-            raise HTTPException(status_code=400, detail="Password is required")
         hashed_password = pwd_context.hash(data.password)
         user_data = data.model_dump()
         user_data["password_hash"] = hashed_password
         del user_data["password"]
-        user = User(**user_data)
+        user = User(**user_data, is_admin=False)
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
@@ -43,8 +40,6 @@ class CrudUser(BaseCRUD[User, UserResponse]):
 
     def update(self, user_id: int, data: UserUpdate) -> UserResponse:
         user = self.read_by_id(user_id)
-        if user is None:
-            raise HTTPException(status_code=404, detail="User not found")
         update_data = data.model_dump()
         if update_data.get("password") is not None:
             update_data["password_hash"] = pwd_context.hash(update_data["password"])
@@ -54,6 +49,4 @@ class CrudUser(BaseCRUD[User, UserResponse]):
                 setattr(user, key, value)
         self.db.commit()
         self.db.refresh(user)
-        print(user)
-        print(UserResponse.model_validate(user))
         return UserResponse.model_validate(user)

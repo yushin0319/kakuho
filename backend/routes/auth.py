@@ -24,7 +24,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str | None = None
+    user_id: str | None = None
 
 
 # アクセストークンを作成する関数
@@ -52,7 +52,8 @@ def login_for_access_token(
     user = crud_user.authenticate_user(form_data.username, form_data.password)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": str(user.id)},  # ユーザーIDを使う
+        expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -68,14 +69,14 @@ def get_current_user(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
-        if email is None:
+        user_id = payload.get("sub")
+        if user_id is None:
             raise credentials_exception
-        token_data = TokenData(username=email)
+        token_data = TokenData(user_id=user_id)
     except JWTError:
         raise credentials_exception
     crud_user = CrudUser(db)
-    user = crud_user.read_by_email(token_data.username)
+    user = crud_user.read_by_id(token_data.user_id)  # user_idで検索
     if user is None:
         raise credentials_exception
     return UserResponse.model_validate(user)
@@ -90,14 +91,6 @@ def read_users_me(current_user: UserResponse = Depends(get_current_user)):
 # 管理者チェックを行う関数
 def check_admin(
     current_user: UserResponse = Depends(get_current_user),
-) -> UserResponse:
+) -> None:
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Permission denied")
-    return current_user
-
-
-# ユーザーチェックを行う関数
-def check_user(
-    current_user: UserResponse = Depends(get_current_user),
-) -> UserResponse:
-    return current_user

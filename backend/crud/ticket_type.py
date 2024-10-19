@@ -1,5 +1,4 @@
 # backend/crud/ticket_type.py
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from crud.base import BaseCRUD
 from models import TicketType
@@ -29,8 +28,6 @@ class CrudTicketType(BaseCRUD[TicketType, TicketTypeResponse]):
 
     def update(self, ticket_type_id: int, data: TicketTypeUpdate) -> TicketTypeResponse:
         ticket_type = self.read_by_id(ticket_type_id)
-        if ticket_type is None:
-            raise HTTPException(status_code=404, detail="TicketType not found")
         for key, value in data.model_dump().items():
             if value is not None:
                 setattr(ticket_type, key, value)

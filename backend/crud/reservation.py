@@ -1,10 +1,9 @@
 # backend/crud/reservation.py
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from crud.base import BaseCRUD
 from models import Reservation
-from datetime import datetime
 from schemas import ReservationCreate, ReservationUpdate, ReservationResponse
+from datetime import datetime
 
 
 class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
@@ -61,8 +60,6 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
         self, reservation_id: int, data: ReservationUpdate
     ) -> ReservationResponse:
         reservation = self.read_by_id(reservation_id)
-        if reservation is None:
-            raise HTTPException(status_code=404, detail="Reservation not found")
         for key, value in data.model_dump().items():
             if value is not None:
                 setattr(reservation, key, value)

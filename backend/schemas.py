@@ -23,9 +23,13 @@ class EventResponse(EventBase):
     model_config = ConfigDict({"from_attributes": True})
 
 
+class EventTimeResponse(BaseModel):
+    start_time: datetime
+    end_time: datetime
+
+
 # ステージのスキーマ
 class StageBase(BaseModel):
-    event_id: int
     start_time: datetime
     end_time: datetime
     capacity: int
@@ -43,6 +47,7 @@ class StageUpdate(StageBase):
 
 class StageResponse(StageBase):
     id: int
+    event_id: int
 
     model_config = ConfigDict({"from_attributes": True})
 
@@ -102,7 +107,6 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6, max_length=50)
-    is_admin: bool = False
 
 
 class UserUpdate(UserBase):

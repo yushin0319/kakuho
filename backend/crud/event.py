@@ -1,9 +1,8 @@
 # backend/crud/event.py
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from crud.base import BaseCRUD
 from models import Event, Stage
-from schemas import EventCreate, EventUpdate, EventResponse
+from schemas import EventCreate, EventUpdate, EventResponse, EventTimeResponse
 from datetime import datetime
 
 
@@ -20,8 +19,6 @@ class CrudEvent(BaseCRUD[Event, EventResponse]):
 
     def update(self, event_id: int, data: EventUpdate) -> EventResponse:
         event = self.read_by_id(event_id)
-        if event is None:
-            raise HTTPException(status_code=404, detail="Event not found")
         for key, value in data.model_dump().items():
             if value is not None:
                 setattr(event, key, value)
@@ -30,14 +27,11 @@ class CrudEvent(BaseCRUD[Event, EventResponse]):
         return EventResponse.model_validate(event)
 
     # イベント全体の開始・終了時間を取得するメソッド
-    def get_event_time(self, event_id: int) -> dict:
-        event = self.read_by_id(event_id)
-        if event is None:
-            raise HTTPException(status_code=404, detail="Event not found")
+    def get_event_time(self, event_id: int) -> EventTimeResponse:
         stages = self.db.query(Stage).filter(Stage.event_id == event_id).all()
         if len(stages) == 0:
             now = datetime.now()
-            return {"start_time": now.isoformat(), "end_time": now.isoformat()}
+            return {"start_time": now, "end_time": now}
         start_time = min([stage.start_time for stage in stages])
         end_time = max([stage.end_time for stage in stages])
-        return {"start_time": start_time.isoformat(), "end_time": end_time.isoformat()}
+        return EventTimeResponse(start_time=start_time, end_time=end_time)

@@ -1,7 +1,17 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float, Boolean
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    ForeignKey,
+    DateTime,
+    Float,
+    Boolean,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timezone
+
 
 Base = declarative_base()
 
@@ -25,6 +35,9 @@ class Stage(Base):
     end_time = Column(DateTime, nullable=False)
     capacity = Column(Integer, nullable=False)
 
+    # 同イベント内でのstart_timeは一意である
+    __table_args__ = (UniqueConstraint("event_id", "start_time"),)
+
     # リレーション: ステージはイベントに紐付いている
     event = relationship("Event", back_populates="stages")
     # リレーション: ステージには複数のチケットタイプがある
@@ -39,6 +52,9 @@ class TicketType(Base):
     type_name = Column(String, nullable=False, default="一般")
     price = Column(Float, nullable=False)
     available = Column(Integer, nullable=False)
+
+    # 同Stage内でのtype_nameは一意である
+    __table_args__ = (UniqueConstraint("stage_id", "type_name"),)
 
     # リレーション: チケットタイプはステージに紐付いている
     stage = relationship("Stage", back_populates="ticket_types")
