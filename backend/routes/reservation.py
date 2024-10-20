@@ -97,7 +97,10 @@ def create_reservation(
     db: Session = Depends(get_db),
     user: UserResponse = Depends(get_current_user),
 ) -> ReservationResponse:
+    ticket_type_crud = CrudTicketType(db)
     reservation_crud = CrudReservation(db)
+    if ticket_type_crud.read_by_id(reservation.ticket_type_id) is None:
+        raise HTTPException(status_code=404, detail="TicketType not found")
     created_reservation = reservation_crud.create(reservation, user.id)
     return created_reservation
 
@@ -135,6 +138,8 @@ def delete_reservation(
     user: UserResponse = Depends(get_current_user),
 ) -> None:
     reservation_crud = CrudReservation(db)
+    if reservation_crud.read_by_id(reservation_id) is None:
+        raise HTTPException(status_code=404, detail="Reservation not found")
     if not user.is_admin and reservation_id not in [
         r.id for r in reservation_crud.read_by_user_id(user.id)
     ]:

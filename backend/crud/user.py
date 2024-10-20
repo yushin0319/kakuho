@@ -23,6 +23,8 @@ class CrudUser(BaseCRUD[User, UserResponse]):
     # パスワードの検証を行う関数
     def authenticate_user(self, email: str, password: str) -> UserResponse:
         user = self.read_by_email(email)
+        if user is None:
+            raise HTTPException(status_code=400, detail="User not found")
         if not pwd_context.verify(password, user.password_hash):
             raise HTTPException(status_code=400, detail="Incorrect password")
         return UserResponse.model_validate(user)

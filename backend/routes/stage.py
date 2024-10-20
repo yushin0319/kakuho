@@ -43,7 +43,14 @@ def create_stage(
     user: UserResponse = Depends(get_current_user),
 ) -> StageResponse:
     check_admin(user)
+    event_crud = CrudEvent(db)
     stage_crud = CrudStage(db)
+    if event_crud.read_by_id(event_id) is None:
+        raise HTTPException(status_code=404, detail="Event not found")
+    existing_stage = stage_crud.read_by_event_id(event_id)
+    for s in existing_stage:
+        if s.start_time == stage.start_time:
+            raise HTTPException(status_code=400, detail="Start time already exists")
     created_stage = stage_crud.create(event_id, stage)
     return created_stage
 

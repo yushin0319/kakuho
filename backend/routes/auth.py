@@ -28,13 +28,11 @@ class TokenData(BaseModel):
 
 
 # アクセストークンを作成する関数
-def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
+def create_access_token(
+    data: dict, expires_delta: timedelta | None = timedelta(minutes=10)
+) -> str:
     to_encode = data.copy()
-    expire = (
-        datetime.now(timezone.utc) + expires_delta
-        if expires_delta
-        else datetime.now(timezone.utc) + timedelta(minutes=15)
-    )
+    expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
