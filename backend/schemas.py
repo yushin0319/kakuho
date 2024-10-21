@@ -78,7 +78,6 @@ class TicketTypeResponse(TicketTypeBase):
 
 # 予約のスキーマ
 class ReservationBase(BaseModel):
-    ticket_type_id: int
     num_attendees: int
 
 
@@ -87,7 +86,6 @@ class ReservationCreate(ReservationBase):
 
 
 class ReservationUpdate(ReservationBase):
-    ticket_type_id: int | None = None
     num_attendees: int | None = None
 
 
