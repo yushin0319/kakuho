@@ -93,6 +93,7 @@ class ReservationResponse(ReservationBase):
     id: int
     created_at: datetime
     user_id: int
+    ticket_type_id: int
 
     model_config = ConfigDict({"from_attributes": True})
 

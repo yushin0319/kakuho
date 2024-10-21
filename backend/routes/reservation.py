@@ -45,12 +45,16 @@ def update_available(ticket_type: TicketTypeResponse, delta: int, db: Session) -
     "/reservations/{reservation_id}", response_model=ReservationResponse
 )
 def read_reservation(
-    reservation_id: int, db: Session = Depends(get_db)
+    reservation_id: int,
+    db: Session = Depends(get_db),
+    user: UserResponse = Depends(get_current_user),
 ) -> ReservationResponse:
     reservation_crud = CrudReservation(db)
     reservation = reservation_crud.read_by_id(reservation_id)
     if reservation is None:
         raise HTTPException(status_code=404, detail="Reservation not found")
+    if not user.is_admin and reservation.user_id != user.id:
+        raise HTTPException(status_code=403, detail="Permission denied")
     return reservation
 
 
@@ -160,10 +164,9 @@ def update_reservation(
         raise HTTPException(status_code=403, detail="Permission denied")
     try:
         ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
-        check_available(ticket_type, data.num_attendees - reservation.num_attendees)
-        update_available(
-            ticket_type, data.num_attendees - reservation.num_attendees, db
-        )
+        delta = reservation.num_attendees - data.num_attendees
+        check_available(ticket_type, delta)
+        update_available(ticket_type, delta, db)
         updated_reservation = reservation_crud.update(reservation_id, data)
         return updated_reservation
     except Exception as e:
