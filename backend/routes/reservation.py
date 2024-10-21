@@ -6,6 +6,8 @@ from schemas import (
     ReservationCreate,
     ReservationUpdate,
     ReservationResponse,
+    TicketTypeUpdate,
+    TicketTypeResponse,
     UserResponse,
 )
 from crud.reservation import CrudReservation
@@ -14,6 +16,27 @@ from crud.ticket_type import CrudTicketType
 from routes.auth import check_admin, get_current_user
 
 reservation_router = APIRouter()
+
+
+# attendeesの変化量と紐づいたTicketTypeのavailableと照らし合わせる
+# deltaがavailableより多い場合はエラーを返す
+def check_available(ticket_type: TicketTypeResponse, delta: int) -> None:
+    if ticket_type.available + delta < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="チケットの在庫が不足しています。"
+            + str(ticket_type.available)
+            + "枚まで購入可能です",
+        )
+
+
+# TicketTypeのavailableを変更する
+def update_available(ticket_type: TicketTypeResponse, delta: int, db: Session) -> None:
+    ticket_type_crud = CrudTicketType(db)
+    ticket_type.available += delta
+    ticket_type_crud.update(
+        ticket_type.id, TicketTypeUpdate(available=ticket_type.available)
+    )
 
 
 # Reservation関連のエンドポイント
@@ -91,18 +114,29 @@ def read_reservations_by_ticket_type_id(
 
 
 # Reservation作成（管理者・ユーザー共通）
-@reservation_router.post("/reservations", response_model=ReservationResponse)
+@reservation_router.post(
+    "/ticket_types/{ticket_type_id}/reservations", response_model=ReservationResponse
+)
 def create_reservation(
+    ticket_type_id: int,
     reservation: ReservationCreate,
     db: Session = Depends(get_db),
     user: UserResponse = Depends(get_current_user),
 ) -> ReservationResponse:
     ticket_type_crud = CrudTicketType(db)
     reservation_crud = CrudReservation(db)
-    if ticket_type_crud.read_by_id(reservation.ticket_type_id) is None:
+    ticket_type = ticket_type_crud.read_by_id(ticket_type_id)
+    if ticket_type is None:
         raise HTTPException(status_code=404, detail="TicketType not found")
-    created_reservation = reservation_crud.create(reservation, user.id)
-    return created_reservation
+    try:
+        check_available(ticket_type, -reservation.num_attendees)
+        update_available(ticket_type, -reservation.num_attendees, db)
+        created_reservation = reservation_crud.create(
+            ticket_type_id, reservation, user.id
+        )
+        return created_reservation
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # Reservation更新（管理者・ユーザー共通）
@@ -113,19 +147,27 @@ def create_reservation(
 )
 def update_reservation(
     reservation_id: int,
-    reservation: ReservationUpdate,
+    data: ReservationUpdate,
     db: Session = Depends(get_db),
     user: UserResponse = Depends(get_current_user),
 ) -> ReservationResponse:
+    ticket_type_crud = CrudTicketType(db)
     reservation_crud = CrudReservation(db)
-    if reservation_crud.read_by_id(reservation_id) is None:
+    reservation = reservation_crud.read_by_id(reservation_id)
+    if reservation is None:
         raise HTTPException(status_code=404, detail="Reservation not found")
-    if not user.is_admin and reservation_id not in [
-        r.id for r in reservation_crud.read_by_user_id(user.id)
-    ]:
+    if not user.is_admin and reservation.user_id != user.id:
         raise HTTPException(status_code=403, detail="Permission denied")
-    updated_reservation = reservation_crud.update(reservation_id, reservation)
-    return updated_reservation
+    try:
+        ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
+        check_available(ticket_type, data.num_attendees - reservation.num_attendees)
+        update_available(
+            ticket_type, data.num_attendees - reservation.num_attendees, db
+        )
+        updated_reservation = reservation_crud.update(reservation_id, data)
+        return updated_reservation
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # Reservation削除（管理者・ユーザー共通）
@@ -137,11 +179,16 @@ def delete_reservation(
     db: Session = Depends(get_db),
     user: UserResponse = Depends(get_current_user),
 ) -> None:
+    ticket_type_crud = CrudTicketType(db)
     reservation_crud = CrudReservation(db)
-    if reservation_crud.read_by_id(reservation_id) is None:
+    reservation = reservation_crud.read_by_id(reservation_id)
+    if reservation is None:
         raise HTTPException(status_code=404, detail="Reservation not found")
-    if not user.is_admin and reservation_id not in [
-        r.id for r in reservation_crud.read_by_user_id(user.id)
-    ]:
+    if not user.is_admin and reservation.user_id != user.id:
         raise HTTPException(status_code=403, detail="Permission denied")
-    reservation_crud.delete(reservation_id)
+    try:
+        ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
+        update_available(ticket_type, reservation.num_attendees, db)
+        reservation_crud.delete(reservation_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

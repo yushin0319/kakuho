@@ -54,8 +54,7 @@ class StageResponse(StageBase):
 
 # チケットタイプのスキーマ
 class TicketTypeBase(BaseModel):
-    stage_id: int
-    type_name: str
+    type_name: str = Field(..., min_length=1, max_length=50)
     price: float
     available: int
 
@@ -72,6 +71,7 @@ class TicketTypeUpdate(TicketTypeBase):
 
 class TicketTypeResponse(TicketTypeBase):
     id: int
+    stage_id: int
 
     model_config = ConfigDict({"from_attributes": True})
 

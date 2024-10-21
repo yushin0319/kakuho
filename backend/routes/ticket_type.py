@@ -52,9 +52,13 @@ def create_ticket_type(
 ) -> TicketTypeResponse:
     check_admin(user)
     stage_crud = CrudStage(db)
+    ticket_type_crud = CrudTicketType(db)
     if stage_crud.read_by_id(stage_id) is None:
         raise HTTPException(status_code=404, detail="Stage not found")
-    ticket_type_crud = CrudTicketType(db)
+    existing_ticket_type = ticket_type_crud.read_by_stage_id(stage_id)
+    for t in existing_ticket_type:
+        if t.type_name == ticket_type.type_name:
+            raise HTTPException(status_code=400, detail="Type name already exists")
     created_ticket_type = ticket_type_crud.create(stage_id, ticket_type)
     return created_ticket_type
 

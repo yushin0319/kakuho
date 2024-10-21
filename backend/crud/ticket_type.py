@@ -19,8 +19,8 @@ class CrudTicketType(BaseCRUD[TicketType, TicketTypeResponse]):
             for ticket_type in ticket_types
         ]
 
-    def create(self, data: TicketTypeCreate) -> TicketTypeResponse:
-        ticket_type = TicketType(**data.model_dump())
+    def create(self, stage_id: int, data: TicketTypeCreate) -> TicketTypeResponse:
+        ticket_type = TicketType(**data.model_dump(), stage_id=stage_id)
         self.db.add(ticket_type)
         self.db.commit()
         self.db.refresh(ticket_type)
