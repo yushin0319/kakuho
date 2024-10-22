@@ -16,8 +16,9 @@ export interface EventResponse extends EventBase {
   id: number;
 }
 
-export interface EventListResponse {
-  events: EventResponse[];
+export interface EventTimeResponse {
+  start_time: string;
+  end_time: string;
 }
 
 //Stage関連の型定義
@@ -41,10 +42,6 @@ export interface StageResponse extends StageBase {
   event_id: number;
 }
 
-export interface StageListResponse {
-  stages: StageResponse[];
-}
-
 //TicketType関連の型定義
 
 interface TicketTypeBase {
@@ -66,10 +63,6 @@ export interface TicketTypeResponse extends TicketTypeBase {
   stage_id: number;
 }
 
-export interface TicketTypeListResponse {
-  ticket_types: TicketTypeResponse[];
-}
-
 //Reservation関連の型定義
 
 interface ReservationBase {
@@ -87,10 +80,6 @@ export interface ReservationResponse extends ReservationBase {
   created_at: string; // datetimeはstringで扱う
   user_id: number;
   ticket_type_id: number;
-}
-
-export interface ReservationListResponse {
-  reservations: ReservationResponse[];
 }
 
 //User関連の型定義
@@ -113,8 +102,4 @@ export interface UserUpdate {
 export interface UserResponse extends UserBase {
   id: number;
   is_admin: boolean;
-}
-
-export interface UserListResponse {
-  users: UserResponse[];
 }
