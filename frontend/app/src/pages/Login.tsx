@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // AuthContextをインポート
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // AuthContextのlogin関数を取得
 
   const validateEmail = (email: string): boolean => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // フロントエンドでの簡易バリデーション
     if (!validateEmail(email)) {
       setError("Invalid email format.");
       return;
@@ -25,8 +28,13 @@ const Login: React.FC = () => {
       return;
     }
 
-    // ログイン処理（仮）
-    navigate("/");
+    try {
+      // ログイン処理を実行
+      await login(email, password);
+      navigate("/"); // ログイン成功時にホームへリダイレクト
+    } catch (error) {
+      setError("Login failed. Please check your email and password."); // エラーメッセージを表示
+    }
   };
 
   return (

@@ -26,8 +26,13 @@ export const login = async (
 
 // 現在のユーザー情報を取得する関数
 export const getCurrentUser = async (): Promise<UserResponse> => {
-  const response = await api.get("/users/me");
-  return response.data;
+  try {
+    const response = await api.get("/users/me");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
 };
 
 // ログアウト処理

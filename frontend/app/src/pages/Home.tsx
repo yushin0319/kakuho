@@ -3,10 +3,12 @@ import { fetchEvents } from "../services/api/event"; // API関数をインポー
 import { fetchEventStages } from "../services/api/stage"; // Stage API関数をインポート
 import { EventResponse, StageResponse } from "../services/interfaces"; // Interfaceをインポート
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // AuthContextをインポート
 
 const Home: React.FC = () => {
   const [events, setEvents] = useState<EventResponse[]>([]); // イベントリストを保持するstate
   const [stages, setStages] = useState<Record<number, StageResponse[]>>({}); // イベントごとのステージ情報を保持するstate
+  const { user } = useAuth(); // AuthContextからユーザー情報を取得
 
   useEffect(() => {
     // イベントを取得して、そのIDごとにステージを取得
@@ -35,6 +37,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-container">
+      <h2>Welcome, {user?.email}!</h2>
       <h2>Upcoming Events</h2>
       {events && events.length > 0 ? (
         <ul>
