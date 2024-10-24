@@ -9,6 +9,7 @@ const Home: React.FC = () => {
   const [events, setEvents] = useState<EventResponse[]>([]); // イベントリストを保持するstate
   const [stages, setStages] = useState<Record<number, StageResponse[]>>({}); // イベントごとのステージ情報を保持するstate
   const { user } = useAuth(); // AuthContextからユーザー情報を取得
+  const displayname = user?.nickname || user?.email;
 
   useEffect(() => {
     // イベントを取得して、そのIDごとにステージを取得
@@ -37,7 +38,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-container">
-      <h2>Welcome, {user?.email}!</h2>
+      <h2>ようこそ　{displayname}　さん！</h2>
       <h2>Upcoming Events</h2>
       {events && events.length > 0 ? (
         <ul>

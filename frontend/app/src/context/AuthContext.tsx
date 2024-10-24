@@ -16,17 +16,13 @@ import { UserResponse } from "../services/interfaces";
 type AuthContextType = {
   isAuthenticated: boolean;
   user: UserResponse | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 };
 
-// デフォルト値を持つContextを作成
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  user: null,
-  login: async () => {},
-  logout: () => {},
-});
+// デフォルト値を持たないContextを作成
+const AuthContext = createContext<AuthContextType | null>(null);
 
 // AuthProviderのプロパティの型
 type AuthProviderProps = {
@@ -36,6 +32,7 @@ type AuthProviderProps = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<UserResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // ログイン関数
   const login = async (email: string, password: string) => {
@@ -66,18 +63,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsAuthenticated(true);
       } catch (error) {
         console.error("Failed to fetch current user:", error);
-        logout(); // 失敗時はログアウト処理
+      } finally {
+        setLoading(false); // ローディング完了
       }
     };
     fetchCurrentUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, loading, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
 // AuthContextを使うためのカスタムフック
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};

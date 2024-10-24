@@ -5,7 +5,6 @@ export const handleApiRequest = async <T>(
 ): Promise<T> => {
   try {
     const response = await request;
-    console.log("API request successful:", response.data);
     return response.data;
   } catch (error: any) {
     console.error("API request failed:", error);

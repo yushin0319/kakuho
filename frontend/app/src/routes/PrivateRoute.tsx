@@ -1,6 +1,6 @@
 //ログインしていなければログインページにリダイレクトする
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,17 +9,10 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-  const { isAuthenticated, user } = useAuth();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (user !== null && isAuthenticated) {
-      setLoading(false);
-    }
-  }, [user, isAuthenticated]);
+  const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // プロバイダがロードを終えるまで待つ
   }
 
   if (!isAuthenticated || user === null) {
