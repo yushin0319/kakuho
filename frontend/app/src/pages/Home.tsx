@@ -1,3 +1,4 @@
+// app/src/components/Home.tsx
 import { useState } from "react";
 import EventList from "../components/EventList";
 import CalendarView from "../components/CalendarView";

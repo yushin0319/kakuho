@@ -1,35 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { EventResponse, EventTimeResponse } from "../services/interfaces";
-import { fetchEvents, fetchEventTime } from "../services/api/event";
+// app/src/components/EventList.tsx
+import React from "react";
+import useEventData from "../hooks/useEventData";
 
 interface EventListProps {
   onSelectEvent: (id: number) => void;
 }
 
 const EventList: React.FC<EventListProps> = ({ onSelectEvent }) => {
-  const [events, setEvents] = useState<(EventResponse & EventTimeResponse)[]>(
-    []
-  );
+  const { events, isLoading, error } = useEventData();
 
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const eventList: EventResponse[] = await fetchEvents();
-        const eventsWithTime = await Promise.all(
-          eventList.map(async (event) => {
-            const time: EventTimeResponse = await fetchEventTime(event.id);
-            return { ...event, ...time };
-          })
-        );
-
-        setEvents(eventsWithTime);
-      } catch (error) {
-        console.error("Failed to load events:", error);
-      }
-    };
-
-    loadEvents();
-  }, []);
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
