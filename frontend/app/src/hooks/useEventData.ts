@@ -1,4 +1,4 @@
-// app/src/hooks/useEventData.ts
+// useEventData.ts
 import { useState, useEffect } from "react";
 import { fetchEvents, fetchEventTime } from "../services/api/event";
 import { EventResponse, EventTimeResponse } from "../services/interfaces";
@@ -13,6 +13,7 @@ const useEventData = () => {
   useEffect(() => {
     const loadEventData = async () => {
       try {
+        setIsLoading(true);
         const eventList = await fetchEvents();
         const eventsWithTime = await Promise.all(
           eventList.map(async (event) => {
@@ -30,7 +31,7 @@ const useEventData = () => {
     };
 
     loadEventData();
-  }, []);
+  }, []); // 依存配列を空にして初回のみ実行
 
   return { events, isLoading, error };
 };

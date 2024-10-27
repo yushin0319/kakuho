@@ -1,4 +1,4 @@
-// app/src/hooks/useCalendarData.ts
+// useCalendarData.ts
 import { useState, useEffect } from "react";
 import { fetchEventStages } from "../services/api/stage";
 import { StageResponse } from "../services/interfaces";
@@ -12,6 +12,7 @@ const useCalendarData = (eventId: number) => {
   useEffect(() => {
     const loadCalendarData = async () => {
       try {
+        setIsLoading(true);
         const fetchedStages = await fetchEventStages(eventId);
         setStages(fetchedStages);
         if (fetchedStages.length > 0) {

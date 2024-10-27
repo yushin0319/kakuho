@@ -1,5 +1,11 @@
-// app/src/components/TicketPopup.tsx
-import React from "react";
+// TicketPopup.tsx
+import { useState } from "react";
+import TicketList from "./TicketList";
+import TicketQuantity from "./TicketQuantity";
+import TicketSummary from "./TicketSummary";
+import { useStageData } from "../hooks/useStageData";
+import { TicketTypeResponse } from "../services/interfaces"; // 型のインポート
+import "../assets/styles/TicketPopup.scss";
 
 interface TicketPopupProps {
   stageId: number;
@@ -7,35 +13,54 @@ interface TicketPopupProps {
 }
 
 const TicketPopup: React.FC<TicketPopupProps> = ({ stageId, onClose }) => {
-  // 仮のデータや表示内容（必要に応じてAPIから詳細データを取得するロジックを追加）
-  const stageDetails = {
-    name: `Stage ${stageId}`,
-    description: "This is a sample description for the selected stage.",
-    ticketsAvailable: 20,
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedTicket, setSelectedTicket] =
+    useState<TicketTypeResponse | null>(null);
+  const [quantity, setQuantity] = useState(1);
+
+  const { stage, isLoading } = useStageData(stageId); // ステージの詳細データを取得
+
+  const handleCancel = () => {
+    onClose();
   };
 
+  if (isLoading || !stage) return <div>Loading...</div>;
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        backgroundColor: "#fff",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        padding: "16px",
-        width: "300px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-        zIndex: 1000,
-      }}
-    >
-      <h2>{stageDetails.name}</h2>
-      <p>{stageDetails.description}</p>
-      <p>Tickets Available: {stageDetails.ticketsAvailable}</p>
-      <button onClick={onClose} style={{ marginTop: "16px" }}>
-        Close
-      </button>
+    <div className="popup">
+      {currentStep === 1 && (
+        <TicketList
+          stage={stage}
+          onSelectTicket={(ticket) => {
+            setSelectedTicket(ticket);
+            setCurrentStep(2);
+          }}
+          onCancel={handleCancel}
+        />
+      )}
+      {currentStep === 2 && selectedTicket && (
+        <TicketQuantity
+          stage={stage}
+          ticket={selectedTicket}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          onConfirm={() => setCurrentStep(3)}
+          onCancel={handleCancel}
+        />
+      )}
+      {currentStep === 3 && selectedTicket && (
+        <TicketSummary
+          stage={stage}
+          ticket={selectedTicket}
+          quantity={quantity}
+          onConfirm={() => {
+            // Reservation 作成のフックを使用
+            console.log("Reservation confirmed!");
+            handleCancel();
+          }}
+          onCancel={() => setCurrentStep(2)}
+        />
+      )}
     </div>
   );
 };

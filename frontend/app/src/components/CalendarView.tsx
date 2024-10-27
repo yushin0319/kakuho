@@ -7,6 +7,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import useCalendarData from "../hooks/useCalendarData";
 import CustomToolbar from "./CustomToolbar";
 import TicketPopup from "./TicketPopup";
+import { StageResponse } from "../services/interfaces";
+import "../assets/styles/CalendarView.scss";
 
 const locales = { ja };
 
@@ -46,7 +48,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ eventId, onBack }) => {
       <button onClick={onBack}>イベントリストに戻る</button>
       <Calendar
         localizer={localizer}
-        events={stages.map((stage) => ({
+        events={stages.map((stage: StageResponse) => ({
           id: stage.id,
           title: new Date(stage.start_time).toLocaleTimeString("ja-JP", {
             hour: "2-digit",

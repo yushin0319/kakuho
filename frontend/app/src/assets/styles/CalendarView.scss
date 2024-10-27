@@ -14,15 +14,10 @@
   padding: 10px;
 }
 
-.rbc-event-content {
-  white-space: nowrap; /* 時刻をすべて表示 */
-  overflow: visible; /* コンテンツが切れないようにする */
-}
-
 .rbc-event {
   background-color: #ff8c00;
   color: white;
-  padding: 0px 3px;
+  padding: 0 3px;
   border-radius: 5px;
   font-size: 12px;
   text-align: center;
@@ -35,12 +30,6 @@
 .rbc-header {
   font-weight: bold;
   color: #333;
-}
-
-.rbc-date-cell {
-  padding: auto;
-  //text-align: center;
-  background-color: #f4f4f4;
 }
 
 .rbc-today {

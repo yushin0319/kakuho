@@ -1,0 +1,38 @@
+/* TicketPopup.scss */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  z-index: 1000;
+}
+
+.popup h3 {
+  margin: 0 0 20px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.popup p {
+  margin: 10px 0;
+}
+
+.popup button {
+  margin: 10px 5px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.popup button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
