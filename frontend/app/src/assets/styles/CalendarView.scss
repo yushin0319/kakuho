@@ -11,10 +11,40 @@
 }
 
 .rbc-toolbar {
-  background-color: $primary-color;
-  color: $white;
-  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px;
+  background-color: $primary-color; /* プライマリーカラー */
+  border-radius: 8px; /* 角を丸くする */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 軽い影 */
+
+  button {
+    background-color: $accent-color; /* アクセントカラー */
+    color: $white; /* 白文字 */
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: $accent-color;
+      color: white;
+    }
+
+    &:focus {
+      background-color: $accent-color; /* クリック時の背景色を指定 */
+      color: white;
+    }
+  }
+
+  .rbc-toolbar-label {
+    font-size: 1.2rem; /* ラベルの文字サイズを大きめに */
+    color: $white; /* セカンダリーカラーで文字を強調 */
+    font-weight: bold;
+  }
 }
 
 .rbc-event {

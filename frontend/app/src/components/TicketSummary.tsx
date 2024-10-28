@@ -30,7 +30,15 @@ const TicketSummary: React.FC<TicketSummaryProps> = ({
 
   return (
     <div>
-      <h3>{new Date(stage.start_time).toLocaleString()}</h3>
+      <h3>
+        {new Date(stage.start_time).toLocaleString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </h3>
       <p>
         {ticket.type_name} - {quantity} 枚 - 合計 {ticket.price * quantity}円
       </p>

@@ -19,6 +19,7 @@ type AuthContextType = {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  setUser: React.Dispatch<React.SetStateAction<UserResponse | null>>; // 追加
 };
 
 // デフォルト値を持たないContextを作成
@@ -72,7 +73,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, loading, login, logout }}
+      value={{
+        isAuthenticated,
+        user,
+        loading,
+        login,
+        logout,
+        setUser, // 追加
+      }}
     >
       {children}
     </AuthContext.Provider>

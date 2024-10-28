@@ -21,7 +21,15 @@ const TicketList: React.FC<TicketListProps> = ({
 
   return (
     <div>
-      <h3>{new Date(stage.start_time).toLocaleString()}</h3>
+      <h3>
+        {new Date(stage.start_time).toLocaleString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </h3>
       {tickets.map((ticket) => (
         <button
           key={ticket.id}
