@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "./Header";
+import "../assets/styles/Layout.scss";
 
 interface LayoutProps {
   children: ReactNode;

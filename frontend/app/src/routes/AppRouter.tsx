@@ -5,7 +5,6 @@ import PrivateRoute from "./PrivateRoute";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import EventDetail from "../pages/EventDetail";
 
 const AppRouter: React.FC = () => {
   return (
@@ -25,9 +24,6 @@ const AppRouter: React.FC = () => {
 
       {/* 登録ページ */}
       <Route path="/register" element={<Register />} />
-
-      {/* イベント詳細ページ */}
-      <Route path="/events/:id" element={<EventDetail />} />
     </Routes>
   );
 };

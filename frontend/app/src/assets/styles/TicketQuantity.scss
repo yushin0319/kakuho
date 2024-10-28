@@ -1,4 +1,6 @@
-/* TicketQuantity.scss */
+// app/src/assets/styles/TicketQuantity.scss
+@import "./variables"; // 変数をインポート
+
 .ticket-quantity {
   display: flex;
   flex-direction: column;
@@ -13,8 +15,8 @@
 .ticket-quantity button {
   margin: 10px;
   padding: 8px 16px;
-  background-color: #ff8c00;
-  color: white;
+  background-color: $primary-color;
+  color: $white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -26,5 +28,5 @@
 }
 
 .ticket-quantity button:hover:not(:disabled) {
-  background-color: #ff6a00;
+  background-color: darken($primary-color, 10%);
 }

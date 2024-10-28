@@ -1,4 +1,4 @@
-// useTicketData.ts
+// app/src/hooks/useTicketData.ts
 import { useState, useEffect } from "react";
 import { fetchStageTicketTypes } from "../services/api/ticketType";
 import { TicketTypeResponse } from "../services/interfaces";

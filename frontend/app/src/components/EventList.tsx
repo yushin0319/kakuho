@@ -1,9 +1,11 @@
 // app/src/components/EventList.tsx
 import React from "react";
 import useEventData from "../hooks/useEventData";
+import { EventResponse } from "../services/interfaces";
+import "../assets/styles/EventList.scss";
 
 interface EventListProps {
-  onSelectEvent: (id: number) => void;
+  onSelectEvent: (event: EventResponse) => void;
 }
 
 const EventList: React.FC<EventListProps> = ({ onSelectEvent }) => {
@@ -13,23 +15,16 @@ const EventList: React.FC<EventListProps> = ({ onSelectEvent }) => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+    <div className="event-list-container">
       {events.map((event) => (
         <div
           key={event.id}
-          onClick={() => onSelectEvent(event.id)}
-          style={{
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            padding: "16px",
-            width: "300px",
-            cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          }}
+          onClick={() => onSelectEvent(event)}
+          className="event-item"
         >
-          <h2 style={{ margin: "0 0 8px 0" }}>{event.name}</h2>
-          <p style={{ color: "#555" }}>{event.description}</p>
-          <p style={{ color: "#888" }}>
+          <h2 className="event-title">{event.name}</h2>
+          <p className="event-description">{event.description}</p>
+          <p className="event-dates">
             {new Date(event.start_time).toLocaleDateString()} -{" "}
             {new Date(event.end_time).toLocaleDateString()}
           </p>

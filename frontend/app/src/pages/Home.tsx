@@ -1,25 +1,28 @@
-// Home.tsx
+// app/src/pages/Home.tsx
 import { useState } from "react";
 import EventList from "../components/EventList";
 import CalendarView from "../components/CalendarView";
+import { EventResponse } from "../services/interfaces"; // イベントの型インポート
 
 const Home = () => {
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
+    null
+  ); // イベント全体をステートで管理
 
-  const handleSelectEvent = (id: number) => {
-    setSelectedEventId(id);
+  const handleSelectEvent = (event: EventResponse) => {
+    setSelectedEvent(event);
   };
 
   const handleBack = () => {
-    setSelectedEventId(null);
+    setSelectedEvent(null);
   };
 
   return (
     <>
-      {selectedEventId === null ? (
+      {selectedEvent === null ? (
         <EventList onSelectEvent={handleSelectEvent} />
       ) : (
-        <CalendarView eventId={selectedEventId} onBack={handleBack} />
+        <CalendarView event={selectedEvent} onBack={handleBack} />
       )}
     </>
   );

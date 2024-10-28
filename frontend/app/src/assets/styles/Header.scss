@@ -1,0 +1,43 @@
+// app/src/assets/styles/Header.scss
+@import "./variables"; // 変数をインポート
+
+/* ログインページ専用のオレンジバー */
+.login-header-bar {
+  background-color: $primary-color;
+  height: 60px;
+  width: 100%;
+}
+
+/* ヘッダーのスタイル */
+header {
+  background-color: $primary-color;
+  padding: 10px;
+  text-align: center;
+
+  .nav-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+
+    li {
+      display: inline;
+
+      a {
+        color: $white;
+        text-decoration: none;
+        font-weight: bold;
+
+        &.active {
+          background-color: $accent-color;
+          padding: 5px 10px;
+          border-radius: 5px;
+        }
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

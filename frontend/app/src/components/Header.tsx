@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import "../assets/styles/Header.scss";
 
 // 仮の管理者フラグ（認証システム導入時に置き換える）
 const isAdmin = true; // 管理者かどうかのフラグ

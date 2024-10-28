@@ -1,0 +1,18 @@
+// app/src/assets/styles/Layout.scss
+@import "./variables"; // 変数をインポート
+@import "./global"; // グローバルスタイルのインポート
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}

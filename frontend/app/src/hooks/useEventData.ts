@@ -1,4 +1,4 @@
-// useEventData.ts
+// app/src/hooks/useEventData.ts
 import { useState, useEffect } from "react";
 import { fetchEvents, fetchEventTime } from "../services/api/event";
 import { EventResponse, EventTimeResponse } from "../services/interfaces";

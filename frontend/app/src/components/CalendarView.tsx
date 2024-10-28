@@ -7,7 +7,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import useCalendarData from "../hooks/useCalendarData";
 import CustomToolbar from "./CustomToolbar";
 import TicketPopup from "./TicketPopup";
-import { StageResponse } from "../services/interfaces";
+import { StageResponse, EventResponse } from "../services/interfaces"; // イベントの型インポート
 import "../assets/styles/CalendarView.scss";
 
 const locales = { ja };
@@ -21,12 +21,12 @@ const localizer = dateFnsLocalizer({
 });
 
 interface CalendarViewProps {
-  eventId: number;
+  event: EventResponse; // event全体を受け取るように変更
   onBack: () => void;
 }
 
-const CalendarView: React.FC<CalendarViewProps> = ({ eventId, onBack }) => {
-  const { stages, defaultDate, isLoading, error } = useCalendarData(eventId);
+const CalendarView: React.FC<CalendarViewProps> = ({ event, onBack }) => {
+  const { stages, defaultDate, isLoading, error } = useCalendarData(event.id); // event.idを利用
   const [selectedStageId, setSelectedStageId] = useState<number | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -46,6 +46,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ eventId, onBack }) => {
   return (
     <div className="calendar-container">
       <button onClick={onBack}>イベントリストに戻る</button>
+      <h2 className="calendar-title">{event.name}</h2> {/* event.nameを表示 */}
       <Calendar
         localizer={localizer}
         events={stages.map((stage: StageResponse) => ({
@@ -68,9 +69,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({ eventId, onBack }) => {
         formats={formats}
         components={{
           event: ({ event }: { event: any }) => (
-            <span onClick={() => handleStageClick(event.id)}>
+            <div
+              onClick={() => handleStageClick(event.id)}
+              className="calendar-event"
+            >
               {event.title}
-            </span>
+            </div>
           ),
           toolbar: CustomToolbar,
         }}
@@ -78,6 +82,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ eventId, onBack }) => {
       {isPopupOpen && selectedStageId && (
         <TicketPopup
           stageId={selectedStageId}
+          event={event} // event全体を渡す
           onClose={() => setIsPopupOpen(false)}
         />
       )}
