@@ -5,16 +5,27 @@ import PrivateRoute from "./PrivateRoute";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import ReservationList from "../pages/ReservationList";
 
 const AppRouter: React.FC = () => {
   return (
     <Routes>
-      {/* ホームページ */}
+      {/* 「予約する」 */}
       <Route
         path="/"
         element={
           <PrivateRoute>
             <Home />
+          </PrivateRoute>
+        }
+      />
+
+      {/* 「マイチケット」 */}
+      <Route
+        path="/my-reservations"
+        element={
+          <PrivateRoute>
+            <ReservationList />
           </PrivateRoute>
         }
       />
