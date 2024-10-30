@@ -1,5 +1,4 @@
-// app/src/components/ReservationCard.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import "../assets/styles/ReservationCard.scss";
 import {
   ReservationResponse,
@@ -7,9 +6,9 @@ import {
   StageResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
-import { useChangeReservation } from "../hooks/useChangeReservation";
 import { useDeleteReservation } from "../hooks/useDeleteReservation";
-import { getDate } from "../services/utils";
+import { getDate, getHour } from "../services/utils";
+import ReservationChange from "./ReservationChange";
 
 interface ReservationCardProps {
   reservation: ReservationResponse;
@@ -26,7 +25,6 @@ const ReservationCard = ({
 }: ReservationCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
-  const { changeReservation } = useChangeReservation();
   const { removeReservation } = useDeleteReservation();
 
   const handleCardClick = () => {
@@ -35,7 +33,6 @@ const ReservationCard = ({
 
   const handleChangeClick = () => {
     setIsChanging(true);
-    // モーダルを開くなどの処理を追加予定
   };
 
   const handleDeleteClick = async () => {
@@ -48,7 +45,10 @@ const ReservationCard = ({
     <div className="reservation-card" onClick={handleCardClick}>
       <div className="reservation-info">
         <h3>{event.name}</h3>
-        <p>日時: {getDate(new Date(stage.start_time))}</p>
+        <p>
+          日時: {getDate(new Date(stage.start_time))}{" "}
+          {getHour(new Date(stage.start_time))}
+        </p>
       </div>
       {isExpanded && (
         <div className="reservation-details">
@@ -67,6 +67,15 @@ const ReservationCard = ({
             </button>
           </div>
         </div>
+      )}
+      {isChanging && (
+        <ReservationChange
+          reservation={reservation}
+          event={event}
+          stage={stage}
+          ticketType={ticketType}
+          onClose={() => setIsChanging(false)}
+        />
       )}
     </div>
   );
