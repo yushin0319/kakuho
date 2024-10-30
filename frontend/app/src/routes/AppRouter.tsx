@@ -1,5 +1,4 @@
-// AppRouter.tsx
-import React from "react";
+// app/src/routes/AppRouter.tsx
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import Home from "../pages/Home";
@@ -7,7 +6,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ReservationList from "../pages/ReservationList";
 
-const AppRouter: React.FC = () => {
+const AppRouter = () => {
   return (
     <Routes>
       {/* 「予約する」 */}

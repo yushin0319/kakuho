@@ -1,4 +1,5 @@
-//ログインしていなければログインページにリダイレクトする
+// app/src/routes/PrivateRoute.tsx
+// Login していない場合はログインページにリダイレクトする
 
 import React from "react";
 import { Navigate } from "react-router-dom";
@@ -8,7 +9,7 @@ interface PrivateRouteProps {
   children: React.ReactNode;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {

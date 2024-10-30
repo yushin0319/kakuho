@@ -1,5 +1,5 @@
 // app/src/components/CalendarView.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { ja } from "date-fns/locale";
 import { format, parse, startOfWeek, getDay } from "date-fns";
@@ -21,11 +21,11 @@ const localizer = dateFnsLocalizer({
 });
 
 interface CalendarViewProps {
-  event: EventResponse; // event全体を受け取るように変更
+  event: EventResponse;
   onBack: () => void;
 }
 
-const CalendarView: React.FC<CalendarViewProps> = ({ event, onBack }) => {
+const CalendarView = ({ event, onBack }: CalendarViewProps) => {
   const { stages, defaultDate, isLoading, error } = useCalendarData(event.id); // event.idを利用
   const [selectedStageId, setSelectedStageId] = useState<number | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -46,7 +46,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ event, onBack }) => {
   return (
     <div className="calendar-container">
       <button onClick={onBack}>イベントリストに戻る</button>
-      <h2 className="calendar-title">{event.name}</h2> {/* event.nameを表示 */}
+      <h2 className="calendar-title">{event.name}</h2>
       <Calendar
         localizer={localizer}
         events={stages.map((stage: StageResponse) => ({
@@ -82,7 +82,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ event, onBack }) => {
       {isPopupOpen && selectedStageId && (
         <TicketPopup
           stageId={selectedStageId}
-          event={event} // event全体を渡す
+          event={event}
           onClose={() => setIsPopupOpen(false)}
         />
       )}

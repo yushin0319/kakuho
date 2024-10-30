@@ -1,5 +1,4 @@
-// TicketQuantity.tsx
-import React from "react";
+// app/src/components/TicketQuantity.tsx
 import { StageResponse, TicketTypeResponse } from "../services/interfaces";
 import "../assets/styles/TicketQuantity.scss";
 
@@ -12,14 +11,14 @@ interface TicketQuantityProps {
   onCancel: () => void;
 }
 
-const TicketQuantity: React.FC<TicketQuantityProps> = ({
+const TicketQuantity = ({
   stage,
   ticket,
   quantity,
   setQuantity,
   onConfirm,
   onCancel,
-}) => {
+}: TicketQuantityProps) => {
   const maxQuantity = ticket.available;
 
   const handleIncrement = () => {

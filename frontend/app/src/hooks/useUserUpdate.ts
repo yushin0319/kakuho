@@ -9,7 +9,7 @@ export const useUserUpdate = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
 
-  const updateUser = async (userData: Partial<UserUpdate>) => {
+  const updateUser = async (userData: UserUpdate) => {
     if (!user) {
       setUpdateError("User not found");
       return;

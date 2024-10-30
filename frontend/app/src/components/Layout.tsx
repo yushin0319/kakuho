@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react";
+// app/src/components/Layout.tsx
+import { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "./Header";
 import "../assets/styles/Layout.scss";
@@ -7,7 +8,7 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
 
   // ログインページや新規登録ページかどうかを判定

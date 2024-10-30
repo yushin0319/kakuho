@@ -1,5 +1,5 @@
 // app/src/components/Header.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import UserInfo from "./UserInfo";
 import "../assets/styles/Header.scss";
@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 // 仮の管理者フラグ（認証システム導入時に置き換える）
 const isAdmin = false;
 
-const Header: React.FC = () => {
+const Header = () => {
   const { user } = useAuth(); // 認証情報を取得するフック
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();

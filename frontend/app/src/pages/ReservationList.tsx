@@ -1,10 +1,9 @@
 // app/src/pages/ReservationList.tsx
-import React from "react";
 import ReservationCard from "../components/ReservationCard";
 import { useReservationDetails } from "../hooks/useReservationDetails";
 import "../assets/styles/ReservationList.scss";
 
-const ReservationList: React.FC = () => {
+const ReservationList = () => {
   const { reservations, isLoading, error } = useReservationDetails();
 
   if (isLoading) return <div>Loading...</div>;

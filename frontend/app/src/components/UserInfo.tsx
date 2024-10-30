@@ -1,5 +1,5 @@
 // app/src/components/UserInfo.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { useUserUpdate } from "../hooks/useUserUpdate";
 import { useAuth } from "../context/AuthContext";
 import Modal from "./Modal";
@@ -8,7 +8,7 @@ interface UserInfoProps {
   onClose: () => void;
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ onClose }) => {
+const UserInfo = ({ onClose }: UserInfoProps) => {
   const { user } = useAuth();
   const { updateUser, isUpdating, updateError } = useUserUpdate();
   const [isEditing, setIsEditing] = useState(false);

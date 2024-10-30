@@ -1,5 +1,4 @@
-// TicketSummary.tsx
-import React from "react";
+// app/src/components/TicketSummary.tsx
 import { useReservation } from "../hooks/useReservation";
 import { StageResponse, TicketTypeResponse } from "../services/interfaces";
 import "../assets/styles/TicketSummary.scss";
@@ -12,14 +11,14 @@ interface TicketSummaryProps {
   onCancel: () => void;
 }
 
-const TicketSummary: React.FC<TicketSummaryProps> = ({
+const TicketSummary = ({
   stage,
   ticket,
   quantity,
   onConfirm,
   onCancel,
-}) => {
-  const { makeReservation } = useReservation(); // 予約の作成用フック
+}: TicketSummaryProps) => {
+  const { makeReservation } = useReservation();
 
   const handleConfirm = () => {
     makeReservation(ticket.id, {

@@ -1,5 +1,4 @@
 // app/src/components/EventList.tsx
-import React from "react";
 import useEventData from "../hooks/useEventData";
 import { EventResponse } from "../services/interfaces";
 import "../assets/styles/EventList.scss";
@@ -8,7 +7,7 @@ interface EventListProps {
   onSelectEvent: (event: EventResponse) => void;
 }
 
-const EventList: React.FC<EventListProps> = ({ onSelectEvent }) => {
+const EventList = ({ onSelectEvent }: EventListProps) => {
   const { events, isLoading, error } = useEventData();
 
   if (isLoading) return <div>Loading...</div>;

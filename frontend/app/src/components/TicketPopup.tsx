@@ -13,11 +13,7 @@ interface TicketPopupProps {
   onClose: () => void;
 }
 
-const TicketPopup: React.FC<TicketPopupProps> = ({
-  stageId,
-  event,
-  onClose,
-}) => {
+const TicketPopup = ({ stageId, event, onClose }: TicketPopupProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedTicket, setSelectedTicket] =
     useState<TicketTypeResponse | null>(null);
