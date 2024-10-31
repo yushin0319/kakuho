@@ -1,5 +1,5 @@
 // app/src/assets/styles/EventList.scss
-@import "./variables"; // 変数をインポート
+@use "./variables" as *;
 
 .event-list-container {
   display: flex;

@@ -1,4 +1,5 @@
 // app/src/assets/styles/_global.scss
+@use "./variables" as *;
 
 a {
   color: $primary-color;

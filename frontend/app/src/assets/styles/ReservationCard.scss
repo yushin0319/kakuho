@@ -1,5 +1,6 @@
 // app/src/assets/styles/ReservationCard.scss
-@import "./variables"; // 色変数のインポート
+@use "sass:color";
+@use "./variables" as *;
 
 .reservation-card {
   background-color: $white;
@@ -60,7 +61,7 @@
         color: $white;
 
         &:hover {
-          background-color: lighten($secondary-color, 10%);
+          background-color: color.scale($secondary-color, $lightness: 10%);
         }
       }
 
@@ -69,7 +70,7 @@
         color: $white;
 
         &:hover {
-          background-color: lighten($error-color, 10%);
+          background-color: color.scale($error-color, $lightness: 10%);
         }
       }
     }

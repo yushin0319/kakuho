@@ -1,6 +1,5 @@
 // app/src/assets/styles/Login.scss
-@import "./variables"; // 変数のインポート
-@import "./global"; // 共通スタイルのインポート
+@use "./variables" as *;
 
 /* ログインページのスタイル */
 .login-header-bar {
