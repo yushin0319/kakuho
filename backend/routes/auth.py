@@ -12,7 +12,7 @@ from schemas import UserResponse
 # JWT設定
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -29,7 +29,7 @@ class TokenData(BaseModel):
 
 # アクセストークンを作成する関数
 def create_access_token(
-    data: dict, expires_delta: timedelta | None = timedelta(minutes=10)
+    data: dict, expires_delta: timedelta | None = timedelta(minutes=300)
 ) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
