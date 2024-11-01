@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { createReservation } from "../services/api/reservation";
 import { ReservationCreate, ReservationResponse } from "../services/interfaces";
+import { useReservationContext } from "../context/ReservationContext";
 
 export const useReservation = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,6 +10,7 @@ export const useReservation = () => {
   const [reservation, setReservation] = useState<ReservationResponse | null>(
     null
   );
+  const { reloadReservations } = useReservationContext();
 
   const makeReservation = async (
     ticket_type_id: number,
@@ -17,6 +19,7 @@ export const useReservation = () => {
     try {
       setIsLoading(true);
       const response = await createReservation(ticket_type_id, reservationData);
+      await reloadReservations();
       setReservation(response);
     } catch (err) {
       setError("Failed to create reservation.");

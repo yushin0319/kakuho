@@ -9,12 +9,15 @@ import {
 import { useDeleteReservation } from "../hooks/useDeleteReservation";
 import { getDate, getHour } from "../services/utils";
 import ReservationChange from "./ReservationChange";
+import { useReservationContext } from "../context/ReservationContext";
 
 interface ReservationCardProps {
   reservation: ReservationResponse;
   event: EventResponse;
   stage: StageResponse;
   ticketType: TicketTypeResponse;
+  isExpanded: boolean;
+  onCardClick: () => void;
 }
 
 const ReservationCard = ({
@@ -22,13 +25,15 @@ const ReservationCard = ({
   event,
   stage,
   ticketType,
+  isExpanded,
+  onCardClick,
 }: ReservationCardProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
   const { removeReservation } = useDeleteReservation();
+  const { reloadReservations } = useReservationContext();
 
   const handleCardClick = () => {
-    setIsExpanded(!isExpanded);
+    onCardClick();
   };
 
   const handleChangeClick = () => {
@@ -38,6 +43,7 @@ const ReservationCard = ({
   const handleDeleteClick = async () => {
     if (window.confirm("この予約を削除しますか？")) {
       await removeReservation(reservation.id);
+      reloadReservations(); // 予約削除後にデータを再取得
     }
   };
 
@@ -74,7 +80,10 @@ const ReservationCard = ({
           event={event}
           stage={stage}
           ticketType={ticketType}
-          onClose={() => setIsChanging(false)}
+          onClose={() => {
+            setIsChanging(false);
+            reloadReservations(); // 予約変更後にデータを再取得
+          }}
         />
       )}
     </div>

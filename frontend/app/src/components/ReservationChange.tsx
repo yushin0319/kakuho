@@ -34,10 +34,15 @@ const ReservationChange = ({
   ticketType,
   onClose,
 }: ReservationChangeProps) => {
+  // ステップ管理用の状態
   const [step, setStep] = useState(1);
+
+  // 新しいステージとチケットタイプを管理する状態
   const [newStage, setNewStage] = useState<StageResponse>(stage);
   const [newTicketType, setNewTicketType] =
     useState<TicketTypeResponse>(ticketType);
+
+  // 予約人数と選択可能なステージやチケットタイプのリスト
   const [newNumAttendees, setNewNumAttendees] = useState<number>(
     reservation.num_attendees
   );
@@ -46,6 +51,16 @@ const ReservationChange = ({
   const [maxAvailable, setMaxAvailable] = useState<number>(0);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
+  // アラートメッセージを評価する関数
+  const evaluateAlert = () => {
+    if (newNumAttendees > maxAvailable) {
+      setAlertMessage("申し訳ございません。ご希望のチケットは満席です。");
+    } else {
+      setAlertMessage(null);
+    }
+  };
+
+  // event.id の変更に応じてステージリストをロードする
   useEffect(() => {
     let isMounted = true;
     const loadStages = async () => {
@@ -56,58 +71,64 @@ const ReservationChange = ({
     };
     loadStages();
     return () => {
-      isMounted = false;
+      isMounted = false; // クリーンアップ時にマウント状態を解除
     };
   }, [event.id]);
 
+  // newStage の変更に応じてチケットタイプをロードする
   useEffect(() => {
     let isMounted = true;
     const loadTicketTypes = async () => {
       const ticketTypes = await fetchStageTicketTypes(newStage.id);
       if (isMounted) {
         setTicketTypes(ticketTypes);
+        setNewTicketType(ticketTypes[0]); // デフォルトで最初のチケットタイプを設定
       }
     };
     loadTicketTypes();
     return () => {
-      isMounted = false;
+      isMounted = false; // クリーンアップ時にマウント状態を解除
     };
-  }, [newStage.id]);
+  }, [newStage]);
 
+  // newTicketType の変更に応じて最大予約可能数を計算する
   useEffect(() => {
-    const maxAvailableForSelected =
+    const available =
       newTicketType.id === ticketType.id
         ? newTicketType.available + reservation.num_attendees
         : newTicketType.available;
+    setMaxAvailable(available);
+  }, [newTicketType]);
 
-    setMaxAvailable(maxAvailableForSelected);
+  // maxAvailable と newNumAttendees の変化に応じてアラートを評価する
+  useEffect(() => {
+    evaluateAlert();
+  }, [maxAvailable, newNumAttendees]);
 
-    if (newNumAttendees > maxAvailableForSelected) {
-      setAlertMessage("選択した券種の最大予約可能数を超えています。");
-    } else {
-      setAlertMessage(null); // 超えていない場合、メッセージを消す
-    }
-  }, [newStage, newTicketType]);
-
+  // キャンセルボタンの処理
   const handleCancel = () => {
     onClose();
   };
 
+  // 次のステップに進む処理
   const handleNext = () => {
     if (step === 1) {
       setStep(2);
     }
   };
 
+  // 前のステップに戻る処理
   const handleBack = () => {
     if (step === 2) {
       setStep(1);
     }
   };
 
+  // 予約の確認と確定処理
   const handleConfirm = async () => {
     if (stage !== newStage || ticketType !== newTicketType) {
       try {
+        // ステージやチケットタイプが変更された場合は予約を削除して新規作成
         await deleteReservation(reservation.id);
         await createReservation(newTicketType.id, {
           num_attendees: newNumAttendees,
@@ -119,6 +140,7 @@ const ReservationChange = ({
       }
     } else {
       try {
+        // ステージやチケットタイプが同じ場合は人数だけを更新
         await updateReservation(reservation.id, {
           num_attendees: newNumAttendees,
         });
@@ -130,37 +152,33 @@ const ReservationChange = ({
     }
   };
 
+  // ステージ選択の変更処理
   const handleStageChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedStageId = parseInt(e.target.value);
-    const newSelectedStage = await fetchStage(selectedStageId);
-    setNewStage(newSelectedStage);
+    const id = parseInt(e.target.value);
+    const fetchedStage = await fetchStage(id);
+    setNewStage(fetchedStage); // ステージを更新
   };
 
+  // チケットタイプ選択の変更処理
   const handleTicketTypeChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const selectedTicketTypeId = parseInt(e.target.value);
-    const newSelectedTicketType = await fetchTicketType(selectedTicketTypeId);
-    setNewTicketType(newSelectedTicketType);
+    const id = parseInt(e.target.value);
+    const fetchedTicketType = await fetchTicketType(id);
+    setNewTicketType(fetchedTicketType); // 券種を更新
   };
 
+  // 予約人数の変更処理
   const handleNumAttendeesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const attendees = parseInt(e.target.value);
-
-    if (attendees > maxAvailable) {
-      setAlertMessage("予約数が制限を超えています。");
-      setNewNumAttendees(maxAvailable);
-    } else {
-      setAlertMessage(null);
-      setNewNumAttendees(attendees);
-    }
+    setNewNumAttendees(attendees); // 枚数を更新
   };
 
   return (
     <Modal onClose={handleCancel}>
       <div className="modal-content">
         <h3>{event.name}</h3>
-        {alertMessage && <p>{alertMessage}</p>}
+        {alertMessage && <p className="alert">{alertMessage}</p>}
         {step === 1 && (
           <div>
             <label htmlFor="stage-select">ステージ選択</label>

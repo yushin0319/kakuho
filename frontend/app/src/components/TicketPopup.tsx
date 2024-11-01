@@ -18,7 +18,6 @@ const TicketPopup = ({ stageId, event, onClose }: TicketPopupProps) => {
   const [selectedTicket, setSelectedTicket] =
     useState<TicketTypeResponse | null>(null);
   const [quantity, setQuantity] = useState(1);
-
   const { stage, isLoading } = useStageData(stageId);
 
   const handleCancel = () => {
