@@ -9,7 +9,13 @@
   padding: 16px 100px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: box-shadow 0.3s;
+  transition: box-shadow 0.3s, background-color 0.5s;
+
+  // ハイライトエフェクト
+  &.highlight {
+    background-color: $highlight-color; // 光る色（$highlight-color を変数として定義しておく）
+    animation: highlightEffect 1s ease-in-out;
+  }
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -74,5 +80,15 @@
         }
       }
     }
+  }
+}
+
+// ハイライトエフェクトのアニメーション定義
+@keyframes highlightEffect {
+  0% {
+    background-color: $highlight-color; // 最初は光る色
+  }
+  100% {
+    background-color: $white; // 元の色に戻す
   }
 }

@@ -17,6 +17,7 @@ interface ReservationCardProps {
   stage: StageResponse;
   ticketType: TicketTypeResponse;
   isExpanded: boolean;
+  isNew: boolean;
   onCardClick: () => void;
 }
 
@@ -26,6 +27,7 @@ const ReservationCard = ({
   stage,
   ticketType,
   isExpanded,
+  isNew,
   onCardClick,
 }: ReservationCardProps) => {
   const [isChanging, setIsChanging] = useState(false);
@@ -44,7 +46,10 @@ const ReservationCard = ({
   };
 
   return (
-    <div className="reservation-card" onClick={handleCardClick}>
+    <div
+      className={`reservation-card ${isNew ? "highlight" : ""}`}
+      onClick={handleCardClick}
+    >
       <div className="reservation-info">
         <h3>{event.name}</h3>
         <p>

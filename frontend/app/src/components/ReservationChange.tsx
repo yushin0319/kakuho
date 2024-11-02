@@ -20,6 +20,7 @@ import {
 } from "../services/interfaces";
 import { getDate, getHour } from "../services/utils";
 import { useReservationContext } from "../context/ReservationContext";
+import { useNewItemContext } from "../context/NewItemContext";
 import "../assets/styles/ReservationChange.scss";
 
 interface ReservationChangeProps {
@@ -54,6 +55,7 @@ const ReservationChange = ({
   const [maxAvailable, setMaxAvailable] = useState<number>(0);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const { reloadReservations } = useReservationContext();
+  const { addNewItem } = useNewItemContext();
 
   // アラートメッセージを評価する関数
   const evaluateAlert = () => {
@@ -86,7 +88,7 @@ const ReservationChange = ({
       const ticketTypes = await fetchStageTicketTypes(newStage.id);
       if (isMounted) {
         setTicketTypes(ticketTypes);
-        setNewTicketType(ticketTypes[0]); // デフォルトで最初のチケットタイプを設定
+        setNewTicketType(ticketTypes[0]);
       }
     };
     loadTicketTypes();
@@ -132,28 +134,25 @@ const ReservationChange = ({
   const handleConfirm = async () => {
     if (stage !== newStage || ticketType !== newTicketType) {
       try {
-        // ステージやチケットタイプが変更された場合は予約を削除して新規作成
-        await deleteReservation(reservation.id);
-        await createReservation(newTicketType.id, {
-          num_attendees: newNumAttendees,
-        });
+        if (stage !== newStage || ticketType !== newTicketType) {
+          // ステージやチケットタイプが変更された場合
+          await deleteReservation(reservation.id);
+          const newItem = await createReservation(newTicketType.id, {
+            num_attendees: newNumAttendees,
+          });
+          addNewItem(newItem.id); // 新規作成された予約のIDを追加
+        } else {
+          // ステージやチケットタイプが同じ場合は人数だけを更新
+          await updateReservation(reservation.id, {
+            num_attendees: newNumAttendees,
+          });
+          addNewItem(reservation.id); // 更新した予約のIDを追加
+        }
+        reloadReservations(); // 予約リストを再取得
       } catch (err) {
-        console.error(err);
+        console.error("Reservation update failed:", err);
       } finally {
-        onClose();
-        reloadReservations();
-      }
-    } else {
-      try {
-        // ステージやチケットタイプが同じ場合は人数だけを更新
-        await updateReservation(reservation.id, {
-          num_attendees: newNumAttendees,
-        });
-      } catch (err) {
-        console.error(err);
-      } finally {
-        onClose();
-        reloadReservations();
+        onClose(); // モーダルを閉じる
       }
     }
   };

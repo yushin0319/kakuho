@@ -6,6 +6,7 @@ import {
   ReservationCreate,
 } from "../services/interfaces";
 import { useReservationContext } from "../context/ReservationContext";
+import { useNewItemContext } from "../context/NewItemContext";
 import "../assets/styles/TicketSummary.scss";
 
 interface TicketSummaryProps {
@@ -24,14 +25,22 @@ const TicketSummary = ({
   onCancel,
 }: TicketSummaryProps) => {
   const { reloadReservations } = useReservationContext();
+  const { addNewItem } = useNewItemContext();
 
-  const handleConfirm = () => {
-    const data: ReservationCreate = {
-      num_attendees: quantity,
-    };
-    createReservation(ticket.id, data);
-    reloadReservations();
-    onConfirm();
+  const handleConfirm = async () => {
+    try {
+      const data: ReservationCreate = {
+        num_attendees: quantity,
+      };
+      const newItem = await createReservation(ticket.id, data);
+      addNewItem(newItem.id);
+    } catch (error) {
+      console.error("Failed to create reservation:", error);
+    } finally {
+      console.log("createReservation");
+      reloadReservations();
+      onConfirm();
+    }
   };
 
   return (

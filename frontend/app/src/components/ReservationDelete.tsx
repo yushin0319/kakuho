@@ -21,8 +21,8 @@ const ReservationDelete = ({
     } catch (error) {
       console.error("Failed to delete reservation:", error);
     } finally {
-      onClose();
       reloadReservations();
+      onClose();
     }
   };
 
