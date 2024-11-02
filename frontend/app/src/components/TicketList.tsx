@@ -1,5 +1,6 @@
 // app/src/components/TicketList.tsx
-import { useTicketData } from "../hooks/useTicketData";
+import { useState, useEffect } from "react";
+import { fetchStageTicketTypes } from "../services/api/ticketType";
 import { StageResponse, TicketTypeResponse } from "../services/interfaces";
 import "../assets/styles/TicketList.scss";
 
@@ -10,9 +11,20 @@ interface TicketListProps {
 }
 
 const TicketList = ({ stage, onSelectTicket, onCancel }: TicketListProps) => {
-  const { tickets, isLoading } = useTicketData(stage.id);
+  const [tickets, setTickets] = useState<TicketTypeResponse[]>([]);
 
-  if (isLoading) return <div>Loading...</div>;
+  useEffect(() => {
+    const loadTickets = async () => {
+      try {
+        const response = await fetchStageTicketTypes(stage.id);
+        setTickets(response);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadTickets();
+  }, [stage.id]);
 
   return (
     <div>

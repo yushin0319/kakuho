@@ -1,11 +1,15 @@
 // app/src/components/TicketPopup.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TicketList from "./TicketList";
 import TicketQuantity from "./TicketQuantity";
 import TicketSummary from "./TicketSummary";
 import Modal from "./Modal";
-import { useStageData } from "../hooks/useStageData";
-import { TicketTypeResponse, EventResponse } from "../services/interfaces";
+import { fetchStage } from "../services/api/stage";
+import {
+  TicketTypeResponse,
+  EventResponse,
+  StageResponse,
+} from "../services/interfaces";
 
 interface TicketPopupProps {
   stageId: number;
@@ -18,13 +22,35 @@ const TicketPopup = ({ stageId, event, onClose }: TicketPopupProps) => {
   const [selectedTicket, setSelectedTicket] =
     useState<TicketTypeResponse | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const { stage, isLoading } = useStageData(stageId);
+  const [stage, setStage] = useState<StageResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStage = async () => {
+      try {
+        const response = await fetchStage(stageId);
+        setStage(response);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadStage();
+  }, [stageId]);
 
   const handleCancel = () => {
     onClose();
   };
 
-  if (isLoading || !stage) return <div>Loading...</div>;
+  if (isLoading) {
+    return <Modal onClose={handleCancel}>Loading...</Modal>;
+  }
+
+  if (!stage) {
+    return <Modal onClose={handleCancel}>Stage not found.</Modal>;
+  }
 
   return (
     <Modal onClose={handleCancel}>

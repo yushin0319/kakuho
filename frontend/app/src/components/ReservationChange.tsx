@@ -1,3 +1,4 @@
+// app/src/components/ReservationChange.tsx
 import { useEffect, useState } from "react";
 import Modal from "./Modal";
 import {
@@ -17,6 +18,8 @@ import {
   StageResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
+import { getDate, getHour } from "../services/utils";
+import { useReservationContext } from "../context/ReservationContext";
 import "../assets/styles/ReservationChange.scss";
 
 interface ReservationChangeProps {
@@ -50,6 +53,7 @@ const ReservationChange = ({
   const [ticketTypes, setTicketTypes] = useState<TicketTypeResponse[]>([]);
   const [maxAvailable, setMaxAvailable] = useState<number>(0);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const { reloadReservations } = useReservationContext();
 
   // アラートメッセージを評価する関数
   const evaluateAlert = () => {
@@ -71,7 +75,7 @@ const ReservationChange = ({
     };
     loadStages();
     return () => {
-      isMounted = false; // クリーンアップ時にマウント状態を解除
+      isMounted = false;
     };
   }, [event.id]);
 
@@ -87,7 +91,7 @@ const ReservationChange = ({
     };
     loadTicketTypes();
     return () => {
-      isMounted = false; // クリーンアップ時にマウント状態を解除
+      isMounted = false;
     };
   }, [newStage]);
 
@@ -137,6 +141,7 @@ const ReservationChange = ({
         console.error(err);
       } finally {
         onClose();
+        reloadReservations();
       }
     } else {
       try {
@@ -148,6 +153,7 @@ const ReservationChange = ({
         console.error(err);
       } finally {
         onClose();
+        reloadReservations();
       }
     }
   };
@@ -189,13 +195,8 @@ const ReservationChange = ({
             >
               {stages.map((stage) => (
                 <option key={stage.id} value={stage.id}>
-                  {new Date(stage.start_time).toLocaleString("ja-JP", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {getDate(new Date(stage.start_time))}{" "}
+                  {getHour(new Date(stage.start_time))}
                 </option>
               ))}
             </select>
@@ -231,14 +232,9 @@ const ReservationChange = ({
           <div>
             <h3>確認</h3>
             <p>
-              {new Date(newStage.start_time).toLocaleString("ja-JP", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}{" "}
-              - {newTicketType.type_name} - {newNumAttendees}枚
+              {getDate(new Date(stage.start_time))}{" "}
+              {getHour(new Date(stage.start_time))} - {newTicketType.type_name}{" "}
+              - {newNumAttendees}枚
             </p>
             <div className="button-group">
               <button onClick={handleBack}>戻る</button>

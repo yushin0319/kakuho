@@ -1,6 +1,11 @@
 // app/src/components/TicketSummary.tsx
-import { useReservation } from "../hooks/useReservation";
-import { StageResponse, TicketTypeResponse } from "../services/interfaces";
+import { createReservation } from "../services/api/reservation";
+import {
+  StageResponse,
+  TicketTypeResponse,
+  ReservationCreate,
+} from "../services/interfaces";
+import { useReservationContext } from "../context/ReservationContext";
 import "../assets/styles/TicketSummary.scss";
 
 interface TicketSummaryProps {
@@ -18,12 +23,14 @@ const TicketSummary = ({
   onConfirm,
   onCancel,
 }: TicketSummaryProps) => {
-  const { makeReservation } = useReservation();
+  const { reloadReservations } = useReservationContext();
 
   const handleConfirm = () => {
-    makeReservation(ticket.id, {
+    const data: ReservationCreate = {
       num_attendees: quantity,
-    });
+    };
+    createReservation(ticket.id, data);
+    reloadReservations();
     onConfirm();
   };
 

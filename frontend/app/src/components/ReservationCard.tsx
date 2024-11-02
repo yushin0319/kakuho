@@ -1,3 +1,4 @@
+// app/src/components/ReservationCard.tsx
 import { useState } from "react";
 import "../assets/styles/ReservationCard.scss";
 import {
@@ -6,10 +7,9 @@ import {
   StageResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
-import { useDeleteReservation } from "../hooks/useDeleteReservation";
 import { getDate, getHour } from "../services/utils";
 import ReservationChange from "./ReservationChange";
-import { useReservationContext } from "../context/ReservationContext";
+import ReservationDelete from "./ReservationDelete";
 
 interface ReservationCardProps {
   reservation: ReservationResponse;
@@ -29,8 +29,7 @@ const ReservationCard = ({
   onCardClick,
 }: ReservationCardProps) => {
   const [isChanging, setIsChanging] = useState(false);
-  const { removeReservation } = useDeleteReservation();
-  const { reloadReservations } = useReservationContext();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleCardClick = () => {
     onCardClick();
@@ -40,11 +39,8 @@ const ReservationCard = ({
     setIsChanging(true);
   };
 
-  const handleDeleteClick = async () => {
-    if (window.confirm("この予約を削除しますか？")) {
-      await removeReservation(reservation.id);
-      reloadReservations(); // 予約削除後にデータを再取得
-    }
+  const handleDeleteClick = () => {
+    setIsDeleting(true);
   };
 
   return (
@@ -82,8 +78,13 @@ const ReservationCard = ({
           ticketType={ticketType}
           onClose={() => {
             setIsChanging(false);
-            reloadReservations(); // 予約変更後にデータを再取得
           }}
+        />
+      )}
+      {isDeleting && (
+        <ReservationDelete
+          reservation={reservation}
+          onClose={() => setIsDeleting(false)} // モーダルを閉じる
         />
       )}
     </div>
