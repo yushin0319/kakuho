@@ -13,8 +13,8 @@
 
   // ハイライトエフェクト
   &.highlight {
-    background-color: $highlight-color; // 光る色（$highlight-color を変数として定義しておく）
-    animation: highlightEffect 1s ease-in-out;
+    background-color: $white;
+    animation: highlightEffect 0.5s ease-in-out;
   }
 
   &:hover {

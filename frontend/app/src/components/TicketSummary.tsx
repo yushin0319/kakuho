@@ -37,7 +37,6 @@ const TicketSummary = ({
     } catch (error) {
       console.error("Failed to create reservation:", error);
     } finally {
-      console.log("createReservation");
       reloadReservations();
       onConfirm();
     }

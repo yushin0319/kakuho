@@ -13,10 +13,8 @@ const ReservationList = () => {
   useEffect(() => {
     if (newItems.length > 0) {
       setTimeout(() => {
-        console.log(reservations);
-        console.log("clearNewItems=", newItems);
         clearNewItems();
-      }, 300);
+      }, 0);
     }
   }, [reservations]);
 

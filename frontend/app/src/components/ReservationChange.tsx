@@ -88,7 +88,11 @@ const ReservationChange = ({
       const ticketTypes = await fetchStageTicketTypes(newStage.id);
       if (isMounted) {
         setTicketTypes(ticketTypes);
-        setNewTicketType(ticketTypes[0]);
+        if (stage.id === newStage.id) {
+          setNewTicketType(ticketType);
+        } else {
+          setNewTicketType(ticketTypes[0]);
+        }
       }
     };
     loadTicketTypes();
@@ -132,28 +136,26 @@ const ReservationChange = ({
 
   // 予約の確認と確定処理
   const handleConfirm = async () => {
-    if (stage !== newStage || ticketType !== newTicketType) {
-      try {
-        if (stage !== newStage || ticketType !== newTicketType) {
-          // ステージやチケットタイプが変更された場合
-          await deleteReservation(reservation.id);
-          const newItem = await createReservation(newTicketType.id, {
-            num_attendees: newNumAttendees,
-          });
-          addNewItem(newItem.id); // 新規作成された予約のIDを追加
-        } else {
-          // ステージやチケットタイプが同じ場合は人数だけを更新
-          await updateReservation(reservation.id, {
-            num_attendees: newNumAttendees,
-          });
-          addNewItem(reservation.id); // 更新した予約のIDを追加
-        }
-        reloadReservations(); // 予約リストを再取得
-      } catch (err) {
-        console.error("Reservation update failed:", err);
-      } finally {
-        onClose(); // モーダルを閉じる
+    try {
+      if (stage !== newStage || ticketType !== newTicketType) {
+        // ステージやチケットタイプが変更された場合
+        await deleteReservation(reservation.id);
+        const newItem = await createReservation(newTicketType.id, {
+          num_attendees: newNumAttendees,
+        });
+        addNewItem(newItem.id); // 新規作成された予約のIDを追加
+      } else {
+        // ステージやチケットタイプが同じ場合は人数だけを更新
+        await updateReservation(reservation.id, {
+          num_attendees: newNumAttendees,
+        });
+        addNewItem(reservation.id); // 更新した予約のIDを追加
       }
+      reloadReservations(); // 予約リストを再取得
+    } catch (err) {
+      console.error("Reservation update failed:", err);
+    } finally {
+      onClose(); // モーダルを閉じる
     }
   };
 

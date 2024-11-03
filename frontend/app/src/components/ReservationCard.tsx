@@ -1,5 +1,5 @@
 // app/src/components/ReservationCard.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../assets/styles/ReservationCard.scss";
 import {
   ReservationResponse,
@@ -32,6 +32,13 @@ const ReservationCard = ({
 }: ReservationCardProps) => {
   const [isChanging, setIsChanging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isNewItem, setIsNewItem] = useState(false);
+
+  useEffect(() => {
+    if (isNew) {
+      setIsNewItem(true);
+    }
+  });
 
   const handleCardClick = () => {
     onCardClick();
@@ -47,7 +54,7 @@ const ReservationCard = ({
 
   return (
     <div
-      className={`reservation-card ${isNew ? "highlight" : ""}`}
+      className={`reservation-card ${isNewItem ? "highlight" : ""}`}
       onClick={handleCardClick}
     >
       <div className="reservation-info">
