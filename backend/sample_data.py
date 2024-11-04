@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Event, Stage, TicketType, Reservation, User
+from models import Event, Stage, SeatGroup, TicketType, Reservation, User
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 
@@ -53,33 +53,32 @@ def initialize_sample_data(db: Session):
     # サンプルイベント作成
     events = [
         Event(
-            name="冬の空に手を伸ばして",
-            description="冷たい風に逆らい、夢に向かって走る若者たちの物語。",
+            name="夜を駆ける謎の影",
+            description="夜の帳に現れた、誰も知らない秘密の影。その正体とは…。",
         ),
         Event(
-            name="星降る夜に約束を",
-            description="星がきらめく夜、運命の出会いが待っている。",
+            name="紅蓮の月に舞う詩",
+            description="紅く染まる月の下で舞う一篇の詩、それは愛か、それとも復讐か。",
         ),
         Event(
-            name="桜散る道のその先に",
-            description="別れと出会い、そして未来を信じる人々の感動の物語。",
+            name="虚空に響く鎮魂歌",
+            description="虚空に響き渡る鎮魂の調べ。隠された真実が、今明らかに。",
         ),
     ]
 
     db.add_all(events)
     db.commit()
 
-    # サンプルステージ作成（イベントごとのステージに start_time と end_time を追加）
+    # サンプルステージ作成
     stages = []
-    base_date = datetime(2024, 11, 1)  # 11月から開始
+    base_date = datetime(2024, 11, 1)
     for i, event in enumerate(events):
-        event_date = base_date + timedelta(days=30 * i)  # 1ヶ月ごとに公演があるイメージ
+        event_date = base_date + timedelta(days=30 * i)
         stages.append(
             Stage(
                 event_id=event.id,
                 start_time=event_date.replace(hour=10),
                 end_time=event_date.replace(hour=12),
-                capacity=100,
             )
         )
         event_date = event_date + timedelta(days=1)
@@ -88,65 +87,42 @@ def initialize_sample_data(db: Session):
                 event_id=event.id,
                 start_time=event_date.replace(hour=14),
                 end_time=event_date.replace(hour=16),
-                capacity=150,
             )
         )
 
     db.add_all(stages)
     db.commit()
 
-    db.add_all(stages)
+    # サンプルシートグループ作成
+    seat_groups = []
+    for stage in stages:
+        # 一般・学生共通のシートグループ
+        seat_groups.append(SeatGroup(stage_id=stage.id, capacity=150))
+        # 特別なS席のシートグループ
+        seat_groups.append(SeatGroup(stage_id=stage.id, capacity=50))
+
+    db.add_all(seat_groups)
     db.commit()
 
-    # サンプルチケットタイプ作成（ステージごとに共通、イベントごとに価格変更）
+    # サンプルチケットタイプ作成
     ticket_types = []
-
-    # 秋の演劇祭り
-    ticket_types.append(
-        TicketType(stage_id=stages[0].id, type_name="一般", price=2000, available=100)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[0].id, type_name="学生", price=1500, available=50)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[1].id, type_name="一般", price=2000, available=100)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[1].id, type_name="学生", price=1500, available=50)
-    )
-
-    # 冬の演劇スペシャル
-    ticket_types.append(
-        TicketType(stage_id=stages[2].id, type_name="一般", price=2500, available=100)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[2].id, type_name="学生", price=2000, available=50)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[3].id, type_name="一般", price=2500, available=100)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[3].id, type_name="学生", price=2000, available=50)
-    )
-
-    # 新年公演
-    ticket_types.append(
-        TicketType(stage_id=stages[4].id, type_name="一般", price=3000, available=100)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[4].id, type_name="学生", price=2500, available=50)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[5].id, type_name="一般", price=3000, available=100)
-    )
-    ticket_types.append(
-        TicketType(stage_id=stages[5].id, type_name="学生", price=2500, available=50)
-    )
+    for i in range(0, len(seat_groups), 2):
+        # 一般・学生のチケットタイプ（同じシートグループ）
+        ticket_types.append(
+            TicketType(seat_group_id=seat_groups[i].id, type_name="一般", price=3000)
+        )
+        ticket_types.append(
+            TicketType(seat_group_id=seat_groups[i].id, type_name="学生", price=2500)
+        )
+        # S席のチケットタイプ（別のシートグループ）
+        ticket_types.append(
+            TicketType(seat_group_id=seat_groups[i + 1].id, type_name="S席", price=5000)
+        )
 
     db.add_all(ticket_types)
     db.commit()
 
-    # サンプル予約作成（元の6個に加えて10個追加）
+    # サンプル予約作成
     reservations = [
         Reservation(
             ticket_type_id=ticket_types[0].id, user_id=users[0].id, num_attendees=2
@@ -160,13 +136,13 @@ def initialize_sample_data(db: Session):
         Reservation(
             ticket_type_id=ticket_types[3].id, user_id=users[3].id, num_attendees=1
         ),  # 鈴木
+        # 追加の予約データ
         Reservation(
             ticket_type_id=ticket_types[4].id, user_id=users[0].id, num_attendees=2
         ),  # 田中
         Reservation(
             ticket_type_id=ticket_types[5].id, user_id=users[1].id, num_attendees=1
         ),  # 斎藤
-        # 追加の予約
         Reservation(
             ticket_type_id=ticket_types[6].id, user_id=users[2].id, num_attendees=1
         ),  # 山田
@@ -197,6 +173,67 @@ def initialize_sample_data(db: Session):
         Reservation(
             ticket_type_id=ticket_types[3].id, user_id=users[3].id, num_attendees=2
         ),  # 鈴木
+        # さらに追加の20個
+        Reservation(
+            ticket_type_id=ticket_types[4].id, user_id=users[0].id, num_attendees=1
+        ),  # 田中
+        Reservation(
+            ticket_type_id=ticket_types[5].id, user_id=users[1].id, num_attendees=3
+        ),  # 斎藤
+        Reservation(
+            ticket_type_id=ticket_types[6].id, user_id=users[2].id, num_attendees=2
+        ),  # 山田
+        Reservation(
+            ticket_type_id=ticket_types[7].id, user_id=users[3].id, num_attendees=4
+        ),  # 鈴木
+        Reservation(
+            ticket_type_id=ticket_types[8].id, user_id=users[0].id, num_attendees=2
+        ),  # 田中
+        Reservation(
+            ticket_type_id=ticket_types[9].id, user_id=users[1].id, num_attendees=1
+        ),  # 斎藤
+        Reservation(
+            ticket_type_id=ticket_types[10].id, user_id=users[2].id, num_attendees=3
+        ),  # 山田
+        Reservation(
+            ticket_type_id=ticket_types[11].id, user_id=users[3].id, num_attendees=2
+        ),  # 鈴木
+        Reservation(
+            ticket_type_id=ticket_types[0].id, user_id=users[0].id, num_attendees=4
+        ),  # 田中
+        Reservation(
+            ticket_type_id=ticket_types[1].id, user_id=users[1].id, num_attendees=2
+        ),  # 斎藤
+        Reservation(
+            ticket_type_id=ticket_types[2].id, user_id=users[2].id, num_attendees=2
+        ),  # 山田
+        Reservation(
+            ticket_type_id=ticket_types[3].id, user_id=users[3].id, num_attendees=3
+        ),  # 鈴木
+        Reservation(
+            ticket_type_id=ticket_types[4].id, user_id=users[0].id, num_attendees=1
+        ),  # 田中
+        Reservation(
+            ticket_type_id=ticket_types[5].id, user_id=users[1].id, num_attendees=3
+        ),  # 斎藤
+        Reservation(
+            ticket_type_id=ticket_types[6].id, user_id=users[2].id, num_attendees=4
+        ),  # 山田
+        Reservation(
+            ticket_type_id=ticket_types[7].id, user_id=users[3].id, num_attendees=2
+        ),  # 鈴木
+        Reservation(
+            ticket_type_id=ticket_types[8].id, user_id=users[0].id, num_attendees=2
+        ),  # 田中
+        Reservation(
+            ticket_type_id=ticket_types[9].id, user_id=users[1].id, num_attendees=4
+        ),  # 斎藤
+        Reservation(
+            ticket_type_id=ticket_types[10].id, user_id=users[2].id, num_attendees=1
+        ),  # 山田
+        Reservation(
+            ticket_type_id=ticket_types[11].id, user_id=users[3].id, num_attendees=3
+        ),  # 鈴木
     ]
 
     db.add_all(reservations)
@@ -205,6 +242,5 @@ def initialize_sample_data(db: Session):
     print("サンプルデータが正常に挿入されました。")
 
 
-# 以下のようにしてサンプルデータを挿入
 # db: Session = SessionLocal() のようにセッションを作ってから呼び出してください
 # initialize_sample_data(db)

@@ -32,7 +32,6 @@ class EventTimeResponse(BaseModel):
 class StageBase(BaseModel):
     start_time: datetime
     end_time: datetime
-    capacity: int
 
 
 class StageCreate(StageBase):
@@ -42,7 +41,6 @@ class StageCreate(StageBase):
 class StageUpdate(StageBase):
     start_time: datetime | None = None
     end_time: datetime | None = None
-    capacity: int | None = None
 
 
 class StageResponse(StageBase):
@@ -52,11 +50,30 @@ class StageResponse(StageBase):
     model_config = ConfigDict({"from_attributes": True})
 
 
+# シートグループのスキーマ
+class SeatGroupBase(BaseModel):
+    capacity: int
+
+
+class SeatGroupCreate(SeatGroupBase):
+    pass
+
+
+class SeatGroupUpdate(SeatGroupBase):
+    capacity: int | None = None
+
+
+class SeatGroupResponse(SeatGroupBase):
+    id: int
+    stage_id: int
+
+    model_config = ConfigDict({"from_attributes": True})
+
+
 # チケットタイプのスキーマ
 class TicketTypeBase(BaseModel):
     type_name: str = Field(..., min_length=1, max_length=50)
     price: float
-    available: int
 
 
 class TicketTypeCreate(TicketTypeBase):
@@ -66,12 +83,11 @@ class TicketTypeCreate(TicketTypeBase):
 class TicketTypeUpdate(TicketTypeBase):
     type_name: str | None = None
     price: float | None = None
-    available: int | None = None
 
 
 class TicketTypeResponse(TicketTypeBase):
     id: int
-    stage_id: int
+    seat_group_id: int
 
     model_config = ConfigDict({"from_attributes": True})
 
@@ -87,6 +103,7 @@ class ReservationCreate(ReservationBase):
 
 class ReservationUpdate(ReservationBase):
     num_attendees: int | None = None
+    is_paid: bool | None = None
 
 
 class ReservationResponse(ReservationBase):
@@ -94,6 +111,7 @@ class ReservationResponse(ReservationBase):
     created_at: datetime
     user_id: int
     ticket_type_id: int
+    is_paid: bool
 
     model_config = ConfigDict({"from_attributes": True})
 

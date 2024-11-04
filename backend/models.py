@@ -33,31 +33,42 @@ class Stage(Base):
     event_id = Column(Integer, ForeignKey("events.id"), nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
-    capacity = Column(Integer, nullable=False)
 
     # 同イベント内でのstart_timeは一意である
     __table_args__ = (UniqueConstraint("event_id", "start_time"),)
 
     # リレーション: ステージはイベントに紐付いている
     event = relationship("Event", back_populates="stages")
-    # リレーション: ステージには複数のチケットタイプがある
-    ticket_types = relationship("TicketType", back_populates="stage")
+    # リレーション: ステージには複数のシートグループがある
+    seat_groups = relationship("SeatGroup", back_populates="stage")
+
+
+class SeatGroup(Base):
+    __tablename__ = "seat_groups"
+
+    id = Column(Integer, primary_key=True)
+    stage_id = Column(Integer, ForeignKey("stages.id"), nullable=False)
+    capacity = Column(Integer, nullable=False)
+
+    # リレーション: シートグループはステージに紐付いている
+    stage = relationship("Stage", back_populates="seat_groups")
+    # リレーション: シートグループには複数のチケットタイプがある
+    ticket_types = relationship("TicketType", back_populates="seat_group")
 
 
 class TicketType(Base):
     __tablename__ = "ticket_types"
 
     id = Column(Integer, primary_key=True)
-    stage_id = Column(Integer, ForeignKey("stages.id"), nullable=False)
+    seat_group_id = Column(Integer, ForeignKey("seat_groups.id"), nullable=False)
     type_name = Column(String, nullable=False, default="一般")
     price = Column(Float, nullable=False)
-    available = Column(Integer, nullable=False)
 
-    # 同Stage内でのtype_nameは一意である
-    __table_args__ = (UniqueConstraint("stage_id", "type_name"),)
+    # 同SeatGroup内でのtype_nameは一意である
+    __table_args__ = (UniqueConstraint("seat_group_id", "type_name"),)
 
     # リレーション: チケットタイプはステージに紐付いている
-    stage = relationship("Stage", back_populates="ticket_types")
+    seat_group = relationship("SeatGroup", back_populates="ticket_types")
     # リレーション: チケットタイプには複数の予約がある
     reservations = relationship("Reservation", back_populates="ticket_type")
 
@@ -69,6 +80,7 @@ class Reservation(Base):
     ticket_type_id = Column(Integer, ForeignKey("ticket_types.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     num_attendees = Column(Integer, nullable=False)
+    is_paid = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     # リレーション: 予約はチケットタイプに紐付いている
