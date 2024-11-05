@@ -2,11 +2,13 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { fetchUserReservations } from "../services/api/reservation";
 import { fetchEvent } from "../services/api/event";
 import { fetchStage } from "../services/api/stage";
+import { fetchSeatGroup } from "../services/api/seatGroup";
 import { fetchTicketType } from "../services/api/ticketType";
 import {
   ReservationResponse,
   TicketTypeResponse,
   StageResponse,
+  SeatGroupResponse,
   EventResponse,
 } from "../services/interfaces";
 import { useAuth } from "../context/AuthContext";
@@ -15,6 +17,7 @@ interface ReservationDetail {
   reservation: ReservationResponse;
   event: EventResponse;
   stage: StageResponse;
+  seatGroup: SeatGroupResponse;
   ticketType: TicketTypeResponse;
 }
 
@@ -49,9 +52,12 @@ export const ReservationProvider = ({
           const ticketType: TicketTypeResponse = await fetchTicketType(
             reservation.ticket_type_id
           );
-          const stage: StageResponse = await fetchStage(ticketType.stage_id);
+          const seatGroup: SeatGroupResponse = await fetchSeatGroup(
+            ticketType.seat_group_id
+          );
+          const stage: StageResponse = await fetchStage(seatGroup.stage_id);
           const event: EventResponse = await fetchEvent(stage.event_id);
-          return { reservation, event, stage, ticketType };
+          return { reservation, event, stage, seatGroup, ticketType };
         })
       );
       setReservations(reservationDetails);

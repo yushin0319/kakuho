@@ -13,19 +13,23 @@ export const fetchTicketType = async (
   return handleApiRequest(api.get(`/ticket_types/${id}`));
 };
 
-// 2. Stageに紐づくチケットタイプ一覧を取得
-export const fetchStageTicketTypes = async (
-  stageId: number
+// 2. SeatGroupに紐づくチケットタイプ一覧を取得
+export const fetchSeatGroupTicketTypes = async (
+  seat_group_id: number
 ): Promise<TicketTypeResponse[]> => {
-  return handleApiRequest(api.get(`/stages/${stageId}/ticket_types`));
+  return handleApiRequest(
+    api.get(`/seat_groups/${seat_group_id}/ticket_types`)
+  );
 };
 
 // 3. チケットタイプを作成（管理者のみ）
 export const createTicketType = async (
-  stage_id: number,
+  seat_group_id: number,
   data: TicketTypeCreate
 ): Promise<TicketTypeResponse> => {
-  return handleApiRequest(api.post(`/stages/${stage_id}/ticket_types`, data));
+  return handleApiRequest(
+    api.post(`/seat_groups/${seat_group_id}/ticket_types`, data)
+  );
 };
 
 // 4. チケットタイプを更新（管理者のみ）

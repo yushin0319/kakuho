@@ -1,4 +1,6 @@
 // app/src/components/TicketQuantity.tsx
+import { useState, useEffect } from "react";
+import { getCapacity } from "../services/api/seatGroup";
 import { StageResponse, TicketTypeResponse } from "../services/interfaces";
 import "../assets/styles/TicketQuantity.scss";
 
@@ -19,7 +21,19 @@ const TicketQuantity = ({
   onConfirm,
   onCancel,
 }: TicketQuantityProps) => {
-  const maxQuantity = ticket.available;
+  const [maxQuantity, setMaxQuantity] = useState(0);
+
+  useEffect(() => {
+    const loadCapacity = async () => {
+      try {
+        const capacity = await getCapacity(ticket.id);
+        setMaxQuantity(capacity);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadCapacity();
+  }, [ticket.id]);
 
   const handleIncrement = () => {
     if (quantity < maxQuantity) setQuantity(quantity + 1);

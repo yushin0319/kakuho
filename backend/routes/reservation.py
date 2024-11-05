@@ -6,37 +6,33 @@ from schemas import (
     ReservationCreate,
     ReservationUpdate,
     ReservationResponse,
-    TicketTypeUpdate,
-    TicketTypeResponse,
+    SeatGroupResponse,
+    SeatGroupUpdate,
     UserResponse,
 )
 from crud.reservation import CrudReservation
 from crud.user import CrudUser
 from crud.ticket_type import CrudTicketType
+from crud.seat_group import CrudSeatGroup
 from routes.auth import check_admin, get_current_user
 
 reservation_router = APIRouter()
 
 
-# attendeesの変化量と紐づいたTicketTypeのavailableと照らし合わせる
-# deltaがavailableより多い場合はエラーを返す
-def check_available(ticket_type: TicketTypeResponse, delta: int) -> None:
-    if ticket_type.available + delta < 0:
+# SeatGroupのcapacityをチェックする
+def check_capacity(seat_group: SeatGroupResponse, delta: int) -> None:
+    if seat_group.capacity + delta < 0:
         raise HTTPException(
             status_code=400,
-            detail="チケットの在庫が不足しています。"
-            + str(ticket_type.available)
-            + "枚まで購入可能です",
+            detail=f"座席が不足しています。{seat_group.capacity}席まで予約可能です。",
         )
 
 
-# TicketTypeのavailableを変更する
-def update_available(ticket_type: TicketTypeResponse, delta: int, db: Session) -> None:
-    ticket_type_crud = CrudTicketType(db)
-    ticket_type.available += delta
-    ticket_type_crud.update(
-        ticket_type.id, TicketTypeUpdate(available=ticket_type.available)
-    )
+# SeatGroupのcapacityを更新する
+def update_capacity(seat_group: SeatGroupResponse, delta: int, db: Session) -> None:
+    seat_group_crud = CrudSeatGroup(db)
+    seat_group.capacity += delta
+    seat_group_crud.update(seat_group.id, SeatGroupUpdate(capacity=seat_group.capacity))
 
 
 # Reservation関連のエンドポイント
@@ -128,13 +124,18 @@ def create_reservation(
     user: UserResponse = Depends(get_current_user),
 ) -> ReservationResponse:
     ticket_type_crud = CrudTicketType(db)
+    seat_group_crud = CrudSeatGroup(db)
     reservation_crud = CrudReservation(db)
     ticket_type = ticket_type_crud.read_by_id(ticket_type_id)
     if ticket_type is None:
         raise HTTPException(status_code=404, detail="TicketType not found")
+    seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
+    if seat_group is None:
+        raise HTTPException(status_code=404, detail="SeatGroup not found")
+
     try:
-        check_available(ticket_type, -reservation.num_attendees)
-        update_available(ticket_type, -reservation.num_attendees, db)
+        check_capacity(seat_group, -reservation.num_attendees)
+        update_capacity(seat_group, -reservation.num_attendees, db)
         created_reservation = reservation_crud.create(
             ticket_type_id, reservation, user.id
         )
@@ -144,8 +145,6 @@ def create_reservation(
 
 
 # Reservation更新（管理者・ユーザー共通）
-# 管理者は全ての予約を更新できる
-# ユーザーは自分の予約のみ更新できる
 @reservation_router.put(
     "/reservations/{reservation_id}", response_model=ReservationResponse
 )
@@ -156,17 +155,20 @@ def update_reservation(
     user: UserResponse = Depends(get_current_user),
 ) -> ReservationResponse:
     ticket_type_crud = CrudTicketType(db)
+    seat_group_crud = CrudSeatGroup(db)
     reservation_crud = CrudReservation(db)
     reservation = reservation_crud.read_by_id(reservation_id)
     if reservation is None:
         raise HTTPException(status_code=404, detail="Reservation not found")
     if not user.is_admin and reservation.user_id != user.id:
         raise HTTPException(status_code=403, detail="Permission denied")
+
     try:
         ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
+        seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
         delta = reservation.num_attendees - data.num_attendees
-        check_available(ticket_type, delta)
-        update_available(ticket_type, delta, db)
+        check_capacity(seat_group, delta)
+        update_capacity(seat_group, delta, db)
         updated_reservation = reservation_crud.update(reservation_id, data)
         return updated_reservation
     except Exception as e:
@@ -174,8 +176,6 @@ def update_reservation(
 
 
 # Reservation削除（管理者・ユーザー共通）
-# 管理者は全ての予約を削除できる
-# ユーザーは自分の予約のみ削除できる
 @reservation_router.delete("/reservations/{reservation_id}", status_code=204)
 def delete_reservation(
     reservation_id: int,
@@ -183,15 +183,18 @@ def delete_reservation(
     user: UserResponse = Depends(get_current_user),
 ) -> None:
     ticket_type_crud = CrudTicketType(db)
+    seat_group_crud = CrudSeatGroup(db)
     reservation_crud = CrudReservation(db)
     reservation = reservation_crud.read_by_id(reservation_id)
     if reservation is None:
         raise HTTPException(status_code=404, detail="Reservation not found")
     if not user.is_admin and reservation.user_id != user.id:
         raise HTTPException(status_code=403, detail="Permission denied")
+
     try:
         ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
-        update_available(ticket_type, reservation.num_attendees, db)
+        seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
+        update_capacity(seat_group, reservation.num_attendees, db)
         reservation_crud.delete(reservation_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

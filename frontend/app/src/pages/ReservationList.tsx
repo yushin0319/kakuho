@@ -33,6 +33,7 @@ const ReservationList = () => {
           reservation={item.reservation}
           event={item.event}
           stage={item.stage}
+          seatGroup={item.seatGroup}
           ticketType={item.ticketType}
           isExpanded={expandCardId === item.reservation.id}
           isNew={newItems.includes(item.reservation.id)}

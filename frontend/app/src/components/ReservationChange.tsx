@@ -8,7 +8,12 @@ import {
 } from "../services/api/reservation";
 import { fetchEventStages, fetchStage } from "../services/api/stage";
 import {
-  fetchStageTicketTypes,
+  fetchStageSeatGroups,
+  fetchSeatGroup,
+  getCapacity,
+} from "../services/api/seatGroup";
+import {
+  fetchSeatGroupTicketTypes,
   fetchTicketType,
 } from "../services/api/ticketType";
 
@@ -16,6 +21,7 @@ import {
   ReservationResponse,
   EventResponse,
   StageResponse,
+  SeatGroupResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
 import { getDate, getHour } from "../services/utils";
@@ -27,6 +33,7 @@ interface ReservationChangeProps {
   reservation: ReservationResponse;
   event: EventResponse;
   stage: StageResponse;
+  seatGroup: SeatGroupResponse;
   ticketType: TicketTypeResponse;
   onClose: () => void;
 }
@@ -35,18 +42,16 @@ const ReservationChange = ({
   reservation,
   event,
   stage,
+  seatGroup,
   ticketType,
   onClose,
 }: ReservationChangeProps) => {
-  // ステップ管理用の状態
   const [step, setStep] = useState(1);
-
-  // 新しいステージとチケットタイプを管理する状態
   const [newStage, setNewStage] = useState<StageResponse>(stage);
+  const [newSeatGroup, setNewSeatGroup] =
+    useState<SeatGroupResponse>(seatGroup);
   const [newTicketType, setNewTicketType] =
     useState<TicketTypeResponse>(ticketType);
-
-  // 予約人数と選択可能なステージやチケットタイプのリスト
   const [newNumAttendees, setNewNumAttendees] = useState<number>(
     reservation.num_attendees
   );
@@ -66,54 +71,81 @@ const ReservationChange = ({
     }
   };
 
-  // event.id の変更に応じてステージリストをロードする
   useEffect(() => {
-    let isMounted = true;
+    const loadMaxAvailable = async () => {
+      const available = await getCapacity(ticketType.id);
+      setMaxAvailable(available + reservation.num_attendees);
+    };
+    loadMaxAvailable();
+
     const loadStages = async () => {
       const stages = await fetchEventStages(event.id);
-      if (isMounted) {
-        setStages(stages);
-      }
+      setStages(stages);
     };
     loadStages();
-    return () => {
-      isMounted = false;
-    };
-  }, [event.id]);
 
-  // newStage の変更に応じてチケットタイプをロードする
-  useEffect(() => {
-    let isMounted = true;
     const loadTicketTypes = async () => {
-      const ticketTypes = await fetchStageTicketTypes(newStage.id);
-      if (isMounted) {
-        setTicketTypes(ticketTypes);
-        if (stage.id === newStage.id) {
-          setNewTicketType(ticketType);
-        } else {
-          setNewTicketType(ticketTypes[0]);
-        }
+      const loadedTicketTypes = [];
+      const seatGroups = await fetchStageSeatGroups(stage.id);
+      for (const seatGroup of seatGroups) {
+        const types = await fetchSeatGroupTicketTypes(seatGroup.id);
+        loadedTicketTypes.push(...types);
       }
+      setTicketTypes(loadedTicketTypes);
     };
     loadTicketTypes();
-    return () => {
-      isMounted = false;
-    };
-  }, [newStage]);
+  }, []);
 
-  // newTicketType の変更に応じて最大予約可能数を計算する
   useEffect(() => {
-    const available =
-      newTicketType.id === ticketType.id
-        ? newTicketType.available + reservation.num_attendees
-        : newTicketType.available;
-    setMaxAvailable(available);
+    const loadCapacity = async () => {
+      const newAvailable = await getCapacity(newTicketType.id);
+      const available =
+        newSeatGroup.id === seatGroup.id
+          ? newAvailable + reservation.num_attendees
+          : newAvailable;
+      setMaxAvailable(available);
+    };
+    loadCapacity();
   }, [newTicketType]);
 
-  // maxAvailable と newNumAttendees の変化に応じてアラートを評価する
   useEffect(() => {
     evaluateAlert();
   }, [maxAvailable, newNumAttendees]);
+
+  // ステージ選択の変更処理
+  const handleStageChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = parseInt(e.target.value);
+    const fetchedStage = await fetchStage(id);
+    setNewStage(fetchedStage);
+    const newSeatGroups = await fetchStageSeatGroups(id);
+    const newTicketTypes = [];
+    for (const seatGroup of newSeatGroups) {
+      const types = await fetchSeatGroupTicketTypes(seatGroup.id);
+      newTicketTypes.push(...types);
+    }
+    setNewSeatGroup(newSeatGroups[0]);
+    setTicketTypes(newTicketTypes);
+    setNewTicketType(newTicketTypes[0]);
+  };
+
+  // チケットタイプ選択の変更処理
+  const handleTicketTypeChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const id = parseInt(e.target.value);
+    const fetchedTicketType = await fetchTicketType(id);
+    const newSeatGroup = await fetchSeatGroup(fetchedTicketType.seat_group_id);
+    setNewSeatGroup(newSeatGroup);
+    const newStage = await fetchStage(newSeatGroup.stage_id);
+    setNewStage(newStage);
+    setNewTicketType(fetchedTicketType);
+  };
+
+  // 予約人数の変更処理
+  const handleNumAttendeesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const attendees = parseInt(e.target.value);
+    setNewNumAttendees(attendees);
+  };
 
   // キャンセルボタンの処理
   const handleCancel = () => {
@@ -137,48 +169,28 @@ const ReservationChange = ({
   // 予約の確認と確定処理
   const handleConfirm = async () => {
     try {
-      if (stage !== newStage || ticketType !== newTicketType) {
-        // ステージやチケットタイプが変更された場合
+      if (
+        stage !== newStage ||
+        seatGroup !== newSeatGroup ||
+        ticketType !== newTicketType
+      ) {
         await deleteReservation(reservation.id);
         const newItem = await createReservation(newTicketType.id, {
           num_attendees: newNumAttendees,
         });
-        addNewItem(newItem.id); // 新規作成された予約のIDを追加
+        addNewItem(newItem.id);
       } else {
-        // ステージやチケットタイプが同じ場合は人数だけを更新
         await updateReservation(reservation.id, {
           num_attendees: newNumAttendees,
         });
-        addNewItem(reservation.id); // 更新した予約のIDを追加
+        addNewItem(reservation.id);
       }
-      reloadReservations(); // 予約リストを再取得
+      reloadReservations();
     } catch (err) {
       console.error("Reservation update failed:", err);
     } finally {
-      onClose(); // モーダルを閉じる
+      onClose();
     }
-  };
-
-  // ステージ選択の変更処理
-  const handleStageChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = parseInt(e.target.value);
-    const fetchedStage = await fetchStage(id);
-    setNewStage(fetchedStage); // ステージを更新
-  };
-
-  // チケットタイプ選択の変更処理
-  const handleTicketTypeChange = async (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const id = parseInt(e.target.value);
-    const fetchedTicketType = await fetchTicketType(id);
-    setNewTicketType(fetchedTicketType); // 券種を更新
-  };
-
-  // 予約人数の変更処理
-  const handleNumAttendeesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const attendees = parseInt(e.target.value);
-    setNewNumAttendees(attendees); // 枚数を更新
   };
 
   return (

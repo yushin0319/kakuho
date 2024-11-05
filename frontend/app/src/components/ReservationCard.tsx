@@ -5,6 +5,7 @@ import {
   ReservationResponse,
   EventResponse,
   StageResponse,
+  SeatGroupResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
 import { getDate, getHour } from "../services/utils";
@@ -15,6 +16,7 @@ interface ReservationCardProps {
   reservation: ReservationResponse;
   event: EventResponse;
   stage: StageResponse;
+  seatGroup: SeatGroupResponse;
   ticketType: TicketTypeResponse;
   isExpanded: boolean;
   isNew: boolean;
@@ -25,6 +27,7 @@ const ReservationCard = ({
   reservation,
   event,
   stage,
+  seatGroup,
   ticketType,
   isExpanded,
   isNew,
@@ -87,6 +90,7 @@ const ReservationCard = ({
           reservation={reservation}
           event={event}
           stage={stage}
+          seatGroup={seatGroup}
           ticketType={ticketType}
           onClose={() => {
             setIsChanging(false);

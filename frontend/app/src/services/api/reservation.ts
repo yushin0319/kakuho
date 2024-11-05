@@ -27,10 +27,10 @@ export const fetchUserReservations = async (
 
 // 4. TicketTypeに紐づく予約一覧を取得
 export const fetchTicketTypeReservations = async (
-  ticketTypeId: number
+  ticket_type_id: number
 ): Promise<ReservationResponse[]> => {
   return handleApiRequest(
-    api.get(`/ticket_types/${ticketTypeId}/reservations`)
+    api.get(`/ticket_types/${ticket_type_id}/reservations`)
   );
 };
 

@@ -26,7 +26,6 @@ export interface EventTimeResponse {
 interface StageBase {
   start_time: string; // datetime型はstringとして扱う
   end_time: string;
-  capacity: number;
 }
 
 export interface StageCreate extends StageBase {}
@@ -34,7 +33,6 @@ export interface StageCreate extends StageBase {}
 export interface StageUpdate {
   start_time?: string;
   end_time?: string;
-  capacity?: number;
 }
 
 export interface StageResponse extends StageBase {
@@ -42,12 +40,28 @@ export interface StageResponse extends StageBase {
   event_id: number;
 }
 
+//SeatGroup関連の型定義
+
+interface SeatGroupBase {
+  capacity: number;
+}
+
+export interface SeatGroupCreate extends SeatGroupBase {}
+
+export interface SeatGroupUpdate {
+  capacity?: number;
+}
+
+export interface SeatGroupResponse extends SeatGroupBase {
+  id: number;
+  stage_id: number;
+}
+
 //TicketType関連の型定義
 
 interface TicketTypeBase {
   type_name: string;
   price: number;
-  available: number;
 }
 
 export interface TicketTypeCreate extends TicketTypeBase {}
@@ -55,12 +69,11 @@ export interface TicketTypeCreate extends TicketTypeBase {}
 export interface TicketTypeUpdate {
   type_name?: string;
   price?: number;
-  available?: number;
 }
 
 export interface TicketTypeResponse extends TicketTypeBase {
   id: number;
-  stage_id: number;
+  seat_group_id: number;
 }
 
 //Reservation関連の型定義
@@ -80,6 +93,7 @@ export interface ReservationResponse extends ReservationBase {
   created_at: string; // datetimeはstringで扱う
   user_id: number;
   ticket_type_id: number;
+  is_paid: boolean;
 }
 
 //User関連の型定義

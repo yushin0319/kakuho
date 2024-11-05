@@ -1,7 +1,7 @@
 // app/src/routes/AppRouter.tsx
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import Home from "../pages/Home";
+import Booking from "../pages/Booking";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ReservationList from "../pages/ReservationList";
@@ -14,7 +14,7 @@ const AppRouter = () => {
         path="/"
         element={
           <PrivateRoute>
-            <Home />
+            <Booking />
           </PrivateRoute>
         }
       />
