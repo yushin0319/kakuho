@@ -1,0 +1,82 @@
+@use "sass:color";
+@use "./variables" as *;
+
+.manage-list {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+
+  .event,
+  .stage,
+  .seat-group {
+    background-color: $white;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    padding: 2px;
+    margin-bottom: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    &-header {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: $primary-color;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background-color: $accent-color;
+      color: $white;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: color.scale($accent-color, $lightness: 10%);
+      }
+    }
+  }
+
+  .stage {
+    margin-left: 5px;
+  }
+
+  .seat-group {
+    margin-left: 5px;
+
+    &-header {
+      font-size: 1rem;
+      background-color: color.scale($secondary-color, $lightness: 10%);
+      color: color.scale($secondary-color, $lightness: -30%);
+      border-radius: 4px;
+
+      &:hover {
+        background-color: color.scale($secondary-color, $lightness: 15%);
+      }
+    }
+  }
+
+  .reservations {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 10s ease, padding 10s ease;
+
+    &.open {
+      max-height: 1000px; // テスト用に大きな値に設定
+      padding-top: 8px;
+    }
+
+    .reservation {
+      background-color: $highlight-color;
+      border: 1px solid $border-color;
+      border-radius: 2px;
+      padding: 2px;
+      margin-bottom: 2px;
+      font-size: 0.9rem;
+      color: color.scale($secondary-color, $lightness: -15%);
+    }
+  }
+}

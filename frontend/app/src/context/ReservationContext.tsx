@@ -1,15 +1,21 @@
+// app/src/context/ReservationContext.tsx
 import { createContext, useContext, useState, useEffect } from "react";
-import { fetchUserReservations } from "../services/api/reservation";
+import {
+  fetchUserReservations,
+  fetchReservations,
+} from "../services/api/reservation";
 import { fetchEvent } from "../services/api/event";
 import { fetchStage } from "../services/api/stage";
 import { fetchSeatGroup } from "../services/api/seatGroup";
 import { fetchTicketType } from "../services/api/ticketType";
+import { fetchUser } from "../services/api/user";
 import {
   ReservationResponse,
   TicketTypeResponse,
   StageResponse,
   SeatGroupResponse,
   EventResponse,
+  UserResponse,
 } from "../services/interfaces";
 import { useAuth } from "../context/AuthContext";
 
@@ -19,6 +25,7 @@ interface ReservationDetail {
   stage: StageResponse;
   seatGroup: SeatGroupResponse;
   ticketType: TicketTypeResponse;
+  user: UserResponse;
 }
 
 interface ReservationContextType {
@@ -44,9 +51,9 @@ export const ReservationProvider = ({
     if (!user) return;
     try {
       setIsLoading(true);
-      const reservations: ReservationResponse[] = await fetchUserReservations(
-        user.id
-      );
+      const reservations: ReservationResponse[] = user.is_admin
+        ? await fetchReservations()
+        : await fetchUserReservations(user.id);
       const reservationDetails = await Promise.all(
         reservations.map(async (reservation) => {
           const ticketType: TicketTypeResponse = await fetchTicketType(
@@ -57,7 +64,8 @@ export const ReservationProvider = ({
           );
           const stage: StageResponse = await fetchStage(seatGroup.stage_id);
           const event: EventResponse = await fetchEvent(stage.event_id);
-          return { reservation, event, stage, seatGroup, ticketType };
+          const user: UserResponse = await fetchUser(reservation.user_id);
+          return { reservation, event, stage, seatGroup, ticketType, user };
         })
       );
       setReservations(reservationDetails);

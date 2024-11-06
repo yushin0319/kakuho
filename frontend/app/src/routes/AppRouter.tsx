@@ -5,6 +5,7 @@ import Booking from "../pages/Booking";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ReservationList from "../pages/ReservationList";
+import ManageList from "../pages/ManageList";
 
 const AppRouter = () => {
   return (
@@ -25,6 +26,16 @@ const AppRouter = () => {
         element={
           <PrivateRoute>
             <ReservationList />
+          </PrivateRoute>
+        }
+      />
+
+      {/* 「予約管理」 */}
+      <Route
+        path="/manage-list"
+        element={
+          <PrivateRoute>
+            <ManageList />
           </PrivateRoute>
         }
       />
