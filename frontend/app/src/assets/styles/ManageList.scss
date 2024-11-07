@@ -10,16 +10,11 @@
   .stage,
   .seat-group {
     background-color: $white;
+    height: 100%;
     border: 1px solid $border-color;
     border-radius: 8px;
     padding: 2px;
     margin-bottom: 2px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
 
     &-header {
       font-size: 1.2rem;
@@ -40,13 +35,7 @@
     }
   }
 
-  .stage {
-    margin-left: 5px;
-  }
-
   .seat-group {
-    margin-left: 5px;
-
     &-header {
       font-size: 1rem;
       background-color: color.scale($secondary-color, $lightness: 10%);
@@ -54,29 +43,31 @@
       border-radius: 4px;
 
       &:hover {
-        background-color: color.scale($secondary-color, $lightness: 15%);
+        background-color: color.scale($secondary-color, $lightness: 20%);
       }
     }
   }
 
+  .stages,
+  .seat-groups,
   .reservations {
-    max-height: 0;
+    max-height: 0px;
+    margin-left: 5px;
+    padding-top: 2px;
     overflow: hidden;
-    transition: max-height 10s ease, padding 10s ease;
+    transition: max-height 1s ease;
 
     &.open {
-      max-height: 1000px; // テスト用に大きな値に設定
-      padding-top: 8px;
+      max-height: 2000px; // アニメーションが適切に動く範囲で十分に大きな値に設定
     }
-
-    .reservation {
-      background-color: $highlight-color;
-      border: 1px solid $border-color;
-      border-radius: 2px;
-      padding: 2px;
-      margin-bottom: 2px;
-      font-size: 0.9rem;
-      color: color.scale($secondary-color, $lightness: -15%);
-    }
+  }
+  .reservation {
+    background-color: $white;
+    border: 1px solid $border-color;
+    border-radius: 2px;
+    padding: 2px;
+    margin-bottom: 2px;
+    font-size: 0.9rem;
+    color: color.scale($secondary-color, $lightness: -15%);
   }
 }
