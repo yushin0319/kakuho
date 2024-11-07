@@ -8,6 +8,7 @@ import {
   StageResponse,
   SeatGroupResponse,
 } from "../services/interfaces";
+import { getDate, getHour } from "../services/utils";
 import { useReservationContext } from "../context/ReservationContext";
 import "../assets/styles/ManageList.scss";
 
@@ -107,7 +108,8 @@ const ManageList = () => {
                   onClick={() => toggleStageOpen(stage.id)}
                 >
                   {openStageIds.includes(stage.id) ? "−" : "+"}{" "}
-                  {new Date(stage.start_time).toLocaleString()}
+                  {getDate(new Date(stage.start_time))}{" "}
+                  {getHour(new Date(stage.start_time))}
                 </div>
                 {openStageIds.includes(stage.id) &&
                   seatGroups[stage.id]?.map((seatGroup) => {
@@ -142,17 +144,18 @@ const ManageList = () => {
                           >
                             {reservations
                               .filter(
-                                (reservation) =>
-                                  reservation.seatGroup.id === seatGroup.id
+                                (data) => data.seatGroup.id === seatGroup.id
                               )
-                              .map((reservation) => (
+                              .map((data) => (
                                 <div
-                                  key={reservation.reservation.id}
+                                  key={data.reservation.id}
                                   className="reservation"
                                 >
-                                  {reservation.user.nickname ||
-                                    reservation.user.email}{" "}
-                                  - {reservation.reservation.num_attendees}人
+                                  {data.ticketType.type_name}{" "}
+                                  {data.reservation.num_attendees}枚{" "}
+                                  {data.reservation.num_attendees *
+                                    data.ticketType.price}
+                                  円 {data.user.nickname || data.user.email}
                                 </div>
                               ))}
                           </div>

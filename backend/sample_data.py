@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from models import Event, Stage, SeatGroup, TicketType, Reservation, User
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
+import random
 
 # パスワードのハッシュ化
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -14,26 +15,50 @@ def initialize_sample_data(db: Session):
 
     users = [
         User(
-            email="tanaka@example.com",
-            nickname="田中",
+            email="hiroshitanaka@example.com",
+            nickname="田中浩",
             password_hash=hashed_password_user,
             is_admin=False,
         ),
         User(
-            email="saito@example.com",
-            nickname="斎藤",
+            email="yukosaito@example.com",
+            nickname="斎藤優子",
             password_hash=hashed_password_user,
             is_admin=False,
         ),
         User(
-            email="yamada@example.com",
-            nickname="山田",
+            email="taroyamada@example.com",
+            nickname="山田太郎",
             password_hash=hashed_password_user,
             is_admin=False,
         ),
         User(
-            email="suzuki@example.com",
-            nickname="鈴木",
+            email="keikosuzuki@example.com",
+            nickname="鈴木恵子",
+            password_hash=hashed_password_user,
+            is_admin=False,
+        ),
+        User(
+            email="yoshida50@example.com",
+            nickname="吉田太郎",
+            password_hash=hashed_password_user,
+            is_admin=False,
+        ),
+        User(
+            email="kanako17@example.com",
+            nickname="かなこ",
+            password_hash=hashed_password_user,
+            is_admin=False,
+        ),
+        User(
+            email="coolguy@example.com",
+            nickname="CoolGuy太夫",
+            password_hash=hashed_password_user,
+            is_admin=False,
+        ),
+        User(
+            email="anonymous@example.com",
+            nickname="",
             password_hash=hashed_password_user,
             is_admin=False,
         ),
@@ -53,16 +78,16 @@ def initialize_sample_data(db: Session):
     # サンプルイベント作成
     events = [
         Event(
-            name="夜を駆ける謎の影",
-            description="夜の帳に現れた、誰も知らない秘密の影。その正体とは…。",
+            name="さよならの約束",
+            description="別れの夜、二人の間に交わされた約束。時を超えて再び巡り合う奇跡の物語。",
         ),
         Event(
-            name="紅蓮の月に舞う詩",
-            description="紅く染まる月の下で舞う一篇の詩、それは愛か、それとも復讐か。",
+            name="深海",
+            description="暗い海の底で待ち受ける謎と恐怖。真実を知るために深淵へと降りる勇気が試される。",
         ),
         Event(
-            name="虚空に響く鎮魂歌",
-            description="虚空に響き渡る鎮魂の調べ。隠された真実が、今明らかに。",
+            name="君は消えゆく光と追憶の終わらない旅路へ",
+            description="時が止まった世界で、少女はかすかな光を追いかける。光の先に待つのは希望か絶望か。",
         ),
     ]
 
@@ -125,115 +150,11 @@ def initialize_sample_data(db: Session):
     # サンプル予約作成
     reservations = [
         Reservation(
-            ticket_type_id=ticket_types[0].id, user_id=users[0].id, num_attendees=2
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[1].id, user_id=users[1].id, num_attendees=1
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[2].id, user_id=users[2].id, num_attendees=3
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[3].id, user_id=users[3].id, num_attendees=1
-        ),  # 鈴木
-        # 追加の予約データ
-        Reservation(
-            ticket_type_id=ticket_types[4].id, user_id=users[0].id, num_attendees=2
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[5].id, user_id=users[1].id, num_attendees=1
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[6].id, user_id=users[2].id, num_attendees=1
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[7].id, user_id=users[3].id, num_attendees=2
-        ),  # 鈴木
-        Reservation(
-            ticket_type_id=ticket_types[8].id, user_id=users[0].id, num_attendees=3
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[9].id, user_id=users[1].id, num_attendees=1
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[10].id, user_id=users[2].id, num_attendees=2
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[11].id, user_id=users[3].id, num_attendees=1
-        ),  # 鈴木
-        Reservation(
-            ticket_type_id=ticket_types[0].id, user_id=users[0].id, num_attendees=1
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[1].id, user_id=users[1].id, num_attendees=2
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[2].id, user_id=users[2].id, num_attendees=1
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[3].id, user_id=users[3].id, num_attendees=2
-        ),  # 鈴木
-        # さらに追加の20個
-        Reservation(
-            ticket_type_id=ticket_types[4].id, user_id=users[0].id, num_attendees=1
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[5].id, user_id=users[1].id, num_attendees=3
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[6].id, user_id=users[2].id, num_attendees=2
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[7].id, user_id=users[3].id, num_attendees=4
-        ),  # 鈴木
-        Reservation(
-            ticket_type_id=ticket_types[8].id, user_id=users[0].id, num_attendees=2
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[9].id, user_id=users[1].id, num_attendees=1
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[10].id, user_id=users[2].id, num_attendees=3
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[11].id, user_id=users[3].id, num_attendees=2
-        ),  # 鈴木
-        Reservation(
-            ticket_type_id=ticket_types[0].id, user_id=users[0].id, num_attendees=4
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[1].id, user_id=users[1].id, num_attendees=2
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[2].id, user_id=users[2].id, num_attendees=2
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[3].id, user_id=users[3].id, num_attendees=3
-        ),  # 鈴木
-        Reservation(
-            ticket_type_id=ticket_types[4].id, user_id=users[0].id, num_attendees=1
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[5].id, user_id=users[1].id, num_attendees=3
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[6].id, user_id=users[2].id, num_attendees=4
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[7].id, user_id=users[3].id, num_attendees=2
-        ),  # 鈴木
-        Reservation(
-            ticket_type_id=ticket_types[8].id, user_id=users[0].id, num_attendees=2
-        ),  # 田中
-        Reservation(
-            ticket_type_id=ticket_types[9].id, user_id=users[1].id, num_attendees=4
-        ),  # 斎藤
-        Reservation(
-            ticket_type_id=ticket_types[10].id, user_id=users[2].id, num_attendees=1
-        ),  # 山田
-        Reservation(
-            ticket_type_id=ticket_types[11].id, user_id=users[3].id, num_attendees=3
-        ),  # 鈴木
+            ticket_type_id=random.choice(ticket_types).id,
+            user_id=random.choice(users).id,
+            num_attendees=random.randint(1, 5),
+        )
+        for _ in range(300)
     ]
 
     db.add_all(reservations)
