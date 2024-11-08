@@ -121,7 +121,6 @@ def create_reservation(
     ticket_type_id: int,
     reservation: ReservationCreate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
 ) -> ReservationResponse:
     ticket_type_crud = CrudTicketType(db)
     seat_group_crud = CrudSeatGroup(db)
@@ -132,13 +131,10 @@ def create_reservation(
     seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
     if seat_group is None:
         raise HTTPException(status_code=404, detail="SeatGroup not found")
-
     try:
         check_capacity(seat_group, -reservation.num_attendees)
         update_capacity(seat_group, -reservation.num_attendees, db)
-        created_reservation = reservation_crud.create(
-            ticket_type_id, reservation, user.id
-        )
+        created_reservation = reservation_crud.create(ticket_type_id, reservation)
         return created_reservation
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -162,7 +158,6 @@ def update_reservation(
         raise HTTPException(status_code=404, detail="Reservation not found")
     if not user.is_admin and reservation.user_id != user.id:
         raise HTTPException(status_code=403, detail="Permission denied")
-
     try:
         ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
         seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)

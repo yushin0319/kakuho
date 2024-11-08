@@ -1,0 +1,44 @@
+// app/src/assets/styles/ManageItem.scss
+@use "sass:color";
+@use "./variables" as *;
+
+.reservation {
+  display: flex;
+  justify-content: space-between;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 2px;
+  padding: 2px;
+  margin-bottom: 2px;
+  font-size: 1rem;
+  color: color.scale($secondary-color, $lightness: -15%);
+
+  .change-btn {
+    background-color: $accent-color;
+    color: $white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-right: 4px;
+
+    &:hover {
+      background-color: color.scale($accent-color, $lightness: 10%);
+    }
+  }
+
+  .delete-btn {
+    background-color: $error-color;
+    color: $white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+
+    &:hover {
+      background-color: color.scale($error-color, $lightness: 10%);
+    }
+  }
+}

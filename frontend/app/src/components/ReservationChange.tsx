@@ -168,6 +168,7 @@ const ReservationChange = ({
 
   // 予約の確認と確定処理
   const handleConfirm = async () => {
+    const user_id = reservation.user_id;
     try {
       if (
         stage !== newStage ||
@@ -177,11 +178,13 @@ const ReservationChange = ({
         await deleteReservation(reservation.id);
         const newItem = await createReservation(newTicketType.id, {
           num_attendees: newNumAttendees,
+          user_id: user_id,
         });
         addNewItem(newItem.id);
       } else {
         await updateReservation(reservation.id, {
           num_attendees: newNumAttendees,
+          user_id: user_id,
         });
         addNewItem(reservation.id);
       }

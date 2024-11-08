@@ -5,6 +5,7 @@ import {
   TicketTypeResponse,
   ReservationCreate,
 } from "../services/interfaces";
+import { useAuth } from "../context/AuthContext";
 import { useReservationContext } from "../context/ReservationContext";
 import { useNewItemContext } from "../context/NewItemContext";
 import "../assets/styles/TicketSummary.scss";
@@ -26,11 +27,17 @@ const TicketSummary = ({
 }: TicketSummaryProps) => {
   const { reloadReservations } = useReservationContext();
   const { addNewItem } = useNewItemContext();
+  const { user } = useAuth();
 
   const handleConfirm = async () => {
+    if (!user) {
+      console.error("User is not logged in");
+      return;
+    }
     try {
       const data: ReservationCreate = {
         num_attendees: quantity,
+        user_id: user.id,
       };
       const newItem = await createReservation(ticket.id, data);
       addNewItem(newItem.id);

@@ -1,3 +1,4 @@
+// app/src/pages/ManageList.tsx
 import { useEffect, useState } from "react";
 import { fetchEvents } from "../services/api/event";
 import { fetchEventStages } from "../services/api/stage";
@@ -8,6 +9,7 @@ import {
   SeatGroupResponse,
 } from "../services/interfaces";
 import { getDate, getHour } from "../services/utils";
+import ManageItem from "../components/ManageItem";
 import { useReservationContext } from "../context/ReservationContext";
 import "../assets/styles/ManageList.scss";
 
@@ -20,7 +22,6 @@ const ManageList = () => {
   const [openEventIds, setOpenEventIds] = useState<number[]>([]);
   const [openStageIds, setOpenStageIds] = useState<number[]>([]);
   const [openSeatGroupIds, setOpenSeatGroupIds] = useState<number[]>([]);
-
   const { reservations, isLoading } = useReservationContext();
 
   const loadEventsData = async () => {
@@ -157,16 +158,10 @@ const ManageList = () => {
                               (data) => data.seatGroup.id === seatGroup.id
                             )
                             .map((data) => (
-                              <div
+                              <ManageItem
+                                data={data}
                                 key={data.reservation.id}
-                                className="reservation"
-                              >
-                                {data.ticketType.type_name}{" "}
-                                {data.reservation.num_attendees}枚{" "}
-                                {data.reservation.num_attendees *
-                                  data.ticketType.price}
-                                円 {data.user.nickname || data.user.email}
-                              </div>
+                              />
                             ))}
                         </div>
                       </div>

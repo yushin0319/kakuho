@@ -80,12 +80,14 @@ export interface TicketTypeResponse extends TicketTypeBase {
 
 interface ReservationBase {
   num_attendees: number;
+  user_id: number;
 }
 
 export interface ReservationCreate extends ReservationBase {}
 
 export interface ReservationUpdate {
   num_attendees?: number;
+  user_id: number;
 }
 
 export interface ReservationResponse extends ReservationBase {

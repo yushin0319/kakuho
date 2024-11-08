@@ -1,8 +1,9 @@
+// app/src/assets/styles/ManageList.scss
 @use "sass:color";
 @use "./variables" as *;
 
 .manage-list {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 
@@ -55,19 +56,10 @@
     margin-left: 5px;
     padding-top: 2px;
     overflow: hidden;
-    transition: max-height 1s ease;
+    transition: max-height 0.2s ease;
 
     &.open {
       max-height: 2000px; // アニメーションが適切に動く範囲で十分に大きな値に設定
     }
-  }
-  .reservation {
-    background-color: $white;
-    border: 1px solid $border-color;
-    border-radius: 2px;
-    padding: 2px;
-    margin-bottom: 2px;
-    font-size: 0.9rem;
-    color: color.scale($secondary-color, $lightness: -15%);
   }
 }

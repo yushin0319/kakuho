@@ -19,7 +19,7 @@ import {
 } from "../services/interfaces";
 import { useAuth } from "../context/AuthContext";
 
-interface ReservationDetail {
+export interface ReservationDetail {
   reservation: ReservationResponse;
   event: EventResponse;
   stage: StageResponse;
