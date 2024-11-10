@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { StageResponse, SeatGroupResponse } from "../services/interfaces";
 import { fetchStageSeatGroups } from "../services/api/seatGroup";
 import ManageSeatGroup from "./ManageSeatGroup";
+import ScannerModal from "./ScannerModal";
 import { getDate, getHour } from "../services/utils";
 
 interface ManageStageProps {
@@ -14,6 +15,7 @@ interface ManageStageProps {
 const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
   const [seatGroups, setSeatGroups] = useState<SeatGroupResponse[]>([]);
   const [openSeatGroupIds, setOpenSeatGroupIds] = useState<number[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const loadSeatGroups = async () => {
@@ -42,6 +44,14 @@ const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
     }
   };
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div>
       <div key={stage.id} className="stage">
@@ -49,7 +59,20 @@ const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
           {isOpen ? "−" : "+"}
           {getDate(new Date(stage.start_time))}{" "}
           {getHour(new Date(stage.start_time))}
+          <button
+            className="qr-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenModal();
+            }}
+          >
+            QRコード受付
+          </button>
+          {isModalOpen && (
+            <ScannerModal stageId={stage.id} onClose={handleCloseModal} />
+          )}
         </div>
+
         <div className={`seat-groups ${isOpen ? "open" : ""}`}>
           {seatGroups.map((group) => (
             <ManageSeatGroup

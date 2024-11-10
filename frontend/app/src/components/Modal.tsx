@@ -9,7 +9,13 @@ interface ModalProps {
 
 const Modal = ({ children, onClose }: ModalProps) => {
   return (
-    <div className="overlay" onClick={onClose}>
+    <div
+      className="overlay"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
+    >
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>

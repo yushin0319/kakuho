@@ -1,6 +1,5 @@
 // app/src/components/ReservationCard.tsx
 import { useEffect, useState } from "react";
-import "../assets/styles/ReservationCard.scss";
 import {
   ReservationResponse,
   EventResponse,
@@ -11,6 +10,8 @@ import {
 import { getDate, getHour } from "../services/utils";
 import ReservationChange from "./ReservationChange";
 import ReservationDelete from "./ReservationDelete";
+import { QRCodeSVG } from "qrcode.react";
+import "../assets/styles/ReservationCard.scss";
 
 interface ReservationCardProps {
   reservation: ReservationResponse;
@@ -74,6 +75,9 @@ const ReservationCard = ({
           </p>
           <p>ご予約枚数：{reservation.num_attendees}枚</p>
           <p>合計：{ticketType.price * reservation.num_attendees}円</p>
+          <div className="qr-code">
+            <QRCodeSVG value={`Kakuho-${reservation.id}`} size={128} />
+          </div>
 
           <div className="buttons">
             <button className="change-btn" onClick={handleChangeClick}>

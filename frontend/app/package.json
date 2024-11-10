@@ -14,10 +14,12 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "globalize": "^1.7.0",
+    "qrcode.react": "^4.1.0",
     "react": "^18.3.1",
     "react-big-calendar": "^1.15.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
+    "react-zxing": "^2.0.2",
     "sass": "^1.80.5"
   },
   "devDependencies": {
