@@ -30,7 +30,10 @@ const ManageSeatGroup = ({
         console.error("Failed to load seat group name:", error);
       }
     };
+    loadSeatGroupName();
+  }, [seatGroup.id]);
 
+  useEffect(() => {
     const countReservations = () => {
       const count = reservations
         .filter((data) => data.seatGroup.id === seatGroup.id)
@@ -38,7 +41,6 @@ const ManageSeatGroup = ({
       setNumOfReservations(count);
     };
 
-    loadSeatGroupName();
     countReservations();
   }, [seatGroup.id, reservations]);
 
@@ -48,14 +50,14 @@ const ManageSeatGroup = ({
         (numOfReservations / (seatGroup.capacity + numOfReservations)) * 100
       )
     );
-  }, [numOfReservations, seatGroup.capacity]);
+  }, [seatGroup.capacity, numOfReservations]);
 
   return (
     <div>
       <div key={seatGroup.id} className="seat-group">
         <div className="seat-group-header" onClick={toggle}>
           {isOpen ? "−" : "+"} {seatGroupName} {numOfReservations}/
-          {numOfReservations + seatGroup.capacity}席
+          {seatGroup.capacity + numOfReservations}席
           <div className="seat-bar">
             <div
               className="seat-bar-fill"
@@ -66,6 +68,15 @@ const ManageSeatGroup = ({
         <div className={`reservations ${isOpen ? "open" : ""}`}>
           {reservations
             .filter((data) => data.seatGroup.id === seatGroup.id)
+            .sort((a, b) => {
+              const nameA = a.user.nickname || a.user.email;
+              const nameB = b.user.nickname || b.user.email;
+              return nameA.localeCompare(nameB); // 文字列のアルファベット順にソート
+            })
+            .sort(
+              (a, b) =>
+                Number(a.reservation.is_paid) - Number(b.reservation.is_paid)
+            ) // is_paidでソート
             .map((data) => (
               <ManageItem data={data} key={data.reservation.id} />
             ))}

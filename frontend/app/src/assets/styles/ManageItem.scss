@@ -5,13 +5,48 @@
 .reservation {
   display: flex;
   justify-content: space-between;
+  width: 700px;
   background-color: $white;
   border: 1px solid $border-color;
   border-radius: 2px;
   padding: 2px;
   margin-bottom: 2px;
-  font-size: 1rem;
-  color: color.scale($secondary-color, $lightness: -15%);
+  font-size: 0.9rem;
+  color: color.scale($secondary-color, $lightness: -40%);
+
+  .paid-btn {
+    background-color: $white;
+    color: $secondary-color;
+    border: 1px solid color.scale($secondary-color, $lightness: 50%);
+    border-radius: 4px;
+    padding: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+
+  .reservation-data {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    padding: 4px;
+
+    .type-name {
+      width: 10%;
+    }
+    .num-attendees {
+      width: 10%;
+    }
+    .total {
+      width: 20%;
+    }
+    .name {
+      width: 60%;
+    }
+
+    &.paid {
+      color: color.scale($secondary-color, $lightness: 40%);
+    }
+  }
 
   .change-btn {
     background-color: $accent-color;

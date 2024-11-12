@@ -61,6 +61,7 @@ const ReservationChange = ({
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const { reloadReservations } = useReservationContext();
   const { addNewItem } = useNewItemContext();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // アラートメッセージを評価する関数
   const evaluateAlert = () => {
@@ -109,7 +110,10 @@ const ReservationChange = ({
   }, [newTicketType]);
 
   useEffect(() => {
-    evaluateAlert();
+    if (maxAvailable > 0) {
+      evaluateAlert();
+      setIsLoading(false);
+    }
   }, [maxAvailable, newNumAttendees]);
 
   // ステージ選択の変更処理
@@ -195,6 +199,10 @@ const ReservationChange = ({
       onClose();
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Modal onClose={handleCancel}>

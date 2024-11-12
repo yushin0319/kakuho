@@ -5,6 +5,7 @@ import { fetchStageSeatGroups } from "../services/api/seatGroup";
 import ManageSeatGroup from "./ManageSeatGroup";
 import ScannerModal from "./ScannerModal";
 import { getDate, getHour } from "../services/utils";
+import { useReservationContext } from "../context/ReservationContext";
 
 interface ManageStageProps {
   stage: StageResponse;
@@ -16,6 +17,7 @@ const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
   const [seatGroups, setSeatGroups] = useState<SeatGroupResponse[]>([]);
   const [openSeatGroupIds, setOpenSeatGroupIds] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { reservations } = useReservationContext();
 
   useEffect(() => {
     const loadSeatGroups = async () => {
@@ -28,7 +30,7 @@ const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
     };
 
     loadSeatGroups();
-  }, [stage.id]);
+  }, [stage.id, reservations]);
 
   useEffect(() => {
     if (!isOpen) {

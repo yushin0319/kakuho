@@ -31,8 +31,9 @@ def check_capacity(seat_group: SeatGroupResponse, delta: int) -> None:
 # SeatGroupのcapacityを更新する
 def update_capacity(seat_group: SeatGroupResponse, delta: int, db: Session) -> None:
     seat_group_crud = CrudSeatGroup(db)
-    seat_group.capacity += delta
-    seat_group_crud.update(seat_group.id, SeatGroupUpdate(capacity=seat_group.capacity))
+    seat_group_crud.update(
+        seat_group.id, SeatGroupUpdate(capacity=seat_group.capacity + delta)
+    )
 
 
 # Reservation関連のエンドポイント
@@ -161,6 +162,8 @@ def update_reservation(
     try:
         ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
         seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
+        if data.num_attendees is None:
+            data.num_attendees = reservation.num_attendees
         delta = reservation.num_attendees - data.num_attendees
         check_capacity(seat_group, delta)
         update_capacity(seat_group, delta, db)

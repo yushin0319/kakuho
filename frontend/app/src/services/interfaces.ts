@@ -87,6 +87,7 @@ export interface ReservationCreate extends ReservationBase {}
 
 export interface ReservationUpdate {
   num_attendees?: number;
+  is_paid?: boolean;
   user_id: number;
 }
 

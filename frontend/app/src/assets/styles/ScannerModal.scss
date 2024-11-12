@@ -1,27 +1,14 @@
 // app/src/assets/styles/ScannerModal.scss
 @use "variables" as *;
 
-.barcode-scanner-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  .modal-content {
-    background: $white;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 400px;
-    text-align: center;
-    video {
-      width: 100%;
-    }
-    .close-btn {
-      margin-top: 10px;
-    }
+.scanner-content {
+  color: $primary-color;
+
+  .alert-modal-content {
+    color: $error-color;
+  }
+
+  video {
+    width: 50%;
   }
 }

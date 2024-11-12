@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useZxing } from "react-zxing";
 import { useReservationContext } from "../context/ReservationContext";
-import Modal from "./Modal"; // Modalコンポーネントをインポート
+import Modal from "./Modal";
 import "../assets/styles/ScannerModal.scss";
 
 interface ScannerModalProps {
@@ -11,10 +11,11 @@ interface ScannerModalProps {
 
 const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
   const [scanResult, setScanResult] = useState("");
+  const [alertMessage, setAlertMessage] = useState<string | null>(null); // アラート用のメッセージ
   const { reservations } = useReservationContext();
   const { ref } = useZxing({
     onDecodeResult(result) {
-      const scannedId = result.getText().replace("Kakuho-", ""); // プレフィックスを除去
+      const scannedId = result.getText().replace("Kakuho-", "");
       setScanResult(scannedId);
       handleCheckReservation(scannedId);
     },
@@ -25,15 +26,16 @@ const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
       (res) => res.reservation.id === parseInt(reservationId, 10)
     );
     if (!reservation) {
-      alert("予約が見つかりません。");
+      setAlertMessage("予約が見つかりません。");
       return;
     }
 
     if (reservation.stage.id !== stageId) {
-      alert("このQRコードは他のステージのものです。");
+      setAlertMessage("このQRコードは他のステージのものです。");
     } else {
-      alert("受付完了！");
-      // ここで `is_paid` を更新する処理を追加
+      setAlertMessage("受付完了！");
+      // `is_paid` を更新する処理を追加
+      onClose();
     }
   };
 
@@ -43,6 +45,15 @@ const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
         <video ref={ref} />
         <p>スキャン結果: {scanResult}</p>
         <button onClick={onClose}>閉じる</button>
+
+        {alertMessage && (
+          <Modal onClose={() => setAlertMessage(null)}>
+            <div className="alert-modal-content">
+              <p>{alertMessage}</p>
+              <button onClick={() => setAlertMessage(null)}>閉じる</button>
+            </div>
+          </Modal>
+        )}
       </div>
     </Modal>
   );

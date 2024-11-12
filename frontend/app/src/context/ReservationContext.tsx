@@ -33,6 +33,7 @@ interface ReservationContextType {
   isLoading: boolean;
   error: string | null;
   reloadReservations: () => void;
+  simpleReload: () => void;
 }
 
 const ReservationContext = createContext<ReservationContextType | null>(null);
@@ -138,6 +139,10 @@ export const ReservationProvider = ({
     loadReservations();
   };
 
+  const simpleReload = () => {
+    loadReservations();
+  };
+
   useEffect(() => {
     loadReservations();
   }, [user]);
@@ -149,6 +154,7 @@ export const ReservationProvider = ({
         isLoading,
         error,
         reloadReservations,
+        simpleReload,
       }}
     >
       {children}
