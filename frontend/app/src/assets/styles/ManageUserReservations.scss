@@ -1,0 +1,30 @@
+// app/src/assets/styles/ManageUserReservations.scss
+@use "sass:color";
+@use "variables" as *;
+
+.user-reservations {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: color.scale($white, $lightness: -10%);
+  padding: 5px;
+  border-radius: 6px;
+
+  .reservation-item {
+    background-color: $white;
+    display: flex;
+    color: $primary-color;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    list-style: none;
+
+    p {
+      margin: 8px;
+    }
+  }
+}

@@ -6,6 +6,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ReservationList from "../pages/ReservationList";
 import ManageList from "../pages/ManageList";
+import ManageUser from "../pages/ManageUser";
 
 const AppRouter = () => {
   return (
@@ -36,6 +37,16 @@ const AppRouter = () => {
         element={
           <PrivateRoute>
             <ManageList />
+          </PrivateRoute>
+        }
+      />
+
+      {/* 「ユーザー管理」 */}
+      <Route
+        path="/manage-user"
+        element={
+          <PrivateRoute>
+            <ManageUser />
           </PrivateRoute>
         }
       />

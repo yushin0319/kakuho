@@ -1,0 +1,37 @@
+// app/src/assets/styles/ManageUser.scss
+@use "sass:color";
+@use "variables" as *;
+
+.manage-user {
+  padding: 20px;
+
+  .user-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .user-item {
+    width: 500px;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+
+    .user-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      button {
+        background-color: $primary-color;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: color.scale($primary-color, $lightness: -10%);
+        }
+      }
+    }
+  }
+}

@@ -49,6 +49,14 @@ const Header = () => {
             予約管理
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/manage-user"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            ユーザー管理
+          </NavLink>
+        </li>
         {isAdmin && ( // 管理者の場合だけ表示
           <li>
             <NavLink
