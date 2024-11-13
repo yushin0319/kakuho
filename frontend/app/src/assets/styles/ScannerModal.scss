@@ -2,6 +2,9 @@
 @use "variables" as *;
 
 .scanner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   color: $primary-color;
 
   .alert-modal-content {
@@ -9,6 +12,6 @@
   }
 
   video {
-    width: 50%;
+    width: 70%;
   }
 }

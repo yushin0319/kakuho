@@ -17,8 +17,10 @@ const ManageSeatGroup = ({
   toggle,
 }: ManageSeatGroupProps) => {
   const [seatGroupName, setSeatGroupName] = useState<string>("");
-  const [numOfReservations, setNumOfReservations] = useState<number>(0);
-  const [rate, setRate] = useState<number>(0);
+  const [numOfReservations, setNumOfReservations] = useState<[number, number]>([
+    0, 0,
+  ]);
+  const [rate, setRate] = useState<[number, number]>([0, 0]);
   const { reservations } = useReservationContext();
 
   useEffect(() => {
@@ -38,30 +40,39 @@ const ManageSeatGroup = ({
       const count = reservations
         .filter((data) => data.seatGroup.id === seatGroup.id)
         .reduce((acc, data) => acc + data.reservation.num_attendees, 0);
-      setNumOfReservations(count);
+      const countPaid = reservations
+        .filter((data) => data.seatGroup.id === seatGroup.id)
+        .reduce(
+          (acc, data) =>
+            acc +
+            Number(data.reservation.is_paid) * data.reservation.num_attendees,
+          0
+        );
+      const rate = Math.round((count / (count + seatGroup.capacity)) * 100);
+      const ratePaid = Math.round(
+        (countPaid / (count + seatGroup.capacity)) * 100
+      );
+      setNumOfReservations([count, countPaid]);
+      setRate([rate, ratePaid]);
     };
 
     countReservations();
   }, [seatGroup.id, reservations]);
 
-  useEffect(() => {
-    setRate(
-      Math.round(
-        (numOfReservations / (seatGroup.capacity + numOfReservations)) * 100
-      )
-    );
-  }, [seatGroup.capacity, numOfReservations]);
-
   return (
     <div>
       <div key={seatGroup.id} className="seat-group">
         <div className="seat-group-header" onClick={toggle}>
-          {isOpen ? "−" : "+"} {seatGroupName} {numOfReservations}/
-          {seatGroup.capacity + numOfReservations}席
+          {isOpen ? "−" : "+"} {seatGroupName} {numOfReservations[0]}/
+          {seatGroup.capacity + numOfReservations[0]}席
           <div className="seat-bar">
             <div
               className="seat-bar-fill"
-              style={{ width: `${rate}%`, transition: "width 0.3s ease" }}
+              style={{ width: `${rate[0]}%`, transition: "width 0.3s ease" }}
+            ></div>
+            <div
+              className="seat-bar-fill-paid"
+              style={{ width: `${rate[1]}%`, transition: "width 0.3s ease" }}
             ></div>
           </div>
         </div>
