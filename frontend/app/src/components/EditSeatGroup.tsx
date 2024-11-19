@@ -1,6 +1,13 @@
 // app/src/components/EditSeatGroup.tsx
-import { useState, useEffect } from "react";
-import { Button, TextField, Grid2 as Grid } from "@mui/material";
+import { useState } from "react";
+import {
+  Button,
+  TextField,
+  Grid2 as Grid,
+  Card,
+  IconButton,
+} from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { seatProps } from "./CreateEvent";
 import { TicketTypeCreate } from "../services/interfaces";
 import EditTicketType from "./EditTicketType";
@@ -16,66 +23,99 @@ const EditSeatGroup = ({
   onUpdate,
   onDelete,
 }: EditSeatGroupProps) => {
-  const [ticketTypes, setTicketTypes] = useState<TicketTypeCreate[]>(
-    seatGroup.ticketTypes
+  const [localSeatGroup, setLocalSeatGroup] = useState(seatGroup);
+  const [inputValue, setInputValue] = useState<string>(
+    localSeatGroup.seatGroup.capacity.toString()
   );
 
-  useEffect(() => {
-    onUpdate({ ...seatGroup, ticketTypes });
-  }, [ticketTypes]);
+  const handleUpdate = () => {
+    onUpdate(localSeatGroup);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.target.value, 10);
-    onUpdate({
-      ...seatGroup,
-      seatGroup: {
-        ...seatGroup.seatGroup,
-        capacity: newValue,
-      },
-    });
+  const handleChangeNumOfSeats = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^\d]/g, "");
+    setInputValue(value);
+    if (!isNaN(parseInt(value))) {
+      setLocalSeatGroup({
+        ...localSeatGroup,
+        seatGroup: {
+          ...localSeatGroup.seatGroup,
+          capacity: parseInt(value),
+        },
+      });
+    }
   };
+
   const handleAddTicketType = () => {
-    setTicketTypes((prev) => [...prev, { type_name: "", price: 0 }]);
+    setLocalSeatGroup({
+      ...localSeatGroup,
+      ticketTypes: [...localSeatGroup.ticketTypes, { type_name: "", price: 0 }],
+    });
+    handleUpdate();
   };
+
   const handleUpdateTicketType = (index: number, ticket: TicketTypeCreate) => {
-    setTicketTypes((prev) => prev.map((t, i) => (i === index ? ticket : t)));
+    setLocalSeatGroup((prev) => ({
+      ...prev,
+      ticketTypes: prev.ticketTypes.map((t, i) => (i === index ? ticket : t)),
+    }));
+    handleUpdate();
   };
+
   const handleDeleteTicketType = (index: number) => {
-    setTicketTypes((prev) => prev.filter((_, i) => i !== index));
+    setLocalSeatGroup((prev) => ({
+      ...prev,
+      ticketTypes: prev.ticketTypes.filter((_, i) => i !== index),
+    }));
+    handleUpdate();
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid size={6}>
-        <TextField
-          label="座席数"
-          value={seatGroup.seatGroup.capacity || 0}
-          onChange={handleChange}
-          type="number"
-        />
-      </Grid>
-      <Button variant="contained" color="secondary" onClick={onDelete}>
-        座席削除
-      </Button>
-      <Grid size={6}>
-        {ticketTypes.map((ticket, index) => (
-          <div key={index}>
-            <EditTicketType
-              ticket={ticket}
-              onUpdate={(newTicket) => handleUpdateTicketType(index, newTicket)}
-              onDelete={() => handleDeleteTicketType(index)}
+    <Card sx={{ margin: "16px", padding: "16px" }}>
+      <Grid container spacing={2}>
+        <Grid container size={6} alignItems={"center"}>
+          <Grid>
+            <TextField
+              label="座席数"
+              value={inputValue}
+              onChange={handleChangeNumOfSeats}
+              error={isNaN(parseInt(inputValue))}
+              helperText={
+                isNaN(parseInt(inputValue)) ? "数値を入力してください" : ""
+              }
+              fullWidth
+              onBlur={handleUpdate}
             />
-          </div>
-        ))}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddTicketType}
-        >
-          チケット追加
-        </Button>
+          </Grid>
+          <Grid>
+            <IconButton aria-label="delete" onClick={onDelete}>
+              <DeleteForeverIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+        <Grid container size={6}>
+          {localSeatGroup.ticketTypes.map((ticket, index) => (
+            <div key={index}>
+              <EditTicketType
+                ticket={ticket}
+                onUpdate={(newTicket) =>
+                  handleUpdateTicketType(index, newTicket)
+                }
+                onDelete={() => handleDeleteTicketType(index)}
+              />
+            </div>
+          ))}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddTicketType}
+            fullWidth
+          >
+            チケット追加
+          </Button>
+        </Grid>
       </Grid>
-    </Grid>
+    </Card>
   );
 };
 

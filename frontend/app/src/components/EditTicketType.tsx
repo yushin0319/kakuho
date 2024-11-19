@@ -1,6 +1,8 @@
 // app/src/components/EditTicketType.tsx
+import { useState } from "react";
 import { TicketTypeCreate } from "../services/interfaces";
-import { Button, Grid2 as Grid, TextField } from "@mui/material";
+import { IconButton, Grid2 as Grid, TextField } from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 interface EditTicketTypeProps {
   ticket: TicketTypeCreate;
@@ -13,32 +15,47 @@ const EditTicketType = ({
   onUpdate,
   onDelete,
 }: EditTicketTypeProps) => {
+  const [localTicket, setLocalTicket] = useState(ticket);
+
+  const handleUpdate = () => {
+    onUpdate(localTicket);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onUpdate({ ...ticket, [e.target.name]: e.target.value });
+    setLocalTicket({
+      ...localTicket,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid size={6}>
+    <Grid container spacing={2} alignItems={"center"}>
+      <Grid size={5}>
         <TextField
           label="チケット種別"
-          value={ticket.type_name}
+          value={localTicket.type_name}
           name="type_name"
           onChange={handleChange}
+          size="small"
+          onBlur={handleUpdate}
         />
       </Grid>
-      <Grid size={4}>
+      <Grid size={5}>
         <TextField
           label="価格"
-          value={ticket.price}
+          value={localTicket.price}
           name="price"
           onChange={handleChange}
+          size="small"
+          error={isNaN(localTicket.price)}
+          helperText={isNaN(localTicket.price) ? "数字を入力してください" : ""}
+          onBlur={handleUpdate}
         />
       </Grid>
       <Grid size={2}>
-        <Button variant="contained" color="secondary" onClick={onDelete}>
-          削除
-        </Button>
+        <IconButton aria-label="delete" onClick={onDelete}>
+          <DeleteForeverIcon />
+        </IconButton>
       </Grid>
     </Grid>
   );

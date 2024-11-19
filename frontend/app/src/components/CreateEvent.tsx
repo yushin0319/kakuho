@@ -53,7 +53,7 @@ const CreateEvent = () => {
       {
         id: prev.length,
         seatGroup: { capacity: 0 },
-        ticketTypes: [],
+        ticketTypes: [{ type_name: "S席", price: 0 }],
       },
     ]);
   };
@@ -66,15 +66,21 @@ const CreateEvent = () => {
           : sg
       )
     );
+    console.log(seatGroups);
   };
 
   const handleDeleteSeatGroup = (id: number) => {
     setSeatGroups((prev) => prev.filter((sg) => sg.id !== id));
   };
 
+  const info = () => {
+    console.log(completedTimes);
+    console.log(seatGroups);
+  };
+
   return (
     <div>
-      <h2>ステージ時間選択</h2>
+      <h2>ステージ時間登録</h2>
       <EditStage
         startDate={startDate}
         endDate={endDate}
@@ -84,7 +90,7 @@ const CreateEvent = () => {
         handleComplete={handleComplete}
         handleDelete={handleDelete}
       />
-      <h2>チケット情報</h2>
+      <h2>チケット情報登録</h2>
       {seatGroups.map((sg) => (
         <EditSeatGroup
           key={sg.id}
@@ -95,7 +101,8 @@ const CreateEvent = () => {
           onDelete={() => handleDeleteSeatGroup(sg.id)}
         />
       ))}
-      <Button onClick={() => handleAddSeatGroup()}>座席追加</Button>
+      <Button onClick={() => handleAddSeatGroup()}>特別席追加</Button>
+      <Button onClick={info}>情報</Button>
     </div>
   );
 };
