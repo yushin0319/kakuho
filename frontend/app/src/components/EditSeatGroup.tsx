@@ -23,51 +23,37 @@ const EditSeatGroup = ({
   onUpdate,
   onDelete,
 }: EditSeatGroupProps) => {
-  const [localSeatGroup, setLocalSeatGroup] = useState(seatGroup);
   const [inputValue, setInputValue] = useState<string>(
-    localSeatGroup.seatGroup.capacity.toString()
+    seatGroup.seatGroup.capacity.toString()
   );
-
-  const handleUpdate = () => {
-    onUpdate(localSeatGroup);
-  };
 
   const handleChangeNumOfSeats = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^\d]/g, "");
     setInputValue(value);
     if (!isNaN(parseInt(value))) {
-      setLocalSeatGroup({
-        ...localSeatGroup,
-        seatGroup: {
-          ...localSeatGroup.seatGroup,
-          capacity: parseInt(value),
-        },
-      });
+      const newSeatGroup = { ...seatGroup };
+      newSeatGroup.seatGroup.capacity = parseInt(value);
+      onUpdate(newSeatGroup);
     }
   };
 
   const handleAddTicketType = () => {
-    setLocalSeatGroup({
-      ...localSeatGroup,
-      ticketTypes: [...localSeatGroup.ticketTypes, { type_name: "", price: 0 }],
-    });
-    handleUpdate();
+    const newTicketType: TicketTypeCreate = { type_name: "", price: 0 };
+    const newSeatGroup = { ...seatGroup };
+    newSeatGroup.ticketTypes.push(newTicketType);
+    onUpdate(newSeatGroup);
   };
 
   const handleUpdateTicketType = (index: number, ticket: TicketTypeCreate) => {
-    setLocalSeatGroup((prev) => ({
-      ...prev,
-      ticketTypes: prev.ticketTypes.map((t, i) => (i === index ? ticket : t)),
-    }));
-    handleUpdate();
+    const newSeatGroup = { ...seatGroup };
+    newSeatGroup.ticketTypes[index] = ticket;
+    onUpdate(newSeatGroup);
   };
 
   const handleDeleteTicketType = (index: number) => {
-    setLocalSeatGroup((prev) => ({
-      ...prev,
-      ticketTypes: prev.ticketTypes.filter((_, i) => i !== index),
-    }));
-    handleUpdate();
+    const newSeatGroup = { ...seatGroup };
+    newSeatGroup.ticketTypes.splice(index, 1);
+    onUpdate(newSeatGroup);
   };
 
   return (
@@ -84,7 +70,6 @@ const EditSeatGroup = ({
                 isNaN(parseInt(inputValue)) ? "数値を入力してください" : ""
               }
               fullWidth
-              onBlur={handleUpdate}
             />
           </Grid>
           <Grid>
@@ -94,7 +79,7 @@ const EditSeatGroup = ({
           </Grid>
         </Grid>
         <Grid container size={6}>
-          {localSeatGroup.ticketTypes.map((ticket, index) => (
+          {seatGroup.ticketTypes.map((ticket, index) => (
             <div key={index}>
               <EditTicketType
                 ticket={ticket}

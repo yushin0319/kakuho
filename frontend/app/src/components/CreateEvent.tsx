@@ -1,5 +1,5 @@
 // app/src/components/CreateEvent.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import { TicketTypeCreate, SeatGroupCreate } from "../services/interfaces";
 import EditStage from "./EditStage";
@@ -11,21 +11,75 @@ export type seatProps = {
   ticketTypes: TicketTypeCreate[];
 };
 
-const CreateEvent = () => {
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [completedTimes, setCompletedTimes] = useState<Record<string, Date[]>>(
-    {}
-  );
-  const [seatGroups, setSeatGroups] = useState<seatProps[]>([
-    {
-      id: 0,
-      seatGroup: {
-        capacity: 0,
+const initialize = () => {
+  try {
+    const data = localStorage.getItem("createEventData");
+    if (data) {
+      const parsedData = JSON.parse(data);
+      return {
+        completedTimes: Object.fromEntries(
+          Object.entries(parsedData.completedTimes || {}).map(
+            ([key, times]) => [
+              key,
+              (times as string[]).map((time: string) => new Date(time)), // 配列内の文字列をDateオブジェクトに変換
+            ]
+          )
+        ),
+        seatGroups: parsedData.seatGroups as seatProps[] | [],
+        startDate: parsedData.startDate ? new Date(parsedData.startDate) : null,
+        endDate: parsedData.endDate ? new Date(parsedData.endDate) : null,
+      };
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  return {
+    completedTimes: {},
+    seatGroups: [
+      {
+        id: 0,
+        seatGroup: {
+          capacity: 0,
+        },
+        ticketTypes: [{ type_name: "一般", price: 0 }],
       },
-      ticketTypes: [{ type_name: "一般", price: 0 }],
-    },
-  ]);
+    ],
+    startDate: null,
+    endDate: null,
+  };
+};
+
+const CreateEvent = () => {
+  const {
+    completedTimes: initialCompletedTimes,
+    seatGroups: initialSeatGroups,
+    startDate: initialStartDate,
+    endDate: initialEndDate,
+  } = initialize();
+  const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
+  const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
+  const [completedTimes, setCompletedTimes] = useState<Record<string, Date[]>>(
+    initialCompletedTimes
+  );
+  const [seatGroups, setSeatGroups] = useState<seatProps[]>(initialSeatGroups);
+
+  useEffect(() => {
+    console.log(seatGroups);
+  }, [seatGroups]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "createEventData",
+      JSON.stringify({
+        completedTimes,
+        seatGroups,
+        startDate,
+        endDate,
+      })
+    );
+  }, [completedTimes, seatGroups, startDate, endDate]);
+
   // 決定ボタンの処理
   const handleComplete = (date: string, time: Date) => {
     const existingTimes = completedTimes[date] || [];
@@ -48,10 +102,11 @@ const CreateEvent = () => {
   };
 
   const handleAddSeatGroup = () => {
+    const newId = Math.max(...seatGroups.map((sg) => sg.id)) + 1;
     setSeatGroups((prev) => [
       ...prev,
       {
-        id: prev.length,
+        id: newId,
         seatGroup: { capacity: 0 },
         ticketTypes: [{ type_name: "S席", price: 0 }],
       },
@@ -60,17 +115,13 @@ const CreateEvent = () => {
 
   const handleUpdateSeatGroup = (id: number, updatedGroup: seatProps) => {
     setSeatGroups((prev) =>
-      prev.map((sg) =>
-        sg.id === id
-          ? { ...updatedGroup, ticketTypes: [...updatedGroup.ticketTypes] }
-          : sg
-      )
+      prev.map((group) => (group.id === id ? updatedGroup : group))
     );
-    console.log(seatGroups);
   };
 
   const handleDeleteSeatGroup = (id: number) => {
-    setSeatGroups((prev) => prev.filter((sg) => sg.id !== id));
+    const newSeatGroups = seatGroups.filter((_, i) => i !== id);
+    setSeatGroups(newSeatGroups);
   };
 
   const info = () => {

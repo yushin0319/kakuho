@@ -15,17 +15,32 @@ const EditTicketType = ({
   onUpdate,
   onDelete,
 }: EditTicketTypeProps) => {
-  const [localTicket, setLocalTicket] = useState(ticket);
+  const [inputValue, setInputValue] = useState<string>(ticket.price.toString());
+  const [error, setError] = useState<string>("");
 
-  const handleUpdate = () => {
-    onUpdate(localTicket);
+  const validatePrice = (value: string): string => {
+    if (!/^\d+$/.test(value)) return "数値のみ入力してください";
+    const parsedPrice = parseInt(value, 10);
+    if (parsedPrice < 0) return "0以上の数字を入力してください";
+    return "";
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalTicket({
-      ...localTicket,
-      [e.target.name]: e.target.value,
-    });
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onUpdate({ ...ticket, type_name: e.target.value });
+  };
+
+  const checkPrice = () => {
+    const replaced = inputValue
+      .replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xfee0))
+      .trim();
+    setInputValue(replaced);
+    const error = validatePrice(replaced);
+    setError(error);
+    if (!error) {
+      onUpdate({ ...ticket, price: parseInt(replaced, 10) });
+    } else {
+      setInputValue(ticket.price.toString()); // エラー時は元の値にリセット
+    }
   };
 
   return (
@@ -33,23 +48,22 @@ const EditTicketType = ({
       <Grid size={5}>
         <TextField
           label="チケット種別"
-          value={localTicket.type_name}
+          value={ticket.type_name}
           name="type_name"
-          onChange={handleChange}
+          onChange={handleChangeName}
           size="small"
-          onBlur={handleUpdate}
         />
       </Grid>
       <Grid size={5}>
         <TextField
           label="価格"
-          value={localTicket.price}
+          value={inputValue}
           name="price"
-          onChange={handleChange}
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={checkPrice}
           size="small"
-          error={isNaN(localTicket.price)}
-          helperText={isNaN(localTicket.price) ? "数字を入力してください" : ""}
-          onBlur={handleUpdate}
+          error={Boolean(error)}
+          helperText={error}
         />
       </Grid>
       <Grid size={2}>
