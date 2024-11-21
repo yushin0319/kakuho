@@ -26,14 +26,28 @@ const EditSeatGroup = ({
   const [inputValue, setInputValue] = useState<string>(
     seatGroup.seatGroup.capacity.toString()
   );
+  const [error, setError] = useState<string>("");
 
-  const handleChangeNumOfSeats = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^\d]/g, "");
-    setInputValue(value);
-    if (!isNaN(parseInt(value))) {
+  const validateNum = (value: string): string => {
+    if (!/^\d+$/.test(value)) return "数値のみ入力してください";
+    const parsedNum = parseInt(value, 10);
+    if (parsedNum < 0) return "0以上の数字を入力してください";
+    return "";
+  };
+
+  const checkNumOfSeats = () => {
+    const replaced = inputValue
+      .replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xfee0))
+      .trim();
+    setInputValue(replaced);
+    const error = validateNum(replaced);
+    setError(error);
+    if (!error) {
       const newSeatGroup = { ...seatGroup };
-      newSeatGroup.seatGroup.capacity = parseInt(value);
+      newSeatGroup.seatGroup.capacity = parseInt(replaced, 10);
       onUpdate(newSeatGroup);
+    } else {
+      setInputValue(seatGroup.seatGroup.capacity.toString());
     }
   };
 
@@ -64,11 +78,10 @@ const EditSeatGroup = ({
             <TextField
               label="座席数"
               value={inputValue}
-              onChange={handleChangeNumOfSeats}
-              error={isNaN(parseInt(inputValue))}
-              helperText={
-                isNaN(parseInt(inputValue)) ? "数値を入力してください" : ""
-              }
+              onChange={(e) => setInputValue(e.target.value)}
+              onBlur={checkNumOfSeats}
+              error={Boolean(error)}
+              helperText={error}
               fullWidth
             />
           </Grid>

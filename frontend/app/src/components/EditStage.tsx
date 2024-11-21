@@ -142,6 +142,7 @@ const EditStage = ({
                               minute: "2-digit",
                             })}
                             variant="outlined"
+                            color="primary"
                             onDelete={() => handleDelete(formattedDate, time)}
                           />
                         </Grid>
