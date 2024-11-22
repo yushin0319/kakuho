@@ -16,6 +16,15 @@ const theme = createTheme({
   typography: {
     fontFamily: "Roboto, Arial, sans-serif", // 好みのフォントを指定
   },
+  components: {
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontWeight: "bold",
+        },
+      },
+    },
+  },
 });
 
 export default theme;

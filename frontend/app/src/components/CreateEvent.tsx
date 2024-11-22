@@ -141,6 +141,11 @@ const CreateEvent = () => {
     setOpen(false);
   };
 
+  const handleReset = () => {
+    localStorage.removeItem("createEventData");
+    window.location.reload();
+  };
+
   return (
     <div>
       <h2>基本情報</h2>
@@ -194,7 +199,7 @@ const CreateEvent = () => {
         seatGroups={seatGroups}
         open={open}
         onClose={handleClose}
-        onConfirm={handleClose}
+        onConfirm={handleReset}
       />
     </div>
   );
