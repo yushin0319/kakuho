@@ -73,6 +73,7 @@ const EditStage = ({
                     variant: "outlined",
                     margin: "normal",
                   },
+                  calendarHeader: { format: "yyyy年MM月" },
                 }}
                 minDate={new Date()}
                 maxDate={
@@ -94,6 +95,7 @@ const EditStage = ({
                       opacity: startDate ? 1 : 0.5,
                     },
                   },
+                  calendarHeader: { format: "yyyy年MM月" },
                 }}
                 minDate={startDate || new Date()}
                 maxDate={
