@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { fetchStageSeatGroups, getCapacity } from "../services/api/seatGroup";
 import { fetchSeatGroupTicketTypes } from "../services/api/ticketType";
 import { StageResponse, TicketTypeResponse } from "../services/interfaces";
+import { toJST } from "../services/utils";
 import "../assets/styles/TicketList.scss";
 
 interface TicketListProps {
@@ -40,15 +41,7 @@ const TicketList = ({ stage, onSelectTicket, onCancel }: TicketListProps) => {
 
   return (
     <div>
-      <h3>
-        {new Date(stage.start_time).toLocaleString("ja-JP", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
-      </h3>
+      <h3>{toJST(stage.start_time, "dateTime")}</h3>
       {tickets.map((ticket) => (
         <button
           key={ticket.id}

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Modal from "../components/Modal";
 import { updateReservation } from "../services/api/reservation";
-import { getDate, getHour } from "../services/utils";
+import { toJST } from "../services/utils";
 import {
   useReservationContext,
   ReservationDetail,
@@ -67,10 +67,7 @@ const PaidStatusController = ({
           <p>ご予約名: {reservation.user.nickname}</p>
         )}
         <p>イベント名：{reservation.event.name}</p>
-        <p>
-          開始時間：{getDate(new Date(reservation.stage.start_time))}{" "}
-          {getHour(new Date(reservation.stage.start_time))}
-        </p>
+        <p>開始時間：{toJST(reservation.stage.start_time, "dateTime")}</p>
         <p>
           チケット種別：{reservation.ticketType.type_name}
           {" - "}

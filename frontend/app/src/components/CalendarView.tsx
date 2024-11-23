@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { ja } from "date-fns/locale";
 import { format, parse, startOfWeek, getDay } from "date-fns";
+import { toJST, toJSTDate } from "../services/utils";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import useCalendarData from "../hooks/useCalendarData";
 import CustomToolbar from "./CustomToolbar";
@@ -51,12 +52,9 @@ const CalendarView = ({ event, onBack }: CalendarViewProps) => {
         localizer={localizer}
         events={stages.map((stage: StageResponse) => ({
           id: stage.id,
-          title: new Date(stage.start_time).toLocaleTimeString("ja-JP", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          start: new Date(stage.start_time),
-          end: new Date(stage.end_time),
+          title: toJST(stage.start_time, "time"),
+          start: toJSTDate(stage.start_time),
+          end: toJSTDate(stage.start_time),
           allDay: false,
         }))}
         defaultView="month"

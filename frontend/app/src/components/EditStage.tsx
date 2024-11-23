@@ -11,6 +11,7 @@ import { TimePicker, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { ja } from "date-fns/locale/ja";
+import { toJST, addTime } from "../services/utils";
 
 interface EditStageProps {
   startDate: Date | null;
@@ -76,9 +77,7 @@ const EditStage = ({
                   calendarHeader: { format: "yyyy年MM月" },
                 }}
                 minDate={new Date()}
-                maxDate={
-                  new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-                }
+                maxDate={addTime(new Date(), { years: 1 })}
               />
             </Grid>
             <Grid size={6}>
@@ -99,25 +98,14 @@ const EditStage = ({
                 }}
                 minDate={startDate || new Date()}
                 maxDate={
-                  startDate
-                    ? new Date(
-                        new Date(startDate).setMonth(
-                          new Date(startDate).getMonth() + 2
-                        )
-                      )
-                    : new Date()
+                  startDate ? addTime(startDate, { months: 2 }) : new Date()
                 }
               />
             </Grid>
           </Grid>
 
           {dateList.map((date) => {
-            const formattedDate = date.toLocaleDateString("ja-JP", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              weekday: "short",
-            });
+            const formattedDate = toJST(date, "fullDate");
 
             return (
               <div key={formattedDate}>
@@ -139,10 +127,7 @@ const EditStage = ({
                           key={time.toString()}
                         >
                           <Chip
-                            label={time.toLocaleTimeString("ja-JP", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            label={toJST(time, "time")}
                             variant="outlined"
                             color="primary"
                             onDelete={() => handleDelete(formattedDate, time)}

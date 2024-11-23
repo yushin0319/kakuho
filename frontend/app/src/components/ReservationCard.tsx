@@ -7,7 +7,7 @@ import {
   SeatGroupResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
-import { getDate, getHour } from "../services/utils";
+import { toJST } from "../services/utils";
 import ReservationChange from "./ReservationChange";
 import ReservationDelete from "./ReservationDelete";
 import { QRCodeSVG } from "qrcode.react";
@@ -63,10 +63,7 @@ const ReservationCard = ({
     >
       <div className="reservation-info">
         <h3>{event.name}</h3>
-        <p>
-          日時: {getDate(new Date(stage.start_time))}{" "}
-          {getHour(new Date(stage.start_time))}
-        </p>
+        <p>日時: {toJST(stage.start_time, "dateTime")}</p>
       </div>
       {isExpanded && (
         <div className="reservation-details">

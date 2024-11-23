@@ -24,7 +24,7 @@ import {
   SeatGroupResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
-import { getDate, getHour } from "../services/utils";
+import { toJST } from "../services/utils";
 import { useReservationContext } from "../context/ReservationContext";
 import { useNewItemContext } from "../context/NewItemContext";
 import "../assets/styles/ReservationChange.scss";
@@ -219,8 +219,7 @@ const ReservationChange = ({
             >
               {stages.map((stage) => (
                 <option key={stage.id} value={stage.id}>
-                  {getDate(new Date(stage.start_time))}{" "}
-                  {getHour(new Date(stage.start_time))}
+                  {toJST(stage.start_time, "dateTime")}
                 </option>
               ))}
             </select>
@@ -256,9 +255,8 @@ const ReservationChange = ({
           <div>
             <h3>確認</h3>
             <p>
-              {getDate(new Date(stage.start_time))}{" "}
-              {getHour(new Date(stage.start_time))} - {newTicketType.type_name}{" "}
-              - {newNumAttendees}枚
+              {toJST(newStage.start_time, "dateTime")} -{" "}
+              {newTicketType.type_name} - {newNumAttendees}枚
             </p>
             <div className="button-group">
               <button onClick={handleBack}>戻る</button>

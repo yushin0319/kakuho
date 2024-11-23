@@ -4,7 +4,7 @@ import { StageResponse, SeatGroupResponse } from "../services/interfaces";
 import { fetchStageSeatGroups } from "../services/api/seatGroup";
 import ManageSeatGroup from "./ManageSeatGroup";
 import ScannerModal from "./ScannerModal";
-import { getDate, getHour } from "../services/utils";
+import { toJST } from "../services/utils";
 import { useReservationContext } from "../context/ReservationContext";
 
 interface ManageStageProps {
@@ -59,8 +59,7 @@ const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
       <div key={stage.id} className="stage">
         <div className="stage-header" onClick={toggle}>
           {isOpen ? "−" : "+"}
-          {getDate(new Date(stage.start_time))}{" "}
-          {getHour(new Date(stage.start_time))}
+          {toJST(stage.start_time, "dateTime")}
           <button
             className="qr-button"
             onClick={(e) => {

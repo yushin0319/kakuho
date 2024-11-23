@@ -1,27 +1,68 @@
 // app/src/services/utils.ts
+import { toZonedTime, format } from "date-fns-tz";
 
 /**
- * 予約の日時を取得する（日付部分のみ）
- * @param date Date オブジェクト
- * @returns 表示用のフォーマットされた日付
+ * JSTの日時を取得し、フォーマットする
+ * @param date 日時
+ * @param formatType フォーマットの種類
+ * @returns 表示用のフォーマットされた日時
  */
-export const getDate = (date: Date): string => {
-  return date.toLocaleDateString("ja-JP", {
-    month: "2-digit",
-    day: "2-digit",
-    weekday: "short",
-  });
-  //.replace(/\//g, "-");
+
+type FormatType = "fullDate" | "monthDate" | "time" | "dateTime" | "ISO8601";
+
+export const toJST = (date: Date | string, formatType: FormatType): string => {
+  const jstDate = toZonedTime(new Date(date), "Asia/Tokyo");
+  const formats = {
+    fullDate: "yyyy/MM/dd (E)",
+    monthDate: "MM/dd (E)",
+    time: "HH:mm",
+    dateTime: "MM/dd (E) HH:mm",
+    ISO8601: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+  };
+  const dayOfWeekMap = {
+    Sun: "日",
+    Mon: "月",
+    Tue: "火",
+    Wed: "水",
+    Thu: "木",
+    Fri: "金",
+    Sat: "土",
+  };
+  const formatted = format(jstDate, formats[formatType]);
+  return formatted.replace(
+    /(Sun|Mon|Tue|Wed|Thu|Fri|Sat)/,
+    (matched) => dayOfWeekMap[matched as keyof typeof dayOfWeekMap]
+  );
 };
 
 /**
- * 予約の時刻を取得する（時刻部分のみ）
- * @param date Date オブジェクト
- * @returns 表示用のフォーマットされた時刻
+ * 日本時間に変換する
+ * @param date 日時
+ * @returns 日本時間の日時
  */
-export const getHour = (date: Date): string => {
-  return date.toLocaleTimeString("ja-JP", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+
+export const toJSTDate = (date: Date | string): Date => {
+  return toZonedTime(new Date(date), "Asia/Tokyo");
+};
+
+/**
+ * 時間を追加する
+ * @param date 日時
+ * @param years 年
+ * @param months 月
+ * @param days 日
+ * @param hours 時間
+ * @returns 時間を追加した日時
+ */
+
+export const addTime = (
+  date: Date,
+  { years = 0, months = 0, days = 0, hours = 0 }
+): Date => {
+  return new Date(
+    date.getFullYear() + years,
+    date.getMonth() + months,
+    date.getDate() + days,
+    date.getHours() + hours
+  );
 };

@@ -8,6 +8,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useReservationContext } from "../context/ReservationContext";
 import { useNewItemContext } from "../context/NewItemContext";
+import { toJST } from "../services/utils";
 import "../assets/styles/TicketSummary.scss";
 
 interface TicketSummaryProps {
@@ -51,15 +52,7 @@ const TicketSummary = ({
 
   return (
     <div>
-      <h3>
-        {new Date(stage.start_time).toLocaleString("ja-JP", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
-      </h3>
+      <h3>{toJST(stage.start_time, "dateTime")}</h3>
       <p>
         {ticket.type_name} - {quantity} 枚 - 合計 {ticket.price * quantity}円
       </p>

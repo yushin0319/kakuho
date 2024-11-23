@@ -21,7 +21,7 @@ import {
   Chip,
 } from "@mui/material";
 import ChairIcon from "@mui/icons-material/Chair";
-import { getHour } from "../services/utils";
+import { toJST, addTime } from "../services/utils";
 import { seatProps } from "./CreateEvent";
 
 interface ConfirmEventProps {
@@ -119,17 +119,8 @@ const ConfirmEvent = ({
         .flat()
         .map((time) => {
           // タイムゾーン補正を行う関数
-          const toLocalISOString = (date: Date) => {
-            const offsetMs = date.getTimezoneOffset() * 60 * 1000; // タイムゾーンオフセット（分 → ミリ秒）
-            const localTime = new Date(date.getTime() - offsetMs); // オフセットを補正
-            return localTime.toISOString().slice(0, -1); // ミリ秒とZを除去
-          };
-
-          const start_time = toLocalISOString(time);
-          const end_time = toLocalISOString(
-            new Date(new Date(time).setHours(new Date(time).getHours() + 1))
-          );
-
+          const start_time = toJST(time, "ISO8601");
+          const end_time = toJST(addTime(time, { hours: 2 }), "ISO8601");
           return createStage(eventId, { start_time, end_time });
         });
 
@@ -232,9 +223,12 @@ const ConfirmEvent = ({
                       <TableCell>{date}</TableCell>
                       <TableCell>
                         {times.map((time) => (
-                          <Typography key={time.toString()} component="span">
+                          <Typography
+                            key={toJST(time, "time")}
+                            component="span"
+                          >
                             <Chip
-                              label={getHour(new Date(time))}
+                              label={toJST(time, "time")}
                               sx={{ margin: 0.5 }}
                             />
                           </Typography>

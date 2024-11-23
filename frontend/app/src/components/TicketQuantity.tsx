@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { getCapacity } from "../services/api/seatGroup";
 import { StageResponse, TicketTypeResponse } from "../services/interfaces";
+import { toJST } from "../services/utils";
 import "../assets/styles/TicketQuantity.scss";
 
 interface TicketQuantityProps {
@@ -45,15 +46,7 @@ const TicketQuantity = ({
 
   return (
     <div>
-      <h3>
-        {new Date(stage.start_time).toLocaleString("ja-JP", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
-      </h3>
+      <h3>{toJST(stage.start_time, "dateTime")}</h3>
       <p>{ticket.type_name}</p>
       <div>
         <button onClick={handleDecrement}>-</button>

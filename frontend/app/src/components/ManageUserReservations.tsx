@@ -3,7 +3,7 @@ import {
   ReservationDetail,
   useReservationContext,
 } from "../context/ReservationContext";
-import { getDate, getHour } from "../services/utils";
+import { toJST } from "../services/utils";
 import "../assets/styles/ManageUserReservations.scss";
 
 const ManageUserReservations = ({ userId }: { userId: number }) => {
@@ -30,12 +30,11 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
           <li key={res.reservation.id} className="reservation-item">
             <p>予約ID: {res.reservation.id}</p>
             <p>イベント: {res.event.name}</p>
-            <p>
-              ステージ: {getDate(new Date(res.stage.start_time))}{" "}
-              {getHour(new Date(res.stage.start_time))}
-            </p>
+            <p>ステージ: {toJST(new Date(res.stage.start_time), "dateTime")}</p>
             <p>チケット: {res.ticketType.type_name}</p>
-            <p>予約日: {getDate(new Date(res.reservation.created_at))}</p>
+            <p>
+              予約日: {toJST(new Date(res.reservation.created_at), "dateTime")}
+            </p>
             <p>支払い状況: {res.reservation.is_paid ? "支払い済" : "未払い"}</p>
           </li>
         ))}
