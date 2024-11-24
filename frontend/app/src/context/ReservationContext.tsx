@@ -4,11 +4,17 @@ import {
   fetchUserReservations,
   fetchReservations,
 } from "../services/api/reservation";
-import { fetchEvent } from "../services/api/event";
-import { fetchStage } from "../services/api/stage";
-import { fetchSeatGroup } from "../services/api/seatGroup";
-import { fetchTicketType } from "../services/api/ticketType";
-import { fetchUser } from "../services/api/user";
+import { fetchEvent, fetchEvents } from "../services/api/event";
+import { fetchStage, fetchEventStages } from "../services/api/stage";
+import {
+  fetchSeatGroup,
+  fetchStageSeatGroups,
+} from "../services/api/seatGroup";
+import {
+  fetchTicketType,
+  fetchSeatGroupTicketTypes,
+} from "../services/api/ticketType";
+import { fetchUser, fetchUsers } from "../services/api/user";
 import {
   ReservationResponse,
   TicketTypeResponse,
@@ -87,6 +93,41 @@ export const ReservationProvider = ({
       const reservations: ReservationResponse[] = user.is_admin
         ? await fetchReservations()
         : await fetchUserReservations(user.id);
+
+      const users = await fetchUsers();
+      users.forEach((user) => cache.users.set(user.id, user));
+
+      // 2. イベントを一括取得
+      const events = await fetchEvents();
+      events.forEach((event) => cache.events.set(event.id, event));
+
+      // 3. イベントごとのステージを取得
+      const stagePromises = Array.from(cache.events.values()).map((event) =>
+        fetchEventStages(event.id)
+      );
+      const stagesArray = await Promise.all(stagePromises);
+      const stages = stagesArray.flat();
+      stages.forEach((stage) => cache.stages.set(stage.id, stage));
+
+      // 4. ステージごとのシートグループを取得
+      const seatGroupPromises = Array.from(cache.stages.values()).map((stage) =>
+        fetchStageSeatGroups(stage.id)
+      );
+      const seatGroupsArray = await Promise.all(seatGroupPromises);
+      const seatGroups = seatGroupsArray.flat();
+      seatGroups.forEach((seatGroup) =>
+        cache.seatGroups.set(seatGroup.id, seatGroup)
+      );
+
+      // 5. シートグループごとのチケットタイプを取得
+      const ticketTypePromises = Array.from(cache.seatGroups.values()).map(
+        (seatGroup) => fetchSeatGroupTicketTypes(seatGroup.id)
+      );
+      const ticketTypesArray = await Promise.all(ticketTypePromises);
+      const ticketTypes = ticketTypesArray.flat();
+      ticketTypes.forEach((ticketType) =>
+        cache.ticketTypes.set(ticketType.id, ticketType)
+      );
 
       const reservationDetails = [];
       for (const reservation of reservations) {

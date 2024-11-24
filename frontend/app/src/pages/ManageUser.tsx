@@ -4,8 +4,26 @@ import { fetchEventStages } from "../services/api/stage";
 import { EventResponse, StageResponse } from "../services/interfaces";
 import { fetchUsers } from "../services/api/user";
 import { UserResponse } from "../services/interfaces";
+import {
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Container,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Box,
+  Divider,
+  Drawer,
+  Button,
+  Pagination,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ManageUserReservations from "../components/ManageUserReservations";
 import { useReservationContext } from "../context/ReservationContext";
+import { toJST } from "../services/utils";
 import "../assets/styles/ManageUser.scss";
 
 const ManageUser = () => {
@@ -20,6 +38,9 @@ const ManageUser = () => {
   );
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [stages, setStages] = useState<StageResponse[]>([]);
+  const [openSearch, setOpenSearch] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageLimit = 7;
   const { reservations } = useReservationContext();
 
   useEffect(() => {
@@ -91,94 +112,119 @@ const ManageUser = () => {
       });
     }
     setFilteredUsers(filtered);
+    setPage(1); // フィルタリング条件が変わったらページをリセット
   }, [searchTerm, selectedEvent, selectedStage, users]);
 
-  return (
-    <div className="manage-user">
-      <h1>ユーザー管理</h1>
-
-      {/* 検索バー */}
-      <input
-        type="text"
-        placeholder="ユーザー名またはメールアドレスで検索"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="search-bar"
-      />
-
-      {/* イベントフィルタリングドロップダウン */}
-      <select
-        value={selectedEvent ? selectedEvent.id : ""}
-        onChange={(e) => {
-          const eventId = e.target.value;
-          if (eventId) {
-            const event = events.find(
-              (event) => event.id === parseInt(eventId)
-            );
-            setSelectedEvent(event || null);
-          } else {
-            setSelectedEvent(null);
-          }
-        }}
-      >
-        <option value="">すべてのイベント</option>
-        {events.map((event) => (
-          <option key={event.id} value={event.id}>
-            {event.name}
-          </option>
-        ))}
-      </select>
-
-      {/* ステージフィルタリングドロップダウン */}
-      <select
-        value={selectedStage ? selectedStage.id : ""}
-        onChange={(e) => {
-          const stageId = e.target.value;
-          if (stageId) {
-            const stage = stages.find(
-              (stage) => stage.id === parseInt(stageId)
-            );
-            setSelectedStage(stage || null);
-          } else {
-            setSelectedStage(null);
-          }
-        }}
-      >
-        <option value="">すべてのステージ</option>
-        {stages.map((stage) => (
-          <option key={stage.id} value={stage.id}>
-            {stage.start_time}
-          </option>
-        ))}
-      </select>
-
-      {/* ユーザーリスト */}
-      <ul className="user-list">
-        {filteredUsers.map((user) => (
-          <UserItem key={user.id} user={user} />
-        ))}
-      </ul>
-    </div>
+  const paginatedUsers = filteredUsers.slice(
+    (page - 1) * pageLimit,
+    page * pageLimit
   );
-};
 
-const UserItem = ({ user }: { user: UserResponse }) => {
-  const [showReservations, setShowReservations] = useState(false);
-
-  const handleToggleReservations = () => {
-    setShowReservations(!showReservations);
+  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
   };
 
   return (
-    <li className="user-item">
-      <div className="user-info">
-        <p>{user.nickname ? user.nickname : user.email}</p>
-        <button onClick={handleToggleReservations}>
-          {showReservations ? "予約を閉じる" : "予約を表示"}
-        </button>
-      </div>
-      {showReservations && <ManageUserReservations userId={user.id} />}
-    </li>
+    <Container fixed>
+      {/* 検索バー */}
+      <Button
+        onClick={() => setOpenSearch(!openSearch)}
+        variant="contained"
+        sx={{ mb: 2 }}
+      >
+        ユーザー名またはメールアドレスで検索
+      </Button>
+      {openSearch && (
+        <Drawer
+          variant="temporary"
+          anchor="top"
+          open={openSearch}
+          onClose={() => setOpenSearch(false)}
+        >
+          <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+            <TextField
+              label="ユーザー名またはメールアドレスで検索"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              fullWidth
+            />
+          </Box>
+        </Drawer>
+      )}
+
+      {/* イベントフィルタリングドロップダウン */}
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <InputLabel>イベント</InputLabel>
+        <Select
+          value={selectedEvent ? selectedEvent.id : ""}
+          onChange={(e) => {
+            const eventId = e.target.value;
+            if (eventId) {
+              const event = events.find((event) => event.id === eventId);
+              setSelectedEvent(event || null);
+            } else {
+              setSelectedEvent(null);
+            }
+          }}
+        >
+          <MenuItem value="">すべてのイベント</MenuItem>
+          {events.map((event) => (
+            <MenuItem key={event.id} value={event.id}>
+              {event.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* ステージフィルタリングドロップダウン */}
+
+      <FormControl fullWidth>
+        <InputLabel>ステージ</InputLabel>
+        <Select
+          value={selectedStage ? selectedStage.id : ""}
+          onChange={(e) => {
+            const stageId = e.target.value;
+            if (stageId) {
+              const stage = stages.find((stage) => stage.id === stageId);
+              setSelectedStage(stage || null);
+            } else {
+              setSelectedStage(null);
+            }
+          }}
+        >
+          <MenuItem value="">すべてのステージ</MenuItem>
+          {stages.map((stage) => (
+            <MenuItem key={stage.id} value={stage.id}>
+              {toJST(stage.start_time, "dateTime")}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* ユーザーリスト */}
+      <Divider />
+      <Box sx={{ mt: 2 }}>
+        {paginatedUsers.length === 0 && (
+          <div>ユーザーが見つかりませんでした</div>
+        )}
+        {paginatedUsers.map((user) => (
+          <Accordion key={user.id}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              {user.nickname ? user.nickname : user.email}
+            </AccordionSummary>
+            <AccordionDetails>
+              <ManageUserReservations userId={user.id} />
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </Box>
+      <Pagination
+        count={Math.ceil(filteredUsers.length / pageLimit)}
+        page={page}
+        onChange={handlePageChange}
+        sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+      />
+    </Container>
   );
 };
 
