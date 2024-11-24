@@ -2,15 +2,15 @@
 import { useState, useEffect } from "react";
 import { EventResponse, StageResponse } from "../services/interfaces";
 import { fetchEventStages } from "../services/api/stage";
-import ManageStage from "./ManageStage";
+import ManageListStage from "./ManageListStage";
 
-interface ManageEventProps {
+interface ManageListEventProps {
   event: EventResponse;
   isOpen: boolean;
   toggle: () => void;
 }
 
-const ManageEvent = ({ event, isOpen, toggle }: ManageEventProps) => {
+const ManageListEvent = ({ event, isOpen, toggle }: ManageListEventProps) => {
   const [stages, setStages] = useState<StageResponse[]>([]);
   const [openStageIds, setOpenStageIds] = useState<number[]>([]);
 
@@ -49,7 +49,7 @@ const ManageEvent = ({ event, isOpen, toggle }: ManageEventProps) => {
         </div>
         <div className={`stages ${isOpen ? "open" : ""}`}>
           {stages.map((stage) => (
-            <ManageStage
+            <ManageListStage
               key={stage.id}
               stage={stage}
               isOpen={openStageIds.includes(stage.id)}
@@ -62,4 +62,4 @@ const ManageEvent = ({ event, isOpen, toggle }: ManageEventProps) => {
   );
 };
 
-export default ManageEvent;
+export default ManageListEvent;

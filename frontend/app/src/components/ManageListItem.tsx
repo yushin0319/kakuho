@@ -6,11 +6,11 @@ import ReservationDelete from "./ReservationDelete";
 import PaidStatusController from "./PaidStatusController";
 import "../assets/styles/ManageItem.scss";
 
-interface ManageItemProps {
+interface ManageListItemProps {
   data: ReservationDetail;
 }
 
-const ManageItem = ({ data }: ManageItemProps) => {
+const ManageListItem = ({ data }: ManageListItemProps) => {
   const [isChanging, setIsChanging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
@@ -76,4 +76,4 @@ const ManageItem = ({ data }: ManageItemProps) => {
   );
 };
 
-export default ManageItem;
+export default ManageListItem;

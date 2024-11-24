@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { fetchEvents } from "../services/api/event";
 import { EventResponse } from "../services/interfaces";
-import ManageEvent from "../components/ManageEvent";
+import ManageListEvent from "../components/ManageListEvent";
 import "../assets/styles/ManageList.scss";
 
 const ManageList = () => {
@@ -33,7 +33,7 @@ const ManageList = () => {
   return (
     <div>
       {events.map((event) => (
-        <ManageEvent
+        <ManageListEvent
           key={event.id}
           event={event}
           isOpen={openEventIds.includes(event.id)}

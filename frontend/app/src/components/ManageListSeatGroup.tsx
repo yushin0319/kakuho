@@ -2,20 +2,20 @@
 import { useState, useEffect } from "react";
 import { SeatGroupResponse } from "../services/interfaces";
 import { fetchSeatGroupTicketTypes } from "../services/api/ticketType";
-import ManageItem from "./ManageItem";
+import ManageListItem from "./ManageListItem";
 import { useReservationContext } from "../context/ReservationContext";
 
-interface ManageSeatGroupProps {
+interface ManageListSeatGroupProps {
   seatGroup: SeatGroupResponse;
   isOpen: boolean;
   toggle: () => void;
 }
 
-const ManageSeatGroup = ({
+const ManageListSeatGroup = ({
   seatGroup,
   isOpen,
   toggle,
-}: ManageSeatGroupProps) => {
+}: ManageListSeatGroupProps) => {
   const [seatGroupName, setSeatGroupName] = useState<string>("");
   const [numOfReservations, setNumOfReservations] = useState<[number, number]>([
     0, 0,
@@ -89,7 +89,7 @@ const ManageSeatGroup = ({
                 Number(a.reservation.is_paid) - Number(b.reservation.is_paid)
             ) // is_paidでソート
             .map((data) => (
-              <ManageItem data={data} key={data.reservation.id} />
+              <ManageListItem data={data} key={data.reservation.id} />
             ))}
         </div>
       </div>
@@ -97,4 +97,4 @@ const ManageSeatGroup = ({
   );
 };
 
-export default ManageSeatGroup;
+export default ManageListSeatGroup;

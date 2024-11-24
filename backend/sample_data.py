@@ -13,55 +13,74 @@ def initialize_sample_data(db: Session):
     hashed_password_user = pwd_context.hash("userpassword")
     hashed_password_admin = pwd_context.hash("adminpassword")
 
+    names = [
+        "田中浩",
+        "斎藤優子",
+        "山田太郎",
+        "鈴木恵子",
+        "吉田太郎",
+        "佐藤健",
+        "高橋和美",
+        "伊藤真一",
+        "渡辺沙織",
+        "中村花子",
+        "藤田剛",
+        "小林美紀",
+        "加藤光",
+        "村上俊介",
+        "長谷川由美",
+        "柴田陽子",
+        "石田真理",
+        "原田悟",
+        "松田春香",
+        "林翔太",
+        "かなこ",
+        "CoolGuy太夫",
+        "じゅんこ",
+        "John",
+        "Sally",
+        "青い鳥",
+        "ピンクの花",
+        "空見者",
+        "たける",
+        "りんりん",
+        "ドリーマー",
+        "なつこ",
+        "桜子",
+        "まい",
+        "かおり",
+        "なかのしまありさ",
+        "はると",
+        "さとし",
+        "けんた",
+        "山猫",
+        "ひかり",
+        "ひろし",
+        "りっしんべん",
+        "大将",
+        "刀",
+        "着物",
+        "静香",
+        "",
+        "",
+        "",
+    ]
+
+    # メールのプレフィックス部分（ユニークにする）
+    email_prefixes = [f"user{i:02d}" for i in range(50)]
+
+    # ドメインリスト
+    domains = ["example.com", "test.com", "mail.com"]
+
+    # ユーザー生成
     users = [
         User(
-            email="hiroshitanaka@example.com",
-            nickname="田中浩",
+            email=f"{email_prefixes[i]}@{random.choice(domains)}",
+            nickname=names[i],
             password_hash=hashed_password_user,
             is_admin=False,
-        ),
-        User(
-            email="yukosaito@example.com",
-            nickname="斎藤優子",
-            password_hash=hashed_password_user,
-            is_admin=False,
-        ),
-        User(
-            email="taroyamada@example.com",
-            nickname="山田太郎",
-            password_hash=hashed_password_user,
-            is_admin=False,
-        ),
-        User(
-            email="keikosuzuki@example.com",
-            nickname="鈴木恵子",
-            password_hash=hashed_password_user,
-            is_admin=False,
-        ),
-        User(
-            email="yoshida50@example.com",
-            nickname="吉田太郎",
-            password_hash=hashed_password_user,
-            is_admin=False,
-        ),
-        User(
-            email="kanako17@example.com",
-            nickname="かなこ",
-            password_hash=hashed_password_user,
-            is_admin=False,
-        ),
-        User(
-            email="coolguy@example.com",
-            nickname="CoolGuy太夫",
-            password_hash=hashed_password_user,
-            is_admin=False,
-        ),
-        User(
-            email="anonymous@example.com",
-            nickname="",
-            password_hash=hashed_password_user,
-            is_admin=False,
-        ),
+        )
+        for i in range(50)
     ]
 
     admin = User(

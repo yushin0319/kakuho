@@ -2,18 +2,18 @@
 import { useState, useEffect } from "react";
 import { StageResponse, SeatGroupResponse } from "../services/interfaces";
 import { fetchStageSeatGroups } from "../services/api/seatGroup";
-import ManageSeatGroup from "./ManageSeatGroup";
+import ManageListSeatGroup from "./ManageListSeatGroup";
 import ScannerModal from "./ScannerModal";
 import { toJST } from "../services/utils";
 import { useReservationContext } from "../context/ReservationContext";
 
-interface ManageStageProps {
+interface ManageListStageProps {
   stage: StageResponse;
   isOpen: boolean;
   toggle: () => void;
 }
 
-const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
+const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
   const [seatGroups, setSeatGroups] = useState<SeatGroupResponse[]>([]);
   const [openSeatGroupIds, setOpenSeatGroupIds] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,7 +76,7 @@ const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
 
         <div className={`seat-groups ${isOpen ? "open" : ""}`}>
           {seatGroups.map((group) => (
-            <ManageSeatGroup
+            <ManageListSeatGroup
               key={group.id}
               seatGroup={group}
               isOpen={openSeatGroupIds.includes(group.id)}
@@ -89,4 +89,4 @@ const ManageStage = ({ stage, isOpen, toggle }: ManageStageProps) => {
   );
 };
 
-export default ManageStage;
+export default ManageListStage;
