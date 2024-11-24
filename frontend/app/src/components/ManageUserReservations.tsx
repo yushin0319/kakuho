@@ -12,7 +12,6 @@ import {
   TableRow,
 } from "@mui/material";
 import { toJST } from "../services/utils";
-import "../assets/styles/ManageUserReservations.scss";
 
 type ManageUserReservationsProps = {
   userId: number;

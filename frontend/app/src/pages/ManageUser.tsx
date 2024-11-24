@@ -24,7 +24,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ManageUserReservations from "../components/ManageUserReservations";
 import { useReservationContext } from "../context/ReservationContext";
 import { toJST } from "../services/utils";
-import "../assets/styles/ManageUser.scss";
 
 const ManageUser = () => {
   const [users, setUsers] = useState<UserResponse[]>([]);
@@ -179,8 +178,12 @@ const ManageUser = () => {
       {/* ステージフィルタリングドロップダウン */}
 
       <FormControl fullWidth>
-        <InputLabel>ステージ</InputLabel>
+        <InputLabel sx={{ opacity: selectedEvent ? 1 : 0.3 }}>
+          ステージ
+        </InputLabel>
         <Select
+          disabled={!selectedEvent}
+          sx={{ opacity: selectedEvent ? 1 : 0.3 }}
           value={selectedStage ? selectedStage.id : ""}
           onChange={(e) => {
             const stageId = e.target.value;
