@@ -1,6 +1,6 @@
 // app/src/components/CreateEvent.tsx
 import { useState, useEffect } from "react";
-import { Button, Card, TextField } from "@mui/material";
+import { Button, Card, TextField, Box, Typography } from "@mui/material";
 import { TicketTypeCreate, SeatGroupCreate } from "../services/interfaces";
 import EditStage from "./EditStage";
 import EditSeatGroup from "./EditSeatGroup";
@@ -88,6 +88,19 @@ const CreateEvent = () => {
     );
   }, [completedTimes, seatGroups, startDate, endDate, title, description]);
 
+  // startDate, endDateの変更時にcompletedTimesのうち、範囲外のデータを削除
+  useEffect(() => {
+    if (startDate && endDate) {
+      const newCompletedTimes: Record<string, Date[]> = {};
+      Object.entries(completedTimes).forEach(([date, times]) => {
+        if (new Date(date) >= startDate && new Date(date) <= endDate) {
+          newCompletedTimes[date] = times;
+        }
+      });
+      setCompletedTimes(newCompletedTimes);
+    }
+  }, [startDate, endDate]);
+
   // 決定ボタンの処理
   const handleComplete = (date: string, time: Date) => {
     const existingTimes = completedTimes[date] || [];
@@ -109,6 +122,7 @@ const CreateEvent = () => {
     });
   };
 
+  // シートグループの追加
   const handleAddSeatGroup = () => {
     const newId = Math.max(...seatGroups.map((sg) => sg.id)) + 1;
     setSeatGroups((prev) => [
@@ -121,35 +135,42 @@ const CreateEvent = () => {
     ]);
   };
 
+  // シートグループの更新
   const handleUpdateSeatGroup = (id: number, updatedGroup: seatProps) => {
     setSeatGroups((prev) =>
       prev.map((group) => (group.id === id ? updatedGroup : group))
     );
   };
 
+  // シートグループの削除
   const handleDeleteSeatGroup = (id: number) => {
     const newSeatGroups = seatGroups.filter((group) => group.id !== id);
     setSeatGroups(newSeatGroups);
   };
 
+  // デバッグ用
   const info = () => {
     console.log(completedTimes);
     console.log(seatGroups);
   };
 
+  // ConfirmEventの開閉
   const handleClose = () => {
     setOpen(false);
   };
 
+  // リセット
   const handleReset = () => {
     localStorage.removeItem("createEventData");
     window.location.reload();
   };
 
   return (
-    <div>
-      <h2>基本情報</h2>
-      <Card sx={{ margin: "16px", padding: "16px" }}>
+    <Box>
+      <Typography variant="h5" margin={2}>
+        基本情報入力
+      </Typography>
+      <Card sx={{ p: 4 }}>
         <TextField
           label="イベント名"
           value={title}
@@ -168,7 +189,9 @@ const CreateEvent = () => {
           margin="normal"
         />
       </Card>
-      <h2>ステージ時間登録</h2>
+      <Typography variant="h5" margin={2}>
+        ステージ時間選択
+      </Typography>
       <EditStage
         startDate={startDate}
         endDate={endDate}
@@ -178,7 +201,9 @@ const CreateEvent = () => {
         handleComplete={handleComplete}
         handleDelete={handleDelete}
       />
-      <h2>チケット情報登録</h2>
+      <Typography variant="h5" margin={2}>
+        チケット情報入力
+      </Typography>
       {seatGroups.map((sg) => (
         <EditSeatGroup
           key={sg.id}
@@ -201,7 +226,7 @@ const CreateEvent = () => {
         onClose={handleClose}
         onConfirm={handleReset}
       />
-    </div>
+    </Box>
   );
 };
 

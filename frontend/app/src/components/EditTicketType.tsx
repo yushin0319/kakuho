@@ -44,29 +44,33 @@ const EditTicketType = ({
   };
 
   return (
-    <Grid container spacing={2} alignItems={"center"}>
-      <Grid size={5}>
-        <TextField
-          label="チケット種別"
-          value={ticket.type_name}
-          name="type_name"
-          onChange={handleChangeName}
-          size="small"
-        />
+    <Grid container spacing={2} alignItems="center">
+      <Grid container size={{ xs: 10, md: 11 }} spacing={1}>
+        <Grid size={6}>
+          <TextField
+            label="チケット種別"
+            value={ticket.type_name}
+            name="type_name"
+            onChange={handleChangeName}
+            size="small"
+            fullWidth
+          />
+        </Grid>
+        <Grid size={6}>
+          <TextField
+            label="価格"
+            value={inputValue}
+            name="price"
+            onChange={(e) => setInputValue(e.target.value)}
+            onBlur={checkPrice}
+            size="small"
+            error={Boolean(error)}
+            helperText={error}
+            fullWidth
+          />
+        </Grid>
       </Grid>
-      <Grid size={5}>
-        <TextField
-          label="価格"
-          value={inputValue}
-          name="price"
-          onChange={(e) => setInputValue(e.target.value)}
-          onBlur={checkPrice}
-          size="small"
-          error={Boolean(error)}
-          helperText={error}
-        />
-      </Grid>
-      <Grid size={2}>
+      <Grid size={{ xs: 2, md: 1 }}>
         <IconButton aria-label="delete" onClick={onDelete}>
           <DeleteForeverIcon />
         </IconButton>

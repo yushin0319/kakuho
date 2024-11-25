@@ -1,12 +1,12 @@
 // app/src/pages/ManageEvent.tsx
 import CreateEvent from "../components/CreateEvent";
+import { Container } from "@mui/material";
 
 const ManageEvent = () => {
   return (
-    <div>
-      <h1>イベント管理</h1>
+    <Container fixed>
       <CreateEvent />
-    </div>
+    </Container>
   );
 };
 

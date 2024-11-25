@@ -60,122 +60,125 @@ const EditStage = ({
   };
 
   return (
-    <Card sx={{ padding: "16px", margin: "16px" }}>
-      <form>
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ja}>
-          <Grid container spacing={2}>
-            <Grid size={6}>
-              <DatePicker
-                label="開始日"
-                value={startDate}
-                onChange={(newValue) => setStartDate(newValue)}
-                slotProps={{
-                  textField: {
-                    variant: "outlined",
-                    margin: "normal",
-                  },
-                  calendarHeader: { format: "yyyy年MM月" },
-                }}
-                minDate={new Date()}
-                maxDate={addTime(new Date(), { years: 1 })}
-              />
-            </Grid>
-            <Grid size={6}>
-              <DatePicker
-                label="終了日"
-                value={endDate}
-                onChange={(newValue) => setEndDate(newValue)}
-                slotProps={{
-                  textField: {
-                    variant: "outlined",
-                    margin: "normal",
-                    disabled: !startDate,
-                    sx: {
-                      opacity: startDate ? 1 : 0.5,
-                    },
-                  },
-                  calendarHeader: { format: "yyyy年MM月" },
-                }}
-                minDate={startDate || new Date()}
-                maxDate={
-                  startDate ? addTime(startDate, { months: 2 }) : new Date()
-                }
-              />
-            </Grid>
+    <Card sx={{ p: 2 }}>
+      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ja}>
+        <Grid container spacing={2}>
+          <Grid size={6}>
+            <DatePicker
+              label="開始日"
+              value={startDate}
+              onChange={(newValue) => setStartDate(newValue)}
+              slotProps={{
+                textField: {
+                  variant: "outlined",
+                  margin: "normal",
+                },
+                calendarHeader: { format: "yyyy年MM月" },
+              }}
+              minDate={new Date()}
+              maxDate={addTime(new Date(), { years: 1 })}
+            />
           </Grid>
+          <Grid size={6}>
+            <DatePicker
+              label="終了日"
+              value={endDate}
+              onChange={(newValue) => setEndDate(newValue)}
+              slotProps={{
+                textField: {
+                  variant: "outlined",
+                  margin: "normal",
+                  disabled: !startDate,
+                  sx: {
+                    opacity: startDate ? 1 : 0.5,
+                  },
+                },
+                calendarHeader: { format: "yyyy年MM月" },
+              }}
+              minDate={startDate || new Date()}
+              maxDate={
+                startDate ? addTime(startDate, { months: 2 }) : new Date()
+              }
+            />
+          </Grid>
+        </Grid>
 
-          {dateList.map((date) => {
-            const formattedDate = toJST(date, "fullDate");
+        {dateList.map((date) => {
+          const formattedDate = toJST(date, "fullDate");
 
-            return (
-              <div key={formattedDate}>
-                <Divider sx={{ margin: "15px" }} />
-                <Grid container spacing={2} alignItems="center">
-                  <Grid size={6}>
-                    <Typography variant="body1" color="textSecondary">
-                      {formattedDate}
-                    </Typography>
-                  </Grid>
-                  <Grid size={6} container spacing={2} alignItems="center">
-                    <Grid size={12} container>
-                      {completedTimes[formattedDate]?.map((time) => (
-                        <Grid
-                          size="auto"
-                          container
-                          alignItems="center"
-                          spacing={2}
-                          key={time.toString()}
-                        >
-                          <Chip
-                            label={toJST(time, "time")}
-                            variant="outlined"
-                            color="primary"
-                            onDelete={() => handleDelete(formattedDate, time)}
-                          />
-                        </Grid>
-                      ))}
-                    </Grid>
-                    <Grid size={8}>
-                      <TimePicker
-                        label="ステージ追加"
-                        value={selectTimes[formattedDate] || null}
-                        onChange={(newValue) =>
-                          handleStageTimeChange(formattedDate, newValue)
-                        }
-                        slotProps={{
-                          textField: {
-                            variant: "standard",
-                            sx: { opacity: 0.5 },
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid size="auto">
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={!selectTimes[formattedDate]}
-                        onClick={() => {
-                          handleComplete(
-                            formattedDate,
-                            selectTimes[formattedDate] as Date
-                          );
-                          setSelectTimes((prev) => ({
-                            ...prev,
-                            [formattedDate]: null,
-                          }));
-                        }}
+          return (
+            <div key={formattedDate}>
+              <Divider sx={{ m: 2 }} />
+              <Grid container spacing={2} alignItems="center">
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="body1" color="textSecondary">
+                    {formattedDate}
+                  </Typography>
+                </Grid>
+                <Grid
+                  size={{ xs: 12, md: 6 }}
+                  container
+                  spacing={2}
+                  alignItems="center"
+                >
+                  <Grid size={12} container>
+                    {completedTimes[formattedDate]?.map((time) => (
+                      <Grid
+                        size="auto"
+                        container
+                        alignItems="center"
+                        spacing={2}
+                        key={time.toString()}
                       >
-                        追加
-                      </Button>
-                    </Grid>
+                        <Chip
+                          label={toJST(time, "time")}
+                          variant="outlined"
+                          color="primary"
+                          onDelete={() => handleDelete(formattedDate, time)}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 8 }}>
+                    <TimePicker
+                      label="開始時間を選択して下さい"
+                      value={selectTimes[formattedDate] || null}
+                      onChange={(newValue) =>
+                        handleStageTimeChange(formattedDate, newValue)
+                      }
+                      slotProps={{
+                        textField: {
+                          variant: "standard",
+                          sx: { opacity: 0.5 },
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={!selectTimes[formattedDate]}
+                      onClick={() => {
+                        handleComplete(
+                          formattedDate,
+                          selectTimes[formattedDate] as Date
+                        );
+                        setSelectTimes((prev) => ({
+                          ...prev,
+                          [formattedDate]: null,
+                        }));
+                      }}
+                    >
+                      追加
+                    </Button>
                   </Grid>
                 </Grid>
-              </div>
-            );
-          })}
-        </LocalizationProvider>
-      </form>
+              </Grid>
+            </div>
+          );
+        })}
+      </LocalizationProvider>
     </Card>
   );
 };

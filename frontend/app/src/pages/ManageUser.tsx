@@ -1,3 +1,4 @@
+// app/src/pages/ManageUser.tsx
 import { useState, useEffect } from "react";
 import { fetchEvents } from "../services/api/event";
 import { fetchEventStages } from "../services/api/stage";
@@ -19,6 +20,7 @@ import {
   Drawer,
   Button,
   Pagination,
+  Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ManageUserReservations from "../components/ManageUserReservations";
@@ -42,6 +44,7 @@ const ManageUser = () => {
   const pageLimit = 7;
   const { reservations } = useReservationContext();
 
+  // ユーザー情報とイベント情報を取得
   useEffect(() => {
     const fetchUsersData = async () => {
       try {
@@ -64,6 +67,7 @@ const ManageUser = () => {
     fetchEventsData();
   }, []);
 
+  // イベントが選択されたら、そのイベントのステージを取得
   useEffect(() => {
     if (!selectedEvent) {
       setStages([]); // イベントが未選択になった場合、ステージをクリア
@@ -82,6 +86,7 @@ const ManageUser = () => {
     fetchStagesData();
   }, [selectedEvent]);
 
+  // ユーザーの絞り込み
   useEffect(() => {
     let filtered = users.filter(
       (user) =>
@@ -114,43 +119,19 @@ const ManageUser = () => {
     setPage(1); // フィルタリング条件が変わったらページをリセット
   }, [searchTerm, selectedEvent, selectedStage, users]);
 
+  // ページネーション
   const paginatedUsers = filteredUsers.slice(
     (page - 1) * pageLimit,
     page * pageLimit
   );
 
+  // ページ変更時の処理
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
 
   return (
     <Container fixed>
-      {/* 検索バー */}
-      <Button
-        onClick={() => setOpenSearch(!openSearch)}
-        variant="contained"
-        sx={{ mb: 2 }}
-      >
-        ユーザー名またはメールアドレスで検索
-      </Button>
-      {openSearch && (
-        <Drawer
-          variant="temporary"
-          anchor="top"
-          open={openSearch}
-          onClose={() => setOpenSearch(false)}
-        >
-          <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-            <TextField
-              label="ユーザー名またはメールアドレスで検索"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              fullWidth
-            />
-          </Box>
-        </Drawer>
-      )}
-
       {/* イベントフィルタリングドロップダウン */}
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>イベント</InputLabel>
@@ -176,7 +157,6 @@ const ManageUser = () => {
       </FormControl>
 
       {/* ステージフィルタリングドロップダウン */}
-
       <FormControl fullWidth>
         <InputLabel sx={{ opacity: selectedEvent ? 1 : 0.3 }}>
           ステージ
@@ -213,7 +193,12 @@ const ManageUser = () => {
         {paginatedUsers.map((user) => (
           <Accordion key={user.id}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              {user.nickname ? user.nickname : user.email}
+              <Typography>
+                {user.nickname ? user.nickname : user.email}
+              </Typography>
+              <Typography sx={{ ml: 2, color: "gray" }}>
+                {user.email}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <ManageUserReservations userId={user.id} />
@@ -227,6 +212,31 @@ const ManageUser = () => {
         onChange={handlePageChange}
         sx={{ mt: 2, display: "flex", justifyContent: "center" }}
       />
+      {/* 検索バー */}
+      <Button
+        onClick={() => setOpenSearch(!openSearch)}
+        variant="outlined"
+        sx={{ margin: 4 }}
+      >
+        ユーザー名またはメールアドレスで検索
+      </Button>
+      {openSearch && (
+        <Drawer
+          variant="temporary"
+          anchor="bottom"
+          open={openSearch}
+          onClose={() => setOpenSearch(false)}
+        >
+          <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+            <TextField
+              label="ユーザー名またはメールアドレスで検索"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              fullWidth
+            />
+          </Box>
+        </Drawer>
+      )}
     </Container>
   );
 };

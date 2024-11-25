@@ -106,6 +106,7 @@ const ConfirmEvent = ({
     check();
   }, [title, description, completedTimes, seatGroups]);
 
+  // 確定ボタンの処理
   const handleConfirm = async () => {
     if (isCreating) return;
     setIsCreating(true);
@@ -216,27 +217,29 @@ const ConfirmEvent = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Object.entries(completedTimes).map(([date, times]) => {
-                  if (times.length === 0) return null; // 空のtimesをスキップ
-                  return (
-                    <TableRow key={date}>
-                      <TableCell>{date}</TableCell>
-                      <TableCell>
-                        {times.map((time) => (
-                          <Typography
-                            key={toJST(time, "time")}
-                            component="span"
-                          >
-                            <Chip
-                              label={toJST(time, "time")}
-                              sx={{ margin: 0.5 }}
-                            />
-                          </Typography>
-                        ))}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {Object.entries(completedTimes)
+                  .sort(([a], [b]) => (a < b ? -1 : 1))
+                  .map(([date, times]) => {
+                    if (times.length === 0) return null; // 空のtimesをスキップ
+                    return (
+                      <TableRow key={date}>
+                        <TableCell>{date}</TableCell>
+                        <TableCell>
+                          {times.map((time) => (
+                            <Typography
+                              key={toJST(time, "time")}
+                              component="span"
+                            >
+                              <Chip
+                                label={toJST(time, "time")}
+                                sx={{ margin: 0.5 }}
+                              />
+                            </Typography>
+                          ))}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </Box>

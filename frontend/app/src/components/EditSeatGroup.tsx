@@ -6,6 +6,7 @@ import {
   Grid2 as Grid,
   Card,
   IconButton,
+  Typography,
 } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { seatProps } from "./CreateEvent";
@@ -28,6 +29,7 @@ const EditSeatGroup = ({
   );
   const [error, setError] = useState<string>("");
 
+  // 数値のバリデーション
   const validateNum = (value: string): string => {
     if (!/^\d+$/.test(value)) return "数値のみ入力してください";
     const parsedNum = parseInt(value, 10);
@@ -35,6 +37,7 @@ const EditSeatGroup = ({
     return "";
   };
 
+  // 座席数のバリデーション
   const checkNumOfSeats = () => {
     const replaced = inputValue
       .replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xfee0))
@@ -51,6 +54,7 @@ const EditSeatGroup = ({
     }
   };
 
+  // チケット種別の追加
   const handleAddTicketType = () => {
     const newTicketType: TicketTypeCreate = { type_name: "", price: 0 };
     const newSeatGroup = { ...seatGroup };
@@ -58,12 +62,14 @@ const EditSeatGroup = ({
     onUpdate(newSeatGroup);
   };
 
+  // チケット種別の更新
   const handleUpdateTicketType = (index: number, ticket: TicketTypeCreate) => {
     const newSeatGroup = { ...seatGroup };
     newSeatGroup.ticketTypes[index] = ticket;
     onUpdate(newSeatGroup);
   };
 
+  // チケット種別の削除
   const handleDeleteTicketType = (index: number) => {
     const newSeatGroup = { ...seatGroup };
     newSeatGroup.ticketTypes.splice(index, 1);
@@ -71,47 +77,44 @@ const EditSeatGroup = ({
   };
 
   return (
-    <Card sx={{ margin: "16px", padding: "16px" }}>
+    <Card sx={{ p: 4, mb: 2 }}>
       <Grid container spacing={2}>
-        <Grid container size={6} alignItems={"center"}>
-          <Grid>
-            <TextField
-              label="座席数"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onBlur={checkNumOfSeats}
-              error={Boolean(error)}
-              helperText={error}
-              fullWidth
-            />
-          </Grid>
-          <Grid>
-            <IconButton aria-label="delete" onClick={onDelete}>
-              <DeleteForeverIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
-        <Grid container size={6}>
+        <TextField
+          label="座席数"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={checkNumOfSeats}
+          error={Boolean(error)}
+          helperText={error}
+          fullWidth
+        />
+        <Grid container size={12} spacing={2}>
           {seatGroup.ticketTypes.map((ticket, index) => (
-            <div key={index}>
-              <EditTicketType
-                ticket={ticket}
-                onUpdate={(newTicket) =>
-                  handleUpdateTicketType(index, newTicket)
-                }
-                onDelete={() => handleDeleteTicketType(index)}
-              />
-            </div>
+            <Grid container size={12} key={index}>
+              <Card sx={{ p: 2, my: 1, width: "100%" }}>
+                <EditTicketType
+                  ticket={ticket}
+                  onUpdate={(newTicket) =>
+                    handleUpdateTicketType(index, newTicket)
+                  }
+                  onDelete={() => handleDeleteTicketType(index)}
+                />
+              </Card>
+            </Grid>
           ))}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddTicketType}
-            fullWidth
-          >
-            チケット追加
-          </Button>
         </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddTicketType}
+          fullWidth
+        >
+          チケット追加
+        </Button>
+        <IconButton aria-label="delete" onClick={onDelete}>
+          <DeleteForeverIcon />
+          <Typography>まとめて削除</Typography>
+        </IconButton>
       </Grid>
     </Card>
   );
