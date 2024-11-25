@@ -134,7 +134,7 @@ const ManageUser = () => {
     <Container fixed>
       {/* イベントフィルタリングドロップダウン */}
       <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>イベント</InputLabel>
+        <InputLabel htmlFor="event-select">イベント</InputLabel>
         <Select
           value={selectedEvent ? selectedEvent.id : ""}
           onChange={(e) => {
@@ -146,6 +146,7 @@ const ManageUser = () => {
               setSelectedEvent(null);
             }
           }}
+          inputProps={{ id: "event-select" }}
         >
           <MenuItem value="">すべてのイベント</MenuItem>
           {events.map((event) => (
@@ -158,7 +159,10 @@ const ManageUser = () => {
 
       {/* ステージフィルタリングドロップダウン */}
       <FormControl fullWidth>
-        <InputLabel sx={{ opacity: selectedEvent ? 1 : 0.3 }}>
+        <InputLabel
+          htmlFor="stage-select"
+          sx={{ opacity: selectedEvent ? 1 : 0.3 }}
+        >
           ステージ
         </InputLabel>
         <Select
@@ -174,6 +178,7 @@ const ManageUser = () => {
               setSelectedStage(null);
             }
           }}
+          inputProps={{ id: "stage-select" }}
         >
           <MenuItem value="">すべてのステージ</MenuItem>
           {stages.map((stage) => (
@@ -229,6 +234,7 @@ const ManageUser = () => {
         >
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
             <TextField
+              id="search"
               label="ユーザー名またはメールアドレスで検索"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

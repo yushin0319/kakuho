@@ -177,6 +177,7 @@ const CreateEvent = () => {
           onChange={(e) => setTitle(e.target.value)}
           variant="outlined"
           fullWidth
+          autoComplete="off"
           margin="normal"
         />
         <TextField
