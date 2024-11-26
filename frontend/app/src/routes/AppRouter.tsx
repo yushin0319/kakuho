@@ -8,6 +8,7 @@ import ReservationList from "../pages/ReservationList";
 import ManageList from "../pages/ManageList";
 import ManageUser from "../pages/ManageUser";
 import ManageEvent from "../pages/ManageEvent";
+import CreateEvent from "../components/CreateEvent";
 
 const AppRouter = () => {
   return (
@@ -58,6 +59,16 @@ const AppRouter = () => {
         element={
           <PrivateRoute>
             <ManageEvent />
+          </PrivateRoute>
+        }
+      />
+
+      {/* 「新規イベント作成」 */}
+      <Route
+        path="/manage-event/create"
+        element={
+          <PrivateRoute>
+            <CreateEvent />
           </PrivateRoute>
         }
       />
