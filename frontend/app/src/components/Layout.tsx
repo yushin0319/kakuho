@@ -2,6 +2,7 @@
 import { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "./Header";
+import { Container } from "@mui/material";
 import "../assets/styles/Layout.scss";
 
 interface LayoutProps {
@@ -24,7 +25,14 @@ const Layout = ({ children }: LayoutProps) => {
           {/* ログイン・新規登録ページ用のオレンジバー */}
         </div>
       )}
-      <main className="main-content">{children}</main>
+      <Container
+        fixed
+        sx={{
+          py: 4,
+        }}
+      >
+        {children}
+      </Container>
     </div>
   );
 };

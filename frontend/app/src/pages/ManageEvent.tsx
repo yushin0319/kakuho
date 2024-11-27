@@ -1,8 +1,6 @@
 // app/src/pages/ManageEvent.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchEvents } from "../services/api/event";
-import { EventResponse } from "../services/interfaces";
 import {
   Container,
   Button,
@@ -16,9 +14,12 @@ import {
   MenuItem,
   Card,
 } from "@mui/material";
+import EventInfoManager from "../components/EventInfoManager";
+import CapacityAdjuster from "../components/CapacityAdjuster";
+import { useEventData } from "../context/EventDataContext";
 
 const ManageEvent = () => {
-  const [events, setEvents] = useState<EventResponse[]>([]);
+  const { events } = useEventData();
   const [openMenu, setOpenMenu] = useState<{
     id: number | null;
     anchor: HTMLElement | null;
@@ -27,19 +28,6 @@ const ManageEvent = () => {
     null
   );
   const [activeAction, setActiveAction] = useState<string>("");
-
-  // イベント一覧を取得
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const eventsData = await fetchEvents();
-        setEvents(eventsData);
-      } catch (error) {
-        console.error("Failed to load events:", error);
-      }
-    };
-    loadEvents();
-  }, []);
 
   // メニューを開く
   const handleMenuClick = (
@@ -60,14 +48,18 @@ const ManageEvent = () => {
       setExpandedAccordion(null);
       setActiveAction("");
     } else {
-      setExpandedAccordion(id);
-      setActiveAction(action);
+      setExpandedAccordion(null);
+      setActiveAction("");
+      setTimeout(() => {
+        setExpandedAccordion(id);
+        setActiveAction(action);
+      }, 0);
     }
     handleMenuClose();
   };
 
   return (
-    <Container fixed>
+    <Container>
       {events.map((event) => (
         <Card sx={{ mb: 2 }} key={event.id}>
           <Accordion key={event.id} expanded={expandedAccordion === event.id}>
@@ -78,7 +70,7 @@ const ManageEvent = () => {
                 width="100%"
                 alignItems="center"
               >
-                <Typography variant="h6" sx={{ mb: 2 }}>
+                <Typography variant="h5" sx={{ my: 4 }}>
                   {event.name}
                 </Typography>
                 <ButtonGroup fullWidth>
@@ -94,7 +86,7 @@ const ManageEvent = () => {
                     color="primary"
                     onClick={() => handleExpand(event.id, "seat")}
                   >
-                    席数調整
+                    残席調整
                   </Button>
                   <Button
                     variant="outlined"
@@ -133,9 +125,9 @@ const ManageEvent = () => {
               {expandedAccordion === event.id && (
                 <Box width="100%">
                   {activeAction === "edit" ? (
-                    <Typography>情報変更</Typography>
+                    <EventInfoManager event={event} />
                   ) : activeAction === "seat" ? (
-                    <Typography>席数調整</Typography>
+                    <CapacityAdjuster event={event} />
                   ) : activeAction === "add-stage" ? (
                     <Typography>ステージ追加</Typography>
                   ) : activeAction === "delete-stage" ? (

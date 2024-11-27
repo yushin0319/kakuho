@@ -62,7 +62,7 @@ const CalendarView = ({ event, onBack }: CalendarViewProps) => {
         defaultDate={defaultDate}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: "600px", width: "500px" }}
+        style={{ height: "600px", width: "100%" }}
         culture="ja"
         formats={formats}
         components={{
