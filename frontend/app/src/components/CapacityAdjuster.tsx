@@ -13,6 +13,7 @@ import { EventResponse } from "../services/interfaces";
 import { updateSeatGroup } from "../services/api/seatGroup";
 import { useEventData } from "../context/EventDataContext";
 import { toJST } from "../services/utils";
+import { useSnack } from "../context/SnackContext";
 
 interface CapacityAdjusterProps {
   event: EventResponse;
@@ -22,14 +23,9 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
   const [newCapacities, setNewCapacities] = useState<Record<number, number>>(
     {}
   );
-  const {
-    stages,
-    seatGroups,
-    seatGroupNames,
-    loading,
-    error,
-    changeSeatGroup,
-  } = useEventData();
+  const { stages, seatGroups, seatGroupNames, error, changeSeatGroup } =
+    useEventData();
+  const { setSnack } = useSnack();
 
   // 席数の初期化
   useEffect(() => {
@@ -55,8 +51,10 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
             }).then(() => changeSeatGroup(sg.id))
           )
       );
+      setSnack({ message: "正常に保存されました", severity: "success" });
     } catch (e) {
       console.error(e);
+      setSnack({ message: "保存中にエラーが発生しました", severity: "error" });
     }
   };
 
@@ -126,13 +124,8 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
           </Box>
         ))}
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSave}
-        disabled={loading}
-      >
-        {loading ? "保存中..." : "保存"}
+      <Button variant="contained" color="primary" onClick={handleSave}>
+        保存
       </Button>
     </Box>
   );

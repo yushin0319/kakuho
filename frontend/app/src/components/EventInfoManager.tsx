@@ -3,6 +3,7 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { EventResponse } from "../services/interfaces";
 import { updateEvent } from "../services/api/event";
 import { useEventData } from "../context/EventDataContext";
+import { useSnack } from "../context/SnackContext";
 
 interface EventInfoManagerProps {
   event: EventResponse;
@@ -12,18 +13,22 @@ const EventInfoManager = ({ event }: EventInfoManagerProps) => {
   const [name, setName] = useState(event.name);
   const [description, setDescription] = useState(event.description || "");
   const { loading, error, changeEvent } = useEventData();
+  const { setSnack } = useSnack();
 
   const handleUpdate = async () => {
     try {
       await updateEvent(event.id, { name, description });
       changeEvent(event.id);
+      setSnack({ message: "正常に保存されました", severity: "success" });
     } catch (e) {
       console.error(e);
+      setSnack({ message: "保存中にエラーが発生しました", severity: "error" });
     }
   };
 
   return (
     <Box display="flex" flexDirection="column" gap={2}>
+      {error && <Typography color="error">{error}</Typography>}
       <TextField
         label="イベント名"
         value={name}
@@ -40,14 +45,8 @@ const EventInfoManager = ({ event }: EventInfoManagerProps) => {
         rows={4}
         disabled={loading}
       />
-      {error && <Typography color="error">{error}</Typography>}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleUpdate}
-        disabled={loading}
-      >
-        {loading ? "更新中..." : "更新"}
+      <Button variant="contained" color="primary" onClick={handleUpdate}>
+        保存
       </Button>
     </Box>
   );

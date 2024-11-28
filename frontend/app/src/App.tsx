@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { EventDataProvider } from "./context/EventDataContext";
 import { ReservationProvider } from "./context/ReservationContext";
 import { NewItemProvider } from "./context/NewItemContext";
+import { SnackProvider } from "./context/SnackContext";
 
 const App = () => {
   return (
@@ -17,9 +18,11 @@ const App = () => {
         <EventDataProvider>
           <ReservationProvider>
             <NewItemProvider>
-              <Layout>
-                <AppRouter />
-              </Layout>
+              <SnackProvider>
+                <Layout>
+                  <AppRouter />
+                </Layout>
+              </SnackProvider>
             </NewItemProvider>
           </ReservationProvider>
         </EventDataProvider>
