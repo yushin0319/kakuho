@@ -32,10 +32,9 @@ const EventList = ({ onSelectEvent }: EventListProps) => {
       stages.forEach((stage) => {
         if (stage.event_id === event.id) {
           const stageStartDate = toJSTDate(stage.start_time);
-          const stageEndDate = toJSTDate(stage.end_time);
 
           if (stageStartDate < start_date) start_date = stageStartDate;
-          if (stageEndDate > end_date) end_date = stageEndDate;
+          if (stageStartDate > end_date) end_date = stageStartDate;
         }
       });
 

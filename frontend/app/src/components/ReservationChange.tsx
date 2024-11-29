@@ -1,49 +1,40 @@
 // app/src/components/ReservationChange.tsx
 import { useEffect, useState } from "react";
-import Modal from "./Modal";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  MenuItem,
+  Grid2 as Grid,
+  Typography,
+  Alert,
+} from "@mui/material";
 import {
   createReservation,
   updateReservation,
   deleteReservation,
 } from "../services/api/reservation";
-import { fetchEventStages, fetchStage } from "../services/api/stage";
 import {
-  fetchStageSeatGroups,
-  fetchSeatGroup,
-  getCapacity,
-} from "../services/api/seatGroup";
-import {
-  fetchSeatGroupTicketTypes,
-  fetchTicketType,
-} from "../services/api/ticketType";
-
-import {
-  ReservationResponse,
-  EventResponse,
   StageResponse,
   SeatGroupResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
 import { toJST } from "../services/utils";
-import { useReservationContext } from "../context/ReservationContext";
+import { useEventData } from "../context/EventDataContext";
+import { ReservationDetail } from "../context/ReservationContext";
 import { useNewItemContext } from "../context/NewItemContext";
 import "../assets/styles/ReservationChange.scss";
 
 interface ReservationChangeProps {
-  reservation: ReservationResponse;
-  event: EventResponse;
-  stage: StageResponse;
-  seatGroup: SeatGroupResponse;
-  ticketType: TicketTypeResponse;
+  reservationDetail: ReservationDetail;
   onClose: () => void;
 }
 
 const ReservationChange = ({
-  reservation,
-  event,
-  stage,
-  seatGroup,
-  ticketType,
+  reservationDetail: { reservation, event, stage, seatGroup, ticketType },
   onClose,
 }: ReservationChangeProps) => {
   const [step, setStep] = useState(1);
@@ -52,54 +43,43 @@ const ReservationChange = ({
     useState<SeatGroupResponse>(seatGroup);
   const [newTicketType, setNewTicketType] =
     useState<TicketTypeResponse>(ticketType);
+  const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
+  const [selectableTicketTypes, setSelectableTicketTypes] = useState<
+    TicketTypeResponse[]
+  >([]);
   const [newNumAttendees, setNewNumAttendees] = useState<number>(
     reservation.num_attendees
   );
-  const [stages, setStages] = useState<StageResponse[]>([]);
-  const [ticketTypes, setTicketTypes] = useState<TicketTypeResponse[]>([]);
   const [maxAvailable, setMaxAvailable] = useState<number>(0);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const { reloadReservations } = useReservationContext();
   const { addNewItem } = useNewItemContext();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {
+    stages,
+    seatGroups,
+    ticketTypes,
+    changeSeatGroup,
+    loading: eventLoading,
+  } = useEventData();
 
-  // アラートメッセージを評価する関数
-  const evaluateAlert = () => {
-    if (newNumAttendees > maxAvailable) {
-      setAlertMessage("申し訳ございません。ご希望のチケットは満席です。");
-    } else {
-      setAlertMessage(null);
-    }
-  };
-
+  // 初期化処理
   useEffect(() => {
-    const loadMaxAvailable = async () => {
-      const available = await getCapacity(ticketType.id);
-      setMaxAvailable(available + reservation.num_attendees);
-    };
-    loadMaxAvailable();
-
-    const loadStages = async () => {
-      const stages = await fetchEventStages(event.id);
-      setStages(stages);
-    };
-    loadStages();
-
-    const loadTicketTypes = async () => {
-      const loadedTicketTypes = [];
-      const seatGroups = await fetchStageSeatGroups(stage.id);
-      for (const seatGroup of seatGroups) {
-        const types = await fetchSeatGroupTicketTypes(seatGroup.id);
-        loadedTicketTypes.push(...types);
-      }
-      setTicketTypes(loadedTicketTypes);
-    };
-    loadTicketTypes();
+    setMaxAvailable(seatGroup.capacity + reservation.num_attendees);
+    const filteredStages = stages.filter(
+      (stage) => stage.event_id === event.id
+    );
+    setSelectableStages(filteredStages);
+    const groups = seatGroups.filter((group) => group.stage_id === stage.id);
+    const types = ticketTypes.filter((type) =>
+      groups.find((group) => group.id === type.seat_group_id)
+    );
+    setSelectableTicketTypes(types);
   }, []);
 
+  // ticketTypeを変更時、availableを再計算する処理
   useEffect(() => {
-    const loadCapacity = async () => {
-      const newAvailable = await getCapacity(newTicketType.id);
+    const loadCapacity = () => {
+      const newAvailable = newSeatGroup.capacity;
       const available =
         newSeatGroup.id === seatGroup.id
           ? newAvailable + reservation.num_attendees
@@ -107,42 +87,57 @@ const ReservationChange = ({
       setMaxAvailable(available);
     };
     loadCapacity();
-  }, [newTicketType]);
+  }, [newTicketType, eventLoading]);
 
+  // 人数超過の検知処理
   useEffect(() => {
-    if (maxAvailable > 0) {
-      evaluateAlert();
-      setIsLoading(false);
+    if (newNumAttendees > maxAvailable) {
+      setAlertMessage("申し訳ございません。ご希望のチケットは満席です。");
+    } else {
+      setAlertMessage(null);
     }
-  }, [maxAvailable, newNumAttendees]);
+    setIsLoading(false);
+  }, [maxAvailable, newNumAttendees, eventLoading]);
 
   // ステージ選択の変更処理
-  const handleStageChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = parseInt(e.target.value);
-    const fetchedStage = await fetchStage(id);
-    setNewStage(fetchedStage);
-    const newSeatGroups = await fetchStageSeatGroups(id);
-    const newTicketTypes = [];
-    for (const seatGroup of newSeatGroups) {
-      const types = await fetchSeatGroupTicketTypes(seatGroup.id);
-      newTicketTypes.push(...types);
+    const selectedStage = stages.find((stage) => stage.id === id);
+    if (!selectedStage) {
+      return;
     }
-    setNewSeatGroup(newSeatGroups[0]);
-    setTicketTypes(newTicketTypes);
-    setNewTicketType(newTicketTypes[0]);
+    const newSeatGroups = seatGroups.filter((group) => group.stage_id === id);
+    const newTicketTypes = ticketTypes.filter((type) =>
+      newSeatGroups.some((group) => group.id === type.seat_group_id)
+    );
+    if (newSeatGroups.length === 0 || newTicketTypes.length === 0) {
+      return;
+    }
+    const newSeatGroup = stage === selectedStage ? seatGroup : newSeatGroups[0];
+    const newTicketType =
+      selectedStage === stage ? ticketType : newTicketTypes[0];
+    setNewStage(selectedStage);
+    setNewSeatGroup(newSeatGroup);
+    setSelectableTicketTypes(newTicketTypes);
+    setNewTicketType(newTicketType);
   };
 
   // チケットタイプ選択の変更処理
-  const handleTicketTypeChange = async (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleTicketTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = parseInt(e.target.value);
-    const fetchedTicketType = await fetchTicketType(id);
-    const newSeatGroup = await fetchSeatGroup(fetchedTicketType.seat_group_id);
-    setNewSeatGroup(newSeatGroup);
-    const newStage = await fetchStage(newSeatGroup.stage_id);
+    const newTicketType = ticketTypes.find((type) => type.id === id);
+    const newSeatGroup = seatGroups.find(
+      (group) => group.id === newTicketType?.seat_group_id
+    );
+    const newStage = stages.find(
+      (stage) => stage.id === newSeatGroup?.stage_id
+    );
+    if (!newStage || !newSeatGroup || !newTicketType) {
+      return;
+    }
     setNewStage(newStage);
-    setNewTicketType(fetchedTicketType);
+    setNewSeatGroup(newSeatGroup);
+    setNewTicketType(newTicketType);
   };
 
   // 予約人数の変更処理
@@ -151,34 +146,16 @@ const ReservationChange = ({
     setNewNumAttendees(attendees);
   };
 
-  // キャンセルボタンの処理
-  const handleCancel = () => {
-    onClose();
-  };
-
-  // 次のステップに進む処理
-  const handleNext = () => {
-    if (step === 1) {
-      setStep(2);
-    }
-  };
-
-  // 前のステップに戻る処理
-  const handleBack = () => {
-    if (step === 2) {
-      setStep(1);
-    }
+  // ステップ変更処理
+  const handleStepChange = (step: number) => {
+    setStep(step);
   };
 
   // 予約の確認と確定処理
   const handleConfirm = async () => {
     const user_id = reservation.user_id;
     try {
-      if (
-        stage !== newStage ||
-        seatGroup !== newSeatGroup ||
-        ticketType !== newTicketType
-      ) {
+      if (ticketType !== newTicketType) {
         await deleteReservation(reservation.id);
         const newItem = await createReservation(newTicketType.id, {
           num_attendees: newNumAttendees,
@@ -192,7 +169,8 @@ const ReservationChange = ({
         });
         addNewItem(reservation.id);
       }
-      reloadReservations();
+      changeSeatGroup(seatGroup.id);
+      changeSeatGroup(newSeatGroup.id);
     } catch (err) {
       console.error("Reservation update failed:", err);
     } finally {
@@ -200,72 +178,89 @@ const ReservationChange = ({
     }
   };
 
-  if (isLoading) {
+  if (isLoading || eventLoading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <Modal onClose={handleCancel}>
-      <div className="modal-content">
-        <h3>{event.name}</h3>
-        {alertMessage && <p className="alert">{alertMessage}</p>}
+    <Dialog
+      open
+      onClose={onClose}
+      fullWidth
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >
+      <DialogTitle>予約変更</DialogTitle>
+      <DialogContent>
+        {alertMessage && <Alert severity="error">{alertMessage}</Alert>}
         {step === 1 && (
-          <div>
-            <label htmlFor="stage-select">ステージ選択</label>
-            <select
-              id="stage-select"
-              onChange={handleStageChange}
-              value={newStage.id}
-            >
-              {stages.map((stage) => (
-                <option key={stage.id} value={stage.id}>
-                  {toJST(stage.start_time, "dateTime")}
-                </option>
-              ))}
-            </select>
-            <label htmlFor="ticket-type-select">チケット選択</label>
-            <select
-              id="ticket-type-select"
-              onChange={handleTicketTypeChange}
-              value={newTicketType.id}
-            >
-              {ticketTypes.map((ticketType) => (
-                <option key={ticketType.id} value={ticketType.id}>
-                  {ticketType.type_name} - {ticketType.price}円
-                </option>
-              ))}
-            </select>
-            <label htmlFor="num-attendees">枚数</label>
-            <input
-              id="num-attendees"
-              type="number"
-              value={newNumAttendees}
-              onChange={handleNumAttendeesChange}
-              min="1"
-              max={maxAvailable}
-            />
-            <div className="button-group">
-              <button onClick={handleNext} disabled={!!alertMessage}>
-                次へ
-              </button>
-            </div>
-          </div>
+          <Grid container spacing={2} sx={{ m: 2 }}>
+            <Grid size={12}>
+              <TextField
+                select
+                name="stage"
+                label="ステージ選択"
+                value={newStage.id}
+                onChange={handleStageChange}
+                fullWidth
+              >
+                {selectableStages.map((stage) => (
+                  <MenuItem key={stage.id} value={stage.id}>
+                    {toJST(stage.start_time, "dateTime")}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid size={12}>
+              <TextField
+                select
+                name="ticketType"
+                label="チケット選択"
+                value={newTicketType.id}
+                onChange={handleTicketTypeChange}
+                fullWidth
+              >
+                {selectableTicketTypes.map((ticketType) => (
+                  <MenuItem key={ticketType.id} value={ticketType.id}>
+                    {ticketType.type_name} - {ticketType.price}円
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid size={12}>
+              <TextField
+                type="number"
+                label="枚数"
+                value={newNumAttendees}
+                onChange={handleNumAttendeesChange}
+                fullWidth
+                inputProps={{ min: 1, max: maxAvailable }}
+              />
+            </Grid>
+          </Grid>
         )}
         {step === 2 && (
-          <div>
-            <h3>確認</h3>
-            <p>
-              {toJST(newStage.start_time, "dateTime")} -{" "}
-              {newTicketType.type_name} - {newNumAttendees}枚
-            </p>
-            <div className="button-group">
-              <button onClick={handleBack}>戻る</button>
-              <button onClick={handleConfirm}>確定</button>
-            </div>
-          </div>
+          <Typography>
+            {toJST(newStage.start_time, "dateTime")} - {newTicketType.type_name}{" "}
+            - {newNumAttendees}枚
+          </Typography>
         )}
-      </div>
-    </Modal>
+      </DialogContent>
+      <DialogActions>
+        {step === 1 && (
+          <Button onClick={() => handleStepChange(2)} disabled={!!alertMessage}>
+            次へ
+          </Button>
+        )}
+        {step === 2 && (
+          <>
+            <Button onClick={() => handleStepChange(1)}>戻る</Button>
+            <Button onClick={handleConfirm}>確定</Button>
+          </>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
 

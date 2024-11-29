@@ -28,6 +28,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Container
         fixed
         sx={{
+          mt: 6,
           py: 4,
         }}
       >

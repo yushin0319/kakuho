@@ -30,11 +30,7 @@ const ReservationList = () => {
       {reservations.map((item) => (
         <ReservationCard
           key={item.reservation.id}
-          reservation={item.reservation}
-          event={item.event}
-          stage={item.stage}
-          seatGroup={item.seatGroup}
-          ticketType={item.ticketType}
+          reservationDetail={item}
           isExpanded={expandCardId === item.reservation.id}
           isNew={newItems.includes(item.reservation.id)}
           onCardClick={() => handleCardClick(item.reservation.id)}

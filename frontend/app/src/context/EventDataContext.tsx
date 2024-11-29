@@ -5,11 +5,15 @@ import {
   fetchSeatGroup,
   fetchStageSeatGroups,
 } from "../services/api/seatGroup";
-import { fetchSeatGroupTicketTypes } from "../services/api/ticketType";
+import {
+  fetchTicketType,
+  fetchSeatGroupTicketTypes,
+} from "../services/api/ticketType";
 import {
   EventResponse,
   StageResponse,
   SeatGroupResponse,
+  TicketTypeResponse,
 } from "../services/interfaces";
 
 interface EventDataContextType {
@@ -17,9 +21,11 @@ interface EventDataContextType {
   stages: StageResponse[];
   seatGroups: SeatGroupResponse[];
   seatGroupNames: Record<number, string[]>;
+  ticketTypes: TicketTypeResponse[];
   changeEvent: (id: number) => void;
   changeStage: (id: number) => void;
   changeSeatGroup: (id: number) => void;
+  changeTicketType: (id: number) => void;
   loading: boolean;
   error: string | null;
 }
@@ -37,6 +43,7 @@ export const EventDataProvider = ({
   const [seatGroupNames, setSeatGroupNames] = useState<
     Record<number, string[]>
   >({});
+  const [ticketTypes, setTicketTypes] = useState<TicketTypeResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +69,13 @@ export const EventDataProvider = ({
         ).flat();
         setSeatGroups(seatGroupsData);
 
+        const ticketTypesData = (
+          await Promise.all(
+            seatGroupsData.map((sg) => fetchSeatGroupTicketTypes(sg.id))
+          )
+        ).flat();
+        setTicketTypes(ticketTypesData);
+
         const ticketTypeMap = Object.fromEntries(
           await Promise.all(
             seatGroupsData.map(async (sg) => [
@@ -72,6 +86,7 @@ export const EventDataProvider = ({
             ])
           )
         );
+
         setSeatGroupNames(ticketTypeMap);
       } catch (e) {
         setError("データの取得に失敗しました");
@@ -121,6 +136,19 @@ export const EventDataProvider = ({
     }
   };
 
+  const changeTicketType = async (id: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updated = await fetchTicketType(id);
+      setTicketTypes((prev) => prev.map((tt) => (tt.id === id ? updated : tt)));
+    } catch (e) {
+      setError("データの更新に失敗しました");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <EventDataContext.Provider
       value={{
@@ -128,9 +156,11 @@ export const EventDataProvider = ({
         stages,
         seatGroups,
         seatGroupNames,
+        ticketTypes,
         changeEvent,
         changeStage,
         changeSeatGroup,
+        changeTicketType,
         loading,
         error,
       }}

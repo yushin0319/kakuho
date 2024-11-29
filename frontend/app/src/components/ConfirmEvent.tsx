@@ -47,6 +47,7 @@ const ConfirmEvent = ({
   const [warnings, setWarnings] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
+  // エラーチェック
   useEffect(() => {
     const check = () => {
       const errors = [];
@@ -158,14 +159,7 @@ const ConfirmEvent = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      disableEnforceFocus
-      aria-hidden={!open}
-    >
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Typography variant="h6" fontWeight="bold" component="div">
           この内容でイベントを作成してもよろしいですか？
@@ -279,7 +273,7 @@ const ConfirmEvent = ({
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose} variant="outlined">
+        <Button onClick={onClose} variant="outlined" autoFocus>
           修正
         </Button>
         <Button

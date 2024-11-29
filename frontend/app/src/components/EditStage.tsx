@@ -59,9 +59,29 @@ const EditStage = ({
     setSelectTimes((prev) => ({ ...prev, [date]: newTime }));
   };
 
+  const styles = {
+    mobiledialogprops: {
+      ".MuiDatePickerToolbar-title": {
+        fontSize: "1.5rem",
+      },
+    },
+  };
+
   return (
     <Card sx={{ p: 2 }}>
-      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ja}>
+      <LocalizationProvider
+        dateAdapter={AdapterDateFns}
+        adapterLocale={ja}
+        localeText={{
+          nextMonth: "次の月",
+          previousMonth: "前の月",
+          day: "日",
+          month: "月",
+          year: "年",
+          cancelButtonLabel: "キャンセル",
+          okButtonLabel: "OK",
+        }}
+      >
         <Grid container spacing={2}>
           <Grid size={6}>
             <DatePicker
@@ -74,6 +94,10 @@ const EditStage = ({
                   margin: "normal",
                 },
                 calendarHeader: { format: "yyyy年MM月" },
+                toolbar: { toolbarFormat: "yyyy年MM月dd日" },
+                dialog: {
+                  sx: styles.mobiledialogprops,
+                },
               }}
               minDate={new Date()}
               maxDate={addTime(new Date(), { years: 1 })}
@@ -88,12 +112,12 @@ const EditStage = ({
                 textField: {
                   variant: "outlined",
                   margin: "normal",
-                  disabled: !startDate,
-                  sx: {
-                    opacity: startDate ? 1 : 0.5,
-                  },
                 },
                 calendarHeader: { format: "yyyy年MM月" },
+                toolbar: { toolbarFormat: "yyyy年MM月dd日" },
+                dialog: {
+                  sx: styles.mobiledialogprops,
+                },
               }}
               minDate={startDate || new Date()}
               maxDate={

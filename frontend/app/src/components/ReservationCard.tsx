@@ -1,35 +1,21 @@
 // app/src/components/ReservationCard.tsx
 import { useEffect, useState } from "react";
-import {
-  ReservationResponse,
-  EventResponse,
-  StageResponse,
-  SeatGroupResponse,
-  TicketTypeResponse,
-} from "../services/interfaces";
 import { toJST } from "../services/utils";
 import ReservationChange from "./ReservationChange";
 import ReservationDelete from "./ReservationDelete";
+import { ReservationDetail } from "../context/ReservationContext";
 import { QRCodeSVG } from "qrcode.react";
 import "../assets/styles/ReservationCard.scss";
 
 interface ReservationCardProps {
-  reservation: ReservationResponse;
-  event: EventResponse;
-  stage: StageResponse;
-  seatGroup: SeatGroupResponse;
-  ticketType: TicketTypeResponse;
+  reservationDetail: ReservationDetail;
   isExpanded: boolean;
   isNew: boolean;
   onCardClick: () => void;
 }
 
 const ReservationCard = ({
-  reservation,
-  event,
-  stage,
-  seatGroup,
-  ticketType,
+  reservationDetail: { reservation, event, stage, seatGroup, ticketType, user },
   isExpanded,
   isNew,
   onCardClick,
@@ -88,11 +74,14 @@ const ReservationCard = ({
       )}
       {isChanging && (
         <ReservationChange
-          reservation={reservation}
-          event={event}
-          stage={stage}
-          seatGroup={seatGroup}
-          ticketType={ticketType}
+          reservationDetail={{
+            reservation,
+            event,
+            stage,
+            seatGroup,
+            ticketType,
+            user,
+          }}
           onClose={() => {
             setIsChanging(false);
           }}
