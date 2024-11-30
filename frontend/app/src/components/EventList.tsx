@@ -68,7 +68,7 @@ const EventList = ({ onSelectEvent }: EventListProps) => {
             <Typography variant="h5" sx={{ mb: 2 }}>
               {event.name}
             </Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" color="secondary">
               {startDate[event.id] && endDate[event.id]
                 ? `${toJST(startDate[event.id], "fullDate")} - ${toJST(
                     endDate[event.id],

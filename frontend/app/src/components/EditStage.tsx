@@ -135,7 +135,7 @@ const EditStage = ({
               <Divider sx={{ m: 2 }} />
               <Grid container spacing={2} alignItems="center">
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="body1" color="textSecondary">
+                  <Typography variant="body1" color="secondary">
                     {formattedDate}
                   </Typography>
                 </Grid>

@@ -17,6 +17,12 @@ const theme = createTheme({
       primary: "#424242", // 濃いグレー
       secondary: "#757575", // 中間グレー
     },
+    error: {
+      main: "#f44336", // 赤
+    },
+    warning: {
+      main: "#ff9800", // オレンジ
+    },
   },
   typography: {
     fontFamily: "Roboto, Arial, sans-serif", // 好みのフォントを指定

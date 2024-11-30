@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -11,6 +10,8 @@ import {
   Grid2 as Grid,
   Typography,
   Alert,
+  Box,
+  Card,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -194,11 +195,10 @@ const ReservationChange = ({
         e.stopPropagation();
       }}
     >
-      <DialogTitle>予約変更</DialogTitle>
       <DialogContent>
         {alertMessage && <Alert severity="error">{alertMessage}</Alert>}
         {step === 1 && (
-          <Grid container spacing={2} sx={{ m: 2 }}>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
             <Grid size={12}>
               <Controller
                 name="stage"
@@ -295,42 +295,107 @@ const ReservationChange = ({
           </Grid>
         )}
         {step === 2 && (
-          <Typography>
-            以下の内容で予約を変更しますか？
-            <br />
-            ステージ:{" "}
-            {toJST(
-              selectableStages.find((stage) => stage.id === watchStage)
-                ?.start_time,
-              "dateTime"
-            )}
-            <br />
-            チケット:{" "}
-            {
-              selectableTicketTypes.find((type) => type.id === watchTicketType)
-                ?.type_name
-            }{" "}
-            -{" "}
-            {
-              selectableTicketTypes.find((type) => type.id === watchTicketType)
-                ?.price
-            }
-            円
-            <br />
-            枚数: {watchNumAttendees}
-          </Typography>
+          <Box>
+            <Typography variant="body1" gutterBottom color="warning">
+              以下の内容に変更してよろしいですか？
+            </Typography>
+            <Card sx={{ p: 2 }} elevation={2}>
+              <Box sx={{ mt: 2 }}>
+                <Grid container spacing={2}>
+                  <Grid size={12}>
+                    <Typography variant="subtitle2" color="secondary">
+                      イベント
+                    </Typography>
+                    <Typography>{event.name}</Typography>
+                  </Grid>
+                  <Grid size={12}>
+                    <Typography variant="subtitle2" color="secondary">
+                      日時
+                    </Typography>
+                    <Typography>
+                      {toJST(
+                        selectableStages.find(
+                          (stage) => stage.id === watchStage
+                        )?.start_time,
+                        "dateTime"
+                      )}
+                    </Typography>
+                  </Grid>
+                  <Grid size={12}>
+                    <Typography variant="subtitle2" color="secondary">
+                      チケット
+                    </Typography>
+                    <Typography>
+                      {
+                        selectableTicketTypes.find(
+                          (type) => type.id === watchTicketType
+                        )?.type_name
+                      }
+                    </Typography>
+                  </Grid>
+                  <Grid size={12}>
+                    <Typography variant="subtitle2" color="secondary">
+                      価格
+                    </Typography>
+                    <Typography>
+                      {
+                        selectableTicketTypes.find(
+                          (type) => type.id === watchTicketType
+                        )?.price
+                      }
+                      円
+                    </Typography>
+                  </Grid>
+                  <Grid size={12}>
+                    <Typography variant="subtitle2" color="secondary">
+                      枚数
+                    </Typography>
+                    <Typography>{watchNumAttendees}</Typography>
+                  </Grid>
+                  <Grid size={12}>
+                    <Typography variant="subtitle2" color="secondary">
+                      合計
+                    </Typography>
+                    <Typography>
+                      {(ticketTypes.find((type) => type.id === watchTicketType)
+                        ?.price || 0) * watchNumAttendees}
+                      円
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Card>
+          </Box>
         )}
       </DialogContent>
       <DialogActions>
         {step === 1 && (
-          <Button onClick={() => handleStepChange(2)} disabled={!!alertMessage}>
-            次へ
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleStepChange(2)}
+              disabled={!!alertMessage}
+            >
+              変更
+            </Button>
+            <Button variant="outlined" onClick={onClose}>
+              キャンセル
+            </Button>
+          </>
         )}
         {step === 2 && (
           <>
-            <Button onClick={() => handleStepChange(1)}>戻る</Button>
-            <Button onClick={handleSubmit(onSubmit)}>変更</Button>
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              variant="contained"
+              color="primary"
+            >
+              決定
+            </Button>
+            <Button variant="outlined" onClick={() => handleStepChange(1)}>
+              キャンセル
+            </Button>
           </>
         )}
       </DialogActions>

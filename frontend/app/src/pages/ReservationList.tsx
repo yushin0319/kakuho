@@ -1,9 +1,9 @@
 // app/src/pages/ReservationList.tsx
 import { useEffect, useState } from "react";
+import { Container } from "@mui/material";
 import ReservationCard from "../components/ReservationCard";
 import { useReservationContext } from "../context/ReservationContext";
 import { useNewItemContext } from "../context/NewItemContext";
-import "../assets/styles/ReservationList.scss";
 
 const ReservationList = () => {
   const { reservations, isLoading, error } = useReservationContext();
@@ -26,7 +26,7 @@ const ReservationList = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="reservation-list">
+    <Container fixed>
       {reservations.map((item) => (
         <ReservationCard
           key={item.reservation.id}
@@ -36,7 +36,7 @@ const ReservationList = () => {
           onCardClick={() => handleCardClick(item.reservation.id)}
         />
       ))}
-    </div>
+    </Container>
   );
 };
 
