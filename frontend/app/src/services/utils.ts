@@ -10,7 +10,11 @@ import { toZonedTime, format } from "date-fns-tz";
 
 type FormatType = "fullDate" | "monthDate" | "time" | "dateTime" | "ISO8601";
 
-export const toJST = (date: Date | string, formatType: FormatType): string => {
+export const toJST = (
+  date: Date | string | undefined | null,
+  formatType: FormatType
+): string => {
+  if (!date) return "";
   const jstDate = toZonedTime(new Date(date), "Asia/Tokyo");
   const formats = {
     fullDate: "yyyy/MM/dd (E)",

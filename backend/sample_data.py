@@ -173,7 +173,7 @@ def initialize_sample_data(db: Session):
             user_id=random.choice(users).id,
             num_attendees=random.randint(1, 5),
         )
-        for _ in range(300)
+        for _ in range(0)
     ]
 
     db.add_all(reservations)

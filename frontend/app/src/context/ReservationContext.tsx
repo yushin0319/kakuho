@@ -129,7 +129,9 @@ export const ReservationProvider = ({
   };
 
   useEffect(() => {
-    loadReservations();
+    if (!eventLoading) {
+      loadReservations();
+    }
   }, [user, eventLoading]);
 
   return (

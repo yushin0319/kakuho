@@ -44,12 +44,21 @@ export const EventDataProvider = ({
     Record<number, string[]>
   >({});
   const [ticketTypes, setTicketTypes] = useState<TicketTypeResponse[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingTask, setLoadingTask] = useState(0);
+
+  const addTask = () => {
+    setLoadingTask((prev) => prev + 1);
+  };
+  const removeTask = () => {
+    setLoadingTask((prev) => prev - 1);
+  };
+
+  const loading = loadingTask > 0;
 
   useEffect(() => {
     const loadData = async () => {
-      setLoading(true);
+      addTask();
       setError(null);
       try {
         const eventsData = await fetchEvents();
@@ -91,14 +100,14 @@ export const EventDataProvider = ({
       } catch (e) {
         setError("データの取得に失敗しました");
       } finally {
-        setLoading(false);
+        removeTask();
       }
     };
     loadData();
   }, []);
 
   const changeEvent = async (id: number) => {
-    setLoading(true);
+    addTask();
     setError(null);
     try {
       const updated = await fetchEvent(id);
@@ -106,12 +115,12 @@ export const EventDataProvider = ({
     } catch (e) {
       setError("データの更新に失敗しました");
     } finally {
-      setLoading(false);
+      removeTask();
     }
   };
 
   const changeStage = async (id: number) => {
-    setLoading(true);
+    addTask();
     setError(null);
     try {
       const updated = await fetchStage(id);
@@ -119,12 +128,12 @@ export const EventDataProvider = ({
     } catch (e) {
       setError("データの更新に失敗しました");
     } finally {
-      setLoading(false);
+      removeTask();
     }
   };
 
   const changeSeatGroup = async (id: number) => {
-    setLoading(true);
+    addTask();
     setError(null);
     try {
       const updated = await fetchSeatGroup(id);
@@ -132,12 +141,12 @@ export const EventDataProvider = ({
     } catch (e) {
       setError("データの更新に失敗しました");
     } finally {
-      setLoading(false);
+      removeTask();
     }
   };
 
   const changeTicketType = async (id: number) => {
-    setLoading(true);
+    addTask();
     setError(null);
     try {
       const updated = await fetchTicketType(id);
@@ -145,7 +154,7 @@ export const EventDataProvider = ({
     } catch (e) {
       setError("データの更新に失敗しました");
     } finally {
-      setLoading(false);
+      removeTask();
     }
   };
 

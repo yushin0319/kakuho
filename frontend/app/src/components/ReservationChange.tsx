@@ -12,25 +12,29 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
 import {
   createReservation,
   updateReservation,
   deleteReservation,
 } from "../services/api/reservation";
-import {
-  StageResponse,
-  SeatGroupResponse,
-  TicketTypeResponse,
-} from "../services/interfaces";
+import { StageResponse, TicketTypeResponse } from "../services/interfaces";
 import { toJST } from "../services/utils";
 import { useEventData } from "../context/EventDataContext";
 import { ReservationDetail } from "../context/ReservationContext";
 import { useNewItemContext } from "../context/NewItemContext";
-import "../assets/styles/ReservationChange.scss";
+import { useSnack } from "../context/SnackContext";
 
 interface ReservationChangeProps {
   reservationDetail: ReservationDetail;
   onClose: () => void;
+}
+
+// 予約変更フォームの入力値
+interface ReservationChangeForm {
+  stage: number;
+  ticketType: number;
+  numAttendees: number;
 }
 
 const ReservationChange = ({
@@ -38,22 +42,18 @@ const ReservationChange = ({
   onClose,
 }: ReservationChangeProps) => {
   const [step, setStep] = useState(1);
-  const [newStage, setNewStage] = useState<StageResponse>(stage);
-  const [newSeatGroup, setNewSeatGroup] =
-    useState<SeatGroupResponse>(seatGroup);
-  const [newTicketType, setNewTicketType] =
-    useState<TicketTypeResponse>(ticketType);
   const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
   const [selectableTicketTypes, setSelectableTicketTypes] = useState<
     TicketTypeResponse[]
   >([]);
-  const [newNumAttendees, setNewNumAttendees] = useState<number>(
-    reservation.num_attendees
+  const [maxAvailable, setMaxAvailable] = useState<number>(
+    seatGroup.capacity + reservation.num_attendees
   );
-  const [maxAvailable, setMaxAvailable] = useState<number>(0);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const { addNewItem } = useNewItemContext();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { setSnack } = useSnack();
+
+  // イベントデータを取得
   const {
     stages,
     seatGroups,
@@ -62,89 +62,84 @@ const ReservationChange = ({
     loading: eventLoading,
   } = useEventData();
 
+  // フォームの初期値を設定
+  const { control, handleSubmit, watch, setValue } =
+    useForm<ReservationChangeForm>({
+      defaultValues: {
+        stage: stage.id,
+        ticketType: ticketType.id,
+        numAttendees: reservation.num_attendees,
+      },
+    });
+
+  const watchStage = watch("stage");
+  const watchTicketType = watch("ticketType");
+  const watchNumAttendees = watch("numAttendees");
+
   // 初期化処理
   useEffect(() => {
-    setMaxAvailable(seatGroup.capacity + reservation.num_attendees);
-    const filteredStages = stages.filter(
-      (stage) => stage.event_id === event.id
-    );
-    setSelectableStages(filteredStages);
-    const groups = seatGroups.filter((group) => group.stage_id === stage.id);
-    const types = ticketTypes.filter((type) =>
-      groups.find((group) => group.id === type.seat_group_id)
-    );
-    setSelectableTicketTypes(types);
-  }, []);
+    if (!eventLoading) {
+      const filteredStages = stages.filter(
+        (stage) => stage.event_id === event.id
+      );
+      setSelectableStages(filteredStages);
+      const groups = seatGroups.filter((group) => group.stage_id === stage.id);
+      const types = ticketTypes.filter((type) =>
+        groups.find((group) => group.id === type.seat_group_id)
+      );
+      setSelectableTicketTypes(types);
+      setValue("stage", stage.id);
+      setValue("ticketType", ticketType.id);
+    }
+  }, [eventLoading]);
 
   // ticketTypeを変更時、availableを再計算する処理
   useEffect(() => {
-    const loadCapacity = () => {
-      const newAvailable = newSeatGroup.capacity;
-      const available =
-        newSeatGroup.id === seatGroup.id
-          ? newAvailable + reservation.num_attendees
-          : newAvailable;
-      setMaxAvailable(available);
-    };
-    loadCapacity();
-  }, [newTicketType, eventLoading]);
+    const newTicketType = ticketTypes.find(
+      (type) => type.id === watchTicketType
+    );
+    const newSeatGroup = seatGroups.find(
+      (group) => group.id === newTicketType?.seat_group_id
+    );
+    const newNumAttendees = watchNumAttendees;
+    if (!newSeatGroup || !newTicketType) {
+      return;
+    }
+    const maxAvailable =
+      newSeatGroup === seatGroup
+        ? newSeatGroup.capacity + reservation.num_attendees
+        : newSeatGroup.capacity;
 
-  // 人数超過の検知処理
-  useEffect(() => {
-    if (newNumAttendees > maxAvailable) {
-      setAlertMessage("申し訳ございません。ご希望のチケットは満席です。");
+    const culcMaxAvailable = Math.min(maxAvailable, 20);
+    if (newNumAttendees > culcMaxAvailable) {
+      setAlertMessage("予約可能な人数を超えています");
     } else {
       setAlertMessage(null);
     }
-    setIsLoading(false);
-  }, [maxAvailable, newNumAttendees, eventLoading]);
+    setMaxAvailable(culcMaxAvailable);
+  }, [watchTicketType, watchNumAttendees, eventLoading]);
 
-  // ステージ選択の変更処理
-  const handleStageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const id = parseInt(e.target.value);
-    const selectedStage = stages.find((stage) => stage.id === id);
-    if (!selectedStage) {
+  // stageを変更時、seatGroupとticketTypeを再計算する処理
+  useEffect(() => {
+    const newStage = stages.find((stage) => stage.id === watchStage);
+    if (!newStage) {
       return;
     }
-    const newSeatGroups = seatGroups.filter((group) => group.stage_id === id);
+    const newSeatGroups = seatGroups.filter(
+      (group) => group.stage_id === newStage.id
+    );
     const newTicketTypes = ticketTypes.filter((type) =>
       newSeatGroups.some((group) => group.id === type.seat_group_id)
     );
     if (newSeatGroups.length === 0 || newTicketTypes.length === 0) {
       return;
     }
-    const newSeatGroup = stage === selectedStage ? seatGroup : newSeatGroups[0];
     const newTicketType =
-      selectedStage === stage ? ticketType : newTicketTypes[0];
-    setNewStage(selectedStage);
-    setNewSeatGroup(newSeatGroup);
+      newTicketTypes.find((type) => type.type_name === ticketType.type_name) ??
+      newTicketTypes[0];
     setSelectableTicketTypes(newTicketTypes);
-    setNewTicketType(newTicketType);
-  };
-
-  // チケットタイプ選択の変更処理
-  const handleTicketTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const id = parseInt(e.target.value);
-    const newTicketType = ticketTypes.find((type) => type.id === id);
-    const newSeatGroup = seatGroups.find(
-      (group) => group.id === newTicketType?.seat_group_id
-    );
-    const newStage = stages.find(
-      (stage) => stage.id === newSeatGroup?.stage_id
-    );
-    if (!newStage || !newSeatGroup || !newTicketType) {
-      return;
-    }
-    setNewStage(newStage);
-    setNewSeatGroup(newSeatGroup);
-    setNewTicketType(newTicketType);
-  };
-
-  // 予約人数の変更処理
-  const handleNumAttendeesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const attendees = parseInt(e.target.value);
-    setNewNumAttendees(attendees);
-  };
+    setValue("ticketType", newTicketType.id);
+  }, [watchStage]);
 
   // ステップ変更処理
   const handleStepChange = (step: number) => {
@@ -152,35 +147,43 @@ const ReservationChange = ({
   };
 
   // 予約の確認と確定処理
-  const handleConfirm = async () => {
+  const onSubmit = async (data: ReservationChangeForm) => {
     const user_id = reservation.user_id;
     try {
-      if (ticketType !== newTicketType) {
+      if (ticketType.id !== data.ticketType) {
         await deleteReservation(reservation.id);
-        const newItem = await createReservation(newTicketType.id, {
-          num_attendees: newNumAttendees,
+        const newItem = await createReservation(data.ticketType, {
+          num_attendees: data.numAttendees,
           user_id: user_id,
         });
         addNewItem(newItem.id);
+        const type = ticketTypes.find((type) => type.id === data.ticketType);
+        if (!type) {
+          throw new Error("TicketType not found");
+        }
+        changeSeatGroup(type.seat_group_id);
       } else {
         await updateReservation(reservation.id, {
-          num_attendees: newNumAttendees,
+          num_attendees: data.numAttendees,
           user_id: user_id,
         });
         addNewItem(reservation.id);
       }
       changeSeatGroup(seatGroup.id);
-      changeSeatGroup(newSeatGroup.id);
+      setSnack({
+        message: "予約を変更しました",
+        severity: "success",
+      });
     } catch (err) {
       console.error("Reservation update failed:", err);
+      setSnack({
+        message: "予約変更に失敗しました",
+        severity: "error",
+      });
     } finally {
       onClose();
     }
   };
-
-  if (isLoading || eventLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <Dialog
@@ -197,53 +200,124 @@ const ReservationChange = ({
         {step === 1 && (
           <Grid container spacing={2} sx={{ m: 2 }}>
             <Grid size={12}>
-              <TextField
-                select
+              <Controller
                 name="stage"
-                label="ステージ選択"
-                value={newStage.id}
-                onChange={handleStageChange}
-                fullWidth
-              >
-                {selectableStages.map((stage) => (
-                  <MenuItem key={stage.id} value={stage.id}>
-                    {toJST(stage.start_time, "dateTime")}
-                  </MenuItem>
-                ))}
-              </TextField>
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    id="stage-select"
+                    select
+                    {...field}
+                    value={
+                      selectableStages.find((stage) => stage.id === watchStage)
+                        ? watchStage
+                        : ""
+                    }
+                    label="ステージ選択"
+                    fullWidth
+                  >
+                    {selectableStages.map((stage) => (
+                      <MenuItem key={stage.id} value={stage.id}>
+                        {toJST(stage.start_time, "dateTime")}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
             </Grid>
             <Grid size={12}>
-              <TextField
-                select
+              <Controller
                 name="ticketType"
-                label="チケット選択"
-                value={newTicketType.id}
-                onChange={handleTicketTypeChange}
-                fullWidth
-              >
-                {selectableTicketTypes.map((ticketType) => (
-                  <MenuItem key={ticketType.id} value={ticketType.id}>
-                    {ticketType.type_name} - {ticketType.price}円
-                  </MenuItem>
-                ))}
-              </TextField>
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    select
+                    {...field}
+                    value={
+                      selectableTicketTypes.find(
+                        (type) => type.id === watchTicketType
+                      )
+                        ? watchTicketType
+                        : ""
+                    }
+                    label="チケット選択"
+                    fullWidth
+                  >
+                    {selectableTicketTypes.map((ticketType) => (
+                      <MenuItem key={ticketType.id} value={ticketType.id}>
+                        {ticketType.type_name} - {ticketType.price}円
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
             </Grid>
             <Grid size={12}>
-              <TextField
-                type="number"
-                label="枚数"
-                value={newNumAttendees}
-                onChange={handleNumAttendeesChange}
-                fullWidth
-                inputProps={{ min: 1, max: maxAvailable }}
+              <Controller
+                name="numAttendees"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    select
+                    {...field}
+                    label="枚数"
+                    fullWidth
+                    slotProps={{
+                      select: {
+                        MenuProps: {
+                          PaperProps: {
+                            style: {
+                              maxHeight: 200, // メニューの最大高さ
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    {[...Array(maxAvailable).keys()].map((num) => (
+                      <MenuItem key={num + 1} value={num + 1}>
+                        {num + 1}
+                      </MenuItem>
+                    ))}
+                    {watchNumAttendees > maxAvailable && (
+                      <MenuItem
+                        key={watchNumAttendees}
+                        value={watchNumAttendees}
+                        disabled
+                      >
+                        {watchNumAttendees} (超過)
+                      </MenuItem>
+                    )}
+                  </TextField>
+                )}
               />
             </Grid>
           </Grid>
         )}
         {step === 2 && (
           <Typography>
-            {toJST(newStage.start_time, "dateTime")} - {newTicketType.type_name}{" "}
-            - {newNumAttendees}枚
+            以下の内容で予約を変更しますか？
+            <br />
+            ステージ:{" "}
+            {toJST(
+              selectableStages.find((stage) => stage.id === watchStage)
+                ?.start_time,
+              "dateTime"
+            )}
+            <br />
+            チケット:{" "}
+            {
+              selectableTicketTypes.find((type) => type.id === watchTicketType)
+                ?.type_name
+            }{" "}
+            -{" "}
+            {
+              selectableTicketTypes.find((type) => type.id === watchTicketType)
+                ?.price
+            }
+            円
+            <br />
+            枚数: {watchNumAttendees}
           </Typography>
         )}
       </DialogContent>
@@ -256,7 +330,7 @@ const ReservationChange = ({
         {step === 2 && (
           <>
             <Button onClick={() => handleStepChange(1)}>戻る</Button>
-            <Button onClick={handleConfirm}>確定</Button>
+            <Button onClick={handleSubmit(onSubmit)}>変更</Button>
           </>
         )}
       </DialogActions>
