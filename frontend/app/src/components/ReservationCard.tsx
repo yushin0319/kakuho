@@ -1,19 +1,19 @@
 // app/src/components/ReservationCard.tsx
-import { useEffect, useState } from "react";
 import {
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
   Button,
+  Card,
+  CardActions,
+  CardContent,
   Collapse,
   Grid2 as Grid,
+  Typography,
 } from "@mui/material";
+import { QRCodeSVG } from "qrcode.react";
+import { useEffect, useState } from "react";
+import { ReservationDetail } from "../context/ReservationContext";
 import { toJST } from "../services/utils";
 import ReservationChange from "./ReservationChange";
 import ReservationDelete from "./ReservationDelete";
-import { ReservationDetail } from "../context/ReservationContext";
-import { QRCodeSVG } from "qrcode.react";
 
 interface ReservationCardProps {
   reservationDetail: ReservationDetail;
@@ -23,7 +23,7 @@ interface ReservationCardProps {
 }
 
 const ReservationCard = ({
-  reservationDetail: { reservation, event, stage, seatGroup, ticketType, user },
+  reservationDetail: item,
   isExpanded,
   isNew,
   onCardClick,
@@ -31,31 +31,30 @@ const ReservationCard = ({
   const [isChanging, setIsChanging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [highlight, setHighlight] = useState(isNew);
+  const { reservation, event, stage, ticketType } = item;
 
+  // 新規予約のハイライトを解除
   useEffect(() => {
     if (isNew) {
-      // 新しい場合、0.5秒後にハイライトを解除
       setTimeout(() => {
         setHighlight(false);
       }, 50);
     }
   }, [isNew]);
 
-  const handleCardClick = () => {
-    onCardClick();
-  };
-
+  // 変更ボタンクリック時の処理
   const handleChangeClick = () => {
     setIsChanging(true);
   };
 
+  // 削除ボタンクリック時の処理
   const handleDeleteClick = () => {
     setIsDeleting(true);
   };
 
   return (
     <Card
-      onClick={handleCardClick}
+      onClick={onCardClick}
       sx={{
         transition: "background-color 0.5s, box-shadow 0.3s",
         backgroundColor: highlight ? "secondary.main" : "paper",
@@ -124,14 +123,7 @@ const ReservationCard = ({
       </Collapse>
       {isChanging && (
         <ReservationChange
-          reservationDetail={{
-            reservation,
-            event,
-            stage,
-            seatGroup,
-            ticketType,
-            user,
-          }}
+          reservationDetail={item}
           onClose={() => {
             setIsChanging(false);
           }}
@@ -139,14 +131,7 @@ const ReservationCard = ({
       )}
       {isDeleting && (
         <ReservationDelete
-          reservationDetail={{
-            reservation,
-            event,
-            stage,
-            seatGroup,
-            ticketType,
-            user,
-          }}
+          reservationDetail={item}
           onClose={() => setIsDeleting(false)}
         />
       )}

@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import {
-  ReservationDetail,
-  useReservationContext,
-} from "../context/ReservationContext";
+// app/src/components/ManageUserReservations.tsx
 import {
   Table,
   TableBody,
@@ -12,6 +8,11 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import {
+  ReservationDetail,
+  useReservationContext,
+} from "../context/ReservationContext";
 import { toJST } from "../services/utils";
 
 type ManageUserReservationsProps = {

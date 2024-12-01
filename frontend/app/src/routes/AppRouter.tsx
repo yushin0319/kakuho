@@ -1,84 +1,99 @@
 // app/src/routes/AppRouter.tsx
-import { Routes, Route } from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
+import { useEffect } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Booking from "../pages/Booking";
+import CreateEvent from "../pages/CreateEvent";
 import Login from "../pages/Login";
-import Register from "../pages/Register";
-import ReservationList from "../pages/ReservationList";
+import ManageEvent from "../pages/ManageEvent";
 import ManageList from "../pages/ManageList";
 import ManageUser from "../pages/ManageUser";
-import ManageEvent from "../pages/ManageEvent";
-import CreateEvent from "../components/CreateEvent";
+import Register from "../pages/Register";
+import ReservationList from "../pages/ReservationList";
+import PrivateRoute from "./PrivateRoute";
+
+// ページ遷移時にページトップにスクロールする
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 const AppRouter = () => {
   return (
-    <Routes>
-      {/* 「予約する」 */}
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <Booking />
-          </PrivateRoute>
-        }
-      />
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* 「予約する」 */}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Booking />
+            </PrivateRoute>
+          }
+        />
 
-      {/* 「マイチケット」 */}
-      <Route
-        path="/my-reservations"
-        element={
-          <PrivateRoute>
-            <ReservationList />
-          </PrivateRoute>
-        }
-      />
+        {/* 「マイチケット」 */}
+        <Route
+          path="/my-reservations"
+          element={
+            <PrivateRoute>
+              <ReservationList />
+            </PrivateRoute>
+          }
+        />
 
-      {/* 「予約管理」 */}
-      <Route
-        path="/manage-list"
-        element={
-          <PrivateRoute>
-            <ManageList />
-          </PrivateRoute>
-        }
-      />
+        {/* 「予約管理」 */}
+        <Route
+          path="/manage-list"
+          element={
+            <PrivateRoute>
+              <ManageList />
+            </PrivateRoute>
+          }
+        />
 
-      {/* 「ユーザー管理」 */}
-      <Route
-        path="/manage-user"
-        element={
-          <PrivateRoute>
-            <ManageUser />
-          </PrivateRoute>
-        }
-      />
+        {/* 「ユーザー管理」 */}
+        <Route
+          path="/manage-user"
+          element={
+            <PrivateRoute>
+              <ManageUser />
+            </PrivateRoute>
+          }
+        />
 
-      {/* 「イベント管理」 */}
-      <Route
-        path="/manage-event"
-        element={
-          <PrivateRoute>
-            <ManageEvent />
-          </PrivateRoute>
-        }
-      />
+        {/* 「イベント管理」 */}
+        <Route
+          path="/manage-event"
+          element={
+            <PrivateRoute>
+              <ManageEvent />
+            </PrivateRoute>
+          }
+        />
 
-      {/* 「新規イベント作成」 */}
-      <Route
-        path="/manage-event/create"
-        element={
-          <PrivateRoute>
-            <CreateEvent />
-          </PrivateRoute>
-        }
-      />
+        {/* 「新規イベント作成」 */}
+        <Route
+          path="/manage-event/create"
+          element={
+            <PrivateRoute>
+              <CreateEvent />
+            </PrivateRoute>
+          }
+        />
 
-      {/* ログインページ */}
-      <Route path="/login" element={<Login />} />
+        {/* ログインページ */}
+        <Route path="/login" element={<Login />} />
 
-      {/* 登録ページ */}
-      <Route path="/register" element={<Register />} />
-    </Routes>
+        {/* 登録ページ */}
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </>
   );
 };
 

@@ -1,15 +1,15 @@
 // app/src/components/EditSeatGroup.tsx
-import { useState } from "react";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import {
   Button,
-  TextField,
-  Grid2 as Grid,
   Card,
+  Grid2 as Grid,
   IconButton,
+  TextField,
   Typography,
 } from "@mui/material";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { seatProps } from "./CreateEvent";
+import { useState } from "react";
+import { seatProps } from "../pages/CreateEvent";
 import { TicketTypeCreate } from "../services/interfaces";
 import EditTicketType from "./EditTicketType";
 

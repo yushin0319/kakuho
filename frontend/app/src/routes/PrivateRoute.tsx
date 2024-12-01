@@ -3,6 +3,7 @@
 
 import React from "react";
 import { Navigate } from "react-router-dom";
+import LoadingScreen from "../components/LoadingScreen";
 import { useAuth } from "../context/AuthContext";
 
 interface PrivateRouteProps {
@@ -13,7 +14,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>; // プロバイダがロードを終えるまで待つ
+    return <LoadingScreen />;
   }
 
   if (!isAuthenticated || user === null) {

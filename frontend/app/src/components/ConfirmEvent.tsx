@@ -1,28 +1,28 @@
 // app/src/components/ConfirmEvent.tsx
-import { useState, useEffect } from "react";
-import { createEvent } from "../services/api/event";
-import { createStage } from "../services/api/stage";
-import { createSeatGroup } from "../services/api/seatGroup";
-import { createTicketType } from "../services/api/ticketType";
+import ChairIcon from "@mui/icons-material/Chair";
 import {
-  Dialog,
+  Box,
   Button,
+  Chip,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Box,
-  Typography,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Paper,
-  Chip,
+  Typography,
 } from "@mui/material";
-import ChairIcon from "@mui/icons-material/Chair";
-import { toJST, addTime } from "../services/utils";
-import { seatProps } from "./CreateEvent";
+import { useEffect, useState } from "react";
+import { seatProps } from "../pages/CreateEvent";
+import { createEvent } from "../services/api/event";
+import { createSeatGroup } from "../services/api/seatGroup";
+import { createStage } from "../services/api/stage";
+import { createTicketType } from "../services/api/ticketType";
+import { addTime, toJST } from "../services/utils";
 
 interface ConfirmEventProps {
   title: string;

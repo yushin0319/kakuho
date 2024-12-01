@@ -35,6 +35,17 @@ const theme = createTheme({
         },
       },
     },
+    MuiContainer: {
+      defaultProps: {
+        fixed: true,
+      },
+      styleOverrides: {
+        root: {
+          alignItems: "center",
+          textAlign: "center",
+        },
+      },
+    },
   },
 });
 

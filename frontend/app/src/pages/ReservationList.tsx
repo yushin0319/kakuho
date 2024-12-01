@@ -1,15 +1,17 @@
 // app/src/pages/ReservationList.tsx
-import { useEffect, useState } from "react";
 import { Container } from "@mui/material";
+import { useEffect, useState } from "react";
+import LoadingScreen from "../components/LoadingScreen";
 import ReservationCard from "../components/ReservationCard";
-import { useReservationContext } from "../context/ReservationContext";
 import { useNewItemContext } from "../context/NewItemContext";
+import { useReservationContext } from "../context/ReservationContext";
 
 const ReservationList = () => {
   const { reservations, isLoading, error } = useReservationContext();
   const [expandCardId, setExpandCardId] = useState<number | null>(null);
   const { newItems, clearNewItems } = useNewItemContext();
 
+  // 新規予約がある場合、新規予約の表示を消す
   useEffect(() => {
     if (newItems.length > 0) {
       setTimeout(() => {
@@ -18,15 +20,16 @@ const ReservationList = () => {
     }
   }, [reservations]);
 
+  // カードクリック時の処理
   const handleCardClick = (id: number) => {
-    setExpandCardId((prev: number | null) => (prev === id ? null : id));
+    setExpandCardId((prev) => (prev === id ? null : id));
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingScreen />;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <Container fixed>
+    <Container>
       {reservations.map((item) => (
         <ReservationCard
           key={item.reservation.id}

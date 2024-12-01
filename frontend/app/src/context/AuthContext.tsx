@@ -1,15 +1,15 @@
 // app/src/context/AuthContext.tsx
 import {
   createContext,
-  useState,
-  useContext,
   ReactNode,
+  useContext,
   useEffect,
+  useState,
 } from "react";
 import {
   login as apiLogin,
-  getCurrentUser,
   logout as apiLogout,
+  getCurrentUser,
 } from "../services/api/auth";
 import { UserResponse } from "../services/interfaces";
 

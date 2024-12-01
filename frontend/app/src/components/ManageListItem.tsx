@@ -1,10 +1,10 @@
 // app/src/components/ManageItem.tsx
 import { useState } from "react";
+import "../assets/styles/ManageItem.scss";
 import { ReservationDetail } from "../context/ReservationContext";
+import PaidStatusController from "./PaidStatusController";
 import ReservationChange from "./ReservationChange";
 import ReservationDelete from "./ReservationDelete";
-import PaidStatusController from "./PaidStatusController";
-import "../assets/styles/ManageItem.scss";
 
 interface ManageListItemProps {
   data: ReservationDetail;
@@ -52,17 +52,13 @@ const ManageListItem = ({ data }: ManageListItemProps) => {
       </div>
       {isChanging && (
         <ReservationChange
-          reservation={data.reservation}
-          event={data.event}
-          stage={data.stage}
-          seatGroup={data.seatGroup}
-          ticketType={data.ticketType}
+          reservationDetail={data}
           onClose={() => setIsChanging(false)}
         />
       )}
       {isDeleting && (
         <ReservationDelete
-          reservation={data.reservation}
+          reservationDetail={data}
           onClose={() => setIsDeleting(false)}
         />
       )}

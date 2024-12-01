@@ -1,30 +1,33 @@
 // app/src/pages/ManageUser.tsx
-import { useState, useEffect } from "react";
-import { fetchEvents } from "../services/api/event";
-import { fetchEventStages } from "../services/api/stage";
-import { EventResponse, StageResponse } from "../services/interfaces";
-import { fetchUsers } from "../services/api/user";
-import { UserResponse } from "../services/interfaces";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Container,
   Accordion,
-  AccordionSummary,
   AccordionDetails,
+  AccordionSummary,
   Box,
+  Button,
+  Container,
   Divider,
   Drawer,
-  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
+  TextField,
   Typography,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useEffect, useState } from "react";
 import ManageUserReservations from "../components/ManageUserReservations";
 import { useReservationContext } from "../context/ReservationContext";
+import { fetchEvents } from "../services/api/event";
+import { fetchEventStages } from "../services/api/stage";
+import { fetchUsers } from "../services/api/user";
+import {
+  EventResponse,
+  StageResponse,
+  UserResponse,
+} from "../services/interfaces";
 import { toJST } from "../services/utils";
 
 const ManageUser = () => {
@@ -131,7 +134,7 @@ const ManageUser = () => {
   };
 
   return (
-    <Container fixed>
+    <Container>
       {/* イベントフィルタリングドロップダウン */}
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel htmlFor="event-select">イベント</InputLabel>
@@ -223,7 +226,7 @@ const ManageUser = () => {
         variant="outlined"
         sx={{ margin: 4 }}
       >
-        ユーザー名またはメールアドレスで検索
+        検索
       </Button>
       {openSearch && (
         <Drawer

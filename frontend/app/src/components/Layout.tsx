@@ -1,9 +1,8 @@
 // app/src/components/Layout.tsx
+import { Container } from "@mui/material";
 import { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "./Header";
-import { Container } from "@mui/material";
-import "../assets/styles/Layout.scss";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,7 +16,7 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname === "/login" || location.pathname === "/register";
 
   return (
-    <div className="layout">
+    <Container sx={{ p: 0, m: 0 }}>
       {!isLoginOrRegisterPage ? (
         <Header />
       ) : (
@@ -30,11 +29,12 @@ const Layout = ({ children }: LayoutProps) => {
         sx={{
           mt: 6,
           py: 4,
+          px: 0,
         }}
       >
         {children}
       </Container>
-    </div>
+    </Container>
   );
 };
 

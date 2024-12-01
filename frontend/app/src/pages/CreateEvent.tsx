@@ -1,10 +1,10 @@
-// app/src/components/CreateEvent.tsx
-import { useState, useEffect } from "react";
-import { Button, Card, TextField, Box, Typography } from "@mui/material";
-import { TicketTypeCreate, SeatGroupCreate } from "../services/interfaces";
-import EditStage from "./EditStage";
-import EditSeatGroup from "./EditSeatGroup";
-import ConfirmEvent from "./ConfirmEvent";
+// app/src/pages/CreateEvent.tsx
+import { Button, Card, Container, TextField, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import ConfirmEvent from "../components/ConfirmEvent";
+import EditSeatGroup from "../components/EditSeatGroup";
+import EditStage from "../components/EditStage";
+import { SeatGroupCreate, TicketTypeCreate } from "../services/interfaces";
 
 export type seatProps = {
   id: number;
@@ -166,7 +166,7 @@ const CreateEvent = () => {
   };
 
   return (
-    <Box>
+    <Container>
       <Typography variant="h5" margin={2}>
         基本情報入力
       </Typography>
@@ -227,7 +227,7 @@ const CreateEvent = () => {
         onClose={handleClose}
         onConfirm={handleReset}
       />
-    </Box>
+    </Container>
   );
 };
 
