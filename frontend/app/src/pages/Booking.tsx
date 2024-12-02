@@ -48,8 +48,8 @@ const Booking = () => {
     <Container>
       {selectedEvent === null ? (
         <Box>
-          <Typography variant="h6" sx={{ mb: 4 }}>
-            イベントを選択してください
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            イベントをお選びください
           </Typography>
           {events.map((event) => (
             <Card
