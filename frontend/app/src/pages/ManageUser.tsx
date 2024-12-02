@@ -107,11 +107,11 @@ const ManageUser = () => {
     return filtered;
   }, [searchTerm, selectedEvent, selectedStage, users]);
 
-  if (loading) return <LoadingScreen />;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <Container>
+      {loading && <LoadingScreen />}
       {/* イベントフィルタリングドロップダウン */}
       <Controller
         name="selectedEvent"
@@ -172,7 +172,13 @@ const ManageUser = () => {
             <Accordion key={user.id}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>{user.nickname || user.email}</Typography>
-                <Typography sx={{ ml: 2, color: "gray" }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    ml: 2,
+                    color: "gray",
+                  }}
+                >
                   {user.email}
                 </Typography>
               </AccordionSummary>

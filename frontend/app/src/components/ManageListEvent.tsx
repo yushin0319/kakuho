@@ -1,7 +1,9 @@
-// app/src/components/ManageEvent.tsx
-import { useState, useEffect } from "react";
-import { EventResponse, StageResponse } from "../services/interfaces";
-import { fetchEventStages } from "../services/api/stage";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Box, Card, Collapse, IconButton, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useEventData } from "../context/EventDataContext";
+import { EventResponse } from "../services/interfaces";
 import ManageListStage from "./ManageListStage";
 
 interface ManageListEventProps {
@@ -11,54 +13,71 @@ interface ManageListEventProps {
 }
 
 const ManageListEvent = ({ event, isOpen, toggle }: ManageListEventProps) => {
-  const [stages, setStages] = useState<StageResponse[]>([]);
   const [openStageIds, setOpenStageIds] = useState<number[]>([]);
-
-  useEffect(() => {
-    const loadStages = async () => {
-      try {
-        const stagesData = await fetchEventStages(event.id);
-        setStages(stagesData);
-      } catch (error) {
-        console.error("Failed to load stages:", error);
-      }
-    };
-
-    loadStages();
-  }, [event.id]);
+  const { stages } = useEventData();
 
   useEffect(() => {
     if (!isOpen) {
-      setOpenStageIds([]);
+      setOpenStageIds([]); // イベントが閉じられたらステージも閉じる
     }
   }, [isOpen]);
 
   const toggleStage = (id: number) => {
-    if (openStageIds.includes(id)) {
-      setOpenStageIds(openStageIds.filter((stageId) => stageId !== id));
-    } else {
-      setOpenStageIds([...openStageIds, id]);
-    }
+    setOpenStageIds((prevIds) =>
+      prevIds.includes(id)
+        ? prevIds.filter((stageId) => stageId !== id)
+        : [...prevIds, id]
+    );
   };
 
   return (
-    <div className="manage-list">
-      <div key={event.id} className="event">
-        <div className="event-header" onClick={toggle}>
-          {isOpen ? "−" : "+"} {event.name}
-        </div>
-        <div className={`stages ${isOpen ? "open" : ""}`}>
-          {stages.map((stage) => (
-            <ManageListStage
-              key={stage.id}
-              stage={stage}
-              isOpen={openStageIds.includes(stage.id)}
-              toggle={() => toggleStage(stage.id)}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+    <Card
+      sx={{
+        mb: 2,
+        borderRadius: 1,
+        p: 1,
+      }}
+    >
+      {/* イベントヘッダー */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          cursor: "pointer",
+        }}
+        onClick={toggle}
+      >
+        <Typography
+          variant="body1"
+          sx={{
+            width: "100%",
+            m: 1,
+          }}
+        >
+          {event.name}
+        </Typography>
+        <IconButton size="small">
+          {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        </IconButton>
+      </Box>
+
+      {/* ステージリスト */}
+      <Collapse in={isOpen} timeout="auto">
+        <Box>
+          {stages
+            .filter((stage) => stage.event_id === event.id)
+            .map((stage) => (
+              <ManageListStage
+                key={stage.id}
+                stage={stage}
+                isOpen={openStageIds.includes(stage.id)}
+                toggle={() => toggleStage(stage.id)}
+              />
+            ))}
+        </Box>
+      </Collapse>
+    </Card>
   );
 };
 

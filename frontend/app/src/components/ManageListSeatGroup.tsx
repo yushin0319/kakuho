@@ -1,9 +1,18 @@
-// app/src/components/ManageSeatGroup.tsx
-import { useState, useEffect } from "react";
-import { SeatGroupResponse } from "../services/interfaces";
-import { fetchSeatGroupTicketTypes } from "../services/api/ticketType";
-import ManageListItem from "./ManageListItem";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {
+  Box,
+  Collapse,
+  Grid2 as Grid,
+  IconButton,
+  LinearProgress,
+  Typography,
+} from "@mui/material";
+import { useMemo } from "react";
+import { useEventData } from "../context/EventDataContext";
 import { useReservationContext } from "../context/ReservationContext";
+import { SeatGroupResponse } from "../services/interfaces";
+import ManageListItem from "./ManageListItem";
 
 interface ManageListSeatGroupProps {
   seatGroup: SeatGroupResponse;
@@ -16,84 +25,105 @@ const ManageListSeatGroup = ({
   isOpen,
   toggle,
 }: ManageListSeatGroupProps) => {
-  const [seatGroupName, setSeatGroupName] = useState<string>("");
-  const [numOfReservations, setNumOfReservations] = useState<[number, number]>([
-    0, 0,
-  ]);
-  const [rate, setRate] = useState<[number, number]>([0, 0]);
+  const { seatGroupNames } = useEventData();
   const { reservations } = useReservationContext();
 
-  useEffect(() => {
-    const loadSeatGroupName = async () => {
-      try {
-        const ticketTypes = await fetchSeatGroupTicketTypes(seatGroup.id);
-        setSeatGroupName(ticketTypes.map((type) => type.type_name).join("・"));
-      } catch (error) {
-        console.error("Failed to load seat group name:", error);
-      }
-    };
-    loadSeatGroupName();
-  }, [seatGroup.id]);
-
-  useEffect(() => {
-    const countReservations = () => {
-      const count = reservations
-        .filter((data) => data.seatGroup.id === seatGroup.id)
-        .reduce((acc, data) => acc + data.reservation.num_attendees, 0);
-      const countPaid = reservations
-        .filter((data) => data.seatGroup.id === seatGroup.id)
-        .reduce(
-          (acc, data) =>
-            acc +
-            Number(data.reservation.is_paid) * data.reservation.num_attendees,
-          0
-        );
-      const rate = Math.round((count / (count + seatGroup.capacity)) * 100);
-      const ratePaid = Math.round(
-        (countPaid / (count + seatGroup.capacity)) * 100
+  // 予約数とパーセンテージを計算 (useMemoで効率化)
+  const { totalReservations, totalSeats, occupancyRate, paidRate } =
+    useMemo(() => {
+      const filteredReservations = reservations.filter(
+        (data) => data.seatGroup.id === seatGroup.id
       );
-      setNumOfReservations([count, countPaid]);
-      setRate([rate, ratePaid]);
-    };
-
-    countReservations();
-  }, [seatGroup.id, reservations]);
+      const total = filteredReservations.reduce(
+        (acc, data) => acc + data.reservation.num_attendees,
+        0
+      );
+      const paid = filteredReservations.reduce(
+        (acc, data) =>
+          acc + (data.reservation.is_paid ? data.reservation.num_attendees : 0),
+        0
+      );
+      const totalCapacity = total + seatGroup.capacity;
+      return {
+        totalReservations: total,
+        totalSeats: totalCapacity,
+        occupancyRate: Math.round((total / totalCapacity) * 100),
+        paidRate: Math.round((paid / totalCapacity) * 100),
+      };
+    }, [seatGroup.id, reservations]);
 
   return (
-    <div>
-      <div key={seatGroup.id} className="seat-group">
-        <div className="seat-group-header" onClick={toggle}>
-          {isOpen ? "−" : "+"} {seatGroupName} {numOfReservations[0]}/
-          {seatGroup.capacity + numOfReservations[0]}席
-          <div className="seat-bar">
-            <div
-              className="seat-bar-fill"
-              style={{ width: `${rate[0]}%`, transition: "width 0.3s ease" }}
-            ></div>
-            <div
-              className="seat-bar-fill-paid"
-              style={{ width: `${rate[1]}%`, transition: "width 0.3s ease" }}
-            ></div>
-          </div>
-        </div>
-        <div className={`reservations ${isOpen ? "open" : ""}`}>
+    <Box
+      sx={{
+        mb: 1,
+        borderRadius: 1,
+        p: 1,
+      }}
+    >
+      {/* ヘッダー部分 */}
+      <Grid
+        container
+        spacing={1}
+        sx={{ alignItems: "center" }}
+        onClick={toggle}
+      >
+        <Grid size={3}>
+          <Typography variant="body2" color="primary">
+            {seatGroupNames[seatGroup.id]?.join("/")}
+          </Typography>
+          <Typography variant="body2" color="primary">
+            {totalReservations}/{totalSeats}席
+          </Typography>
+        </Grid>
+        <Grid size={7}>
+          <Box sx={{ position: "relative" }}>
+            <LinearProgress
+              variant="determinate"
+              value={occupancyRate}
+              sx={{ height: 20, mb: 1 }}
+            />
+            <LinearProgress
+              variant="determinate"
+              value={paidRate}
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: 20,
+                zIndex: 1,
+                opacity: 0.5,
+              }}
+            />
+          </Box>
+        </Grid>
+        <Grid size={2}>
+          <IconButton size="small">
+            {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+        </Grid>
+      </Grid>
+
+      {/* 予約一覧 (Collapseで開閉) */}
+      <Collapse in={isOpen}>
+        <Box sx={{ mt: 2 }}>
           {reservations
             .filter((data) => data.seatGroup.id === seatGroup.id)
             .sort((a, b) => {
               const nameA = a.user.nickname || a.user.email;
               const nameB = b.user.nickname || b.user.email;
-              return nameA.localeCompare(nameB); // 文字列のアルファベット順にソート
+              return nameA.localeCompare(nameB); // 名前順
             })
             .sort(
               (a, b) =>
-                Number(a.reservation.is_paid) - Number(b.reservation.is_paid)
-            ) // is_paidでソート
+                Number(a.reservation.is_paid) - Number(b.reservation.is_paid) // 支払い順
+            )
             .map((data) => (
               <ManageListItem data={data} key={data.reservation.id} />
             ))}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Collapse>
+    </Box>
   );
 };
 

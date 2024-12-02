@@ -41,11 +41,11 @@ const Booking = () => {
     setEndDate(newEndDates);
   }, [events, stages]);
 
-  if (loading) return <LoadingScreen />;
   if (error) return <div>エラーが発生しました</div>;
 
   return (
     <Container>
+      {loading && <LoadingScreen />}
       {selectedEvent === null ? (
         <Box>
           <Typography variant="body2" sx={{ mb: 2 }}>

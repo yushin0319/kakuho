@@ -1,26 +1,13 @@
 // app/src/pages/ManageList.tsx
-import { useEffect, useState } from "react";
-import { fetchEvents } from "../services/api/event";
-import { EventResponse } from "../services/interfaces";
+import { Container } from "@mui/material";
+import { useState } from "react";
+import LoadingScreen from "../components/LoadingScreen";
 import ManageListEvent from "../components/ManageListEvent";
-import "../assets/styles/ManageList.scss";
+import { useEventData } from "../context/EventDataContext";
 
 const ManageList = () => {
-  const [events, setEvents] = useState<EventResponse[]>([]);
+  const { events, loading, error } = useEventData();
   const [openEventIds, setOpenEventIds] = useState<number[]>([]);
-
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const eventsData = await fetchEvents();
-        setEvents(eventsData);
-      } catch (error) {
-        console.error("Failed to load events:", error);
-      }
-    };
-
-    loadEvents();
-  }, []);
 
   const toggleEvent = (id: number) => {
     if (openEventIds.includes(id)) {
@@ -30,8 +17,13 @@ const ManageList = () => {
     }
   };
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
-    <div>
+    <Container>
+      {loading && <LoadingScreen />}
       {events.map((event) => (
         <ManageListEvent
           key={event.id}
@@ -40,7 +32,7 @@ const ManageList = () => {
           toggle={() => toggleEvent(event.id)}
         />
       ))}
-    </div>
+    </Container>
   );
 };
 

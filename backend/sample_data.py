@@ -14,60 +14,60 @@ def initialize_sample_data(db: Session):
     hashed_password_admin = pwd_context.hash("adminpassword")
 
     names = [
-        "田中浩",
-        "斎藤優子",
-        "山田太郎",
-        "鈴木恵子",
-        "吉田太郎",
-        "佐藤健",
-        "高橋和美",
-        "伊藤真一",
-        "渡辺沙織",
-        "中村花子",
-        "藤田剛",
-        "小林美紀",
-        "加藤光",
-        "村上俊介",
-        "長谷川由美",
-        "柴田陽子",
-        "石田真理",
-        "原田悟",
-        "松田春香",
-        "林翔太",
-        "かなこ",
-        "CoolGuy太夫",
-        "じゅんこ",
-        "John",
-        "Sally",
-        "青い鳥",
-        "ピンクの花",
-        "空見者",
-        "たける",
-        "りんりん",
-        "ドリーマー",
-        "なつこ",
-        "桜子",
-        "まい",
-        "かおり",
-        "なかのしまありさ",
-        "はると",
-        "さとし",
-        "けんた",
-        "山猫",
-        "ひかり",
-        "ひろし",
-        "りっしんべん",
-        "大将",
-        "刀",
-        "着物",
-        "静香",
+        "一ノ瀬遥",
+        "月島灯",
+        "白鳥蒼",
+        "葉山楓",
+        "橘蓮",
+        "秋山結衣",
+        "夏目颯",
+        "冬木詩音",
+        "深山光",
+        "早川凜",
+        "神代翼",
+        "風間律",
+        "黒川優",
+        "桐生樹",
+        "天城真央",
+        "柳瀬翠",
+        "新海陽",
+        "高槻悠",
+        "雪村響",
+        "西園寺悠真",
+        "高天カオル",
+        "白石リコ",
+        "星野ノア",
+        "音羽すず",
+        "天城レン",
+        "小鳥遊そら",
+        "水城エリカ",
+        "東雲ミナ",
+        "若葉シオン",
+        "草薙ケイ",
+        "紫藤レイ",
+        "雪村カエデ",
+        "南条ヒロ",
+        "椿まどか",
+        "もりもりたろう",
+        "ShadowMaster",
+        "ねこのしっぽ",
+        "ひつじのなみ",
+        "月夜の花",
+        "流れ星の彼方",
+        "キリトリミドリ",
+        "しろい風船",
+        "リュウの心",
+        "夕焼け雲",
+        "空飛ぶペンギン",
+        "シークレットウルフ",
+        "",
         "",
         "",
         "",
     ]
 
     # メールのプレフィックス部分（ユニークにする）
-    email_prefixes = [f"user{i:02d}" for i in range(50)]
+    email_prefixes = [f"user{i:03d}" for i in range(100)]
 
     # ドメインリスト
     domains = ["example.com", "test.com", "mail.com"]
@@ -75,12 +75,12 @@ def initialize_sample_data(db: Session):
     # ユーザー生成
     users = [
         User(
-            email=f"{email_prefixes[i]}@{random.choice(domains)}",
-            nickname=names[i],
+            email=f"{email_prefixes[i % len(email_prefixes)]}@{random.choice(domains)}",
+            nickname=names[i % len(names)],
             password_hash=hashed_password_user,
             is_admin=False,
         )
-        for i in range(50)
+        for i in range(100)
     ]
 
     admin = User(
@@ -97,16 +97,18 @@ def initialize_sample_data(db: Session):
     # サンプルイベント作成
     events = [
         Event(
-            name="さよならの約束",
-            description="別れの夜、二人の間に交わされた約束。時を超えて再び巡り合う奇跡の物語。",
+            name="日曜日に洗濯を",
+            description="コインランドリーでの出会いと別れ。機械の音が響く中、見知らぬ人々が織りなす本当にささやかな話。",
         ),
         Event(
-            name="深海",
-            description="暗い海の底で待ち受ける謎と恐怖。真実を知るために深淵へと降りる勇気が試される。",
+            name="明日、透明人間になる",
+            description=(
+                "透明になっていく自分を受け入れた青年が、かつての恋人に「何か」を伝える旅に出る。限られた時間の中で、彼が最後に選ぶ言葉とは何か。"
+            ),
         ),
         Event(
-            name="君は消えゆく光と追憶の終わらない旅路へ",
-            description="時が止まった世界で、少女はかすかな光を追いかける。光の先に待つのは希望か絶望か。",
+            name="バイバイ、階段の踊り場で",
+            description="階段の踊り場で交わされた一方的な別れの言葉。その理由を理解できずにいたが、自分自身の中に眠る本当の感情に気付いていく。",
         ),
     ]
 
@@ -115,7 +117,7 @@ def initialize_sample_data(db: Session):
 
     # サンプルステージ作成
     stages = []
-    base_date = datetime(2024, 11, 1)
+    base_date = datetime(2024, 12, 10)
     for i, event in enumerate(events):
         event_date = base_date + timedelta(days=30 * i)
         stages.append(
@@ -143,7 +145,7 @@ def initialize_sample_data(db: Session):
         # 一般・学生共通のシートグループ
         seat_groups.append(SeatGroup(stage_id=stage.id, capacity=150))
         # 特別なS席のシートグループ
-        seat_groups.append(SeatGroup(stage_id=stage.id, capacity=50))
+        seat_groups.append(SeatGroup(stage_id=stage.id, capacity=10))
 
     db.add_all(seat_groups)
     db.commit()
@@ -167,20 +169,22 @@ def initialize_sample_data(db: Session):
     db.commit()
 
     # サンプル予約作成
-    reservations = [
-        Reservation(
-            ticket_type_id=random.choice(ticket_types).id,
-            user_id=random.choice(users).id,
-            num_attendees=random.randint(1, 5),
+    reservations = []
+    reservation_count = 50  # 目標予約数
+
+    for _ in range(reservation_count):
+        ticket_type = random.choice(ticket_types)
+        user = random.choice(users)
+        num_attendees = random.randint(1, 5)
+        reservations.append(
+            Reservation(
+                ticket_type_id=ticket_type.id,
+                user_id=user.id,
+                num_attendees=num_attendees,
+            )
         )
-        for _ in range(0)
-    ]
 
     db.add_all(reservations)
     db.commit()
 
     print("サンプルデータが正常に挿入されました。")
-
-
-# db: Session = SessionLocal() のようにセッションを作ってから呼び出してください
-# initialize_sample_data(db)

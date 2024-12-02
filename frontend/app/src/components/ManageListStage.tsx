@@ -1,11 +1,13 @@
-// app/src/components/ManageStage.tsx
-import { useState, useEffect } from "react";
-import { StageResponse, SeatGroupResponse } from "../services/interfaces";
-import { fetchStageSeatGroups } from "../services/api/seatGroup";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import { Box, Button, Collapse, IconButton, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useEventData } from "../context/EventDataContext";
+import { StageResponse } from "../services/interfaces";
+import { toJST } from "../services/utils";
 import ManageListSeatGroup from "./ManageListSeatGroup";
 import ScannerModal from "./ScannerModal";
-import { toJST } from "../services/utils";
-import { useReservationContext } from "../context/ReservationContext";
 
 interface ManageListStageProps {
   stage: StageResponse;
@@ -14,39 +16,26 @@ interface ManageListStageProps {
 }
 
 const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
-  const [seatGroups, setSeatGroups] = useState<SeatGroupResponse[]>([]);
   const [openSeatGroupIds, setOpenSeatGroupIds] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { reservations } = useReservationContext();
-
-  useEffect(() => {
-    const loadSeatGroups = async () => {
-      try {
-        const seatGroupsData = await fetchStageSeatGroups(stage.id);
-        setSeatGroups(seatGroupsData);
-      } catch (error) {
-        console.error("Failed to load seat groups:", error);
-      }
-    };
-
-    loadSeatGroups();
-  }, [stage.id, reservations]);
+  const { seatGroups } = useEventData();
 
   useEffect(() => {
     if (!isOpen) {
-      setOpenSeatGroupIds([]);
+      setOpenSeatGroupIds([]); // ステージが閉じられたら座席グループも閉じる
     }
   }, [isOpen]);
 
   const toggleSeatGroup = (id: number) => {
-    if (openSeatGroupIds.includes(id)) {
-      setOpenSeatGroupIds(openSeatGroupIds.filter((groupId) => groupId !== id));
-    } else {
-      setOpenSeatGroupIds([...openSeatGroupIds, id]);
-    }
+    setOpenSeatGroupIds((prevIds) =>
+      prevIds.includes(id)
+        ? prevIds.filter((groupId) => groupId !== id)
+        : [...prevIds, id]
+    );
   };
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsModalOpen(true);
   };
 
@@ -55,37 +44,69 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
   };
 
   return (
-    <div>
-      <div key={stage.id} className="stage">
-        <div className="stage-header" onClick={toggle}>
-          {isOpen ? "−" : "+"}
+    <Box
+      sx={{
+        mt: 2,
+        mb: 1,
+        border: "1px solid #ddd",
+        borderRadius: 2,
+        py: 1,
+      }}
+    >
+      {/* ヘッダー部分 */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          cursor: "pointer",
+        }}
+        onClick={toggle}
+      >
+        <Typography
+          variant="h6"
+          color="secondary"
+          fontWeight="bold"
+          sx={{ ml: 1 }}
+        >
           {toJST(stage.start_time, "dateTime")}
-          <button
-            className="qr-button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleOpenModal();
-            }}
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<QrCodeIcon />}
+            onClick={handleOpenModal}
           >
-            QRコード受付
-          </button>
-          {isModalOpen && (
-            <ScannerModal stageId={stage.id} onClose={handleCloseModal} />
-          )}
-        </div>
+            QR受付
+          </Button>
+          <IconButton size="small">
+            {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+        </Box>
+      </Box>
 
-        <div className={`seat-groups ${isOpen ? "open" : ""}`}>
-          {seatGroups.map((group) => (
-            <ManageListSeatGroup
-              key={group.id}
-              seatGroup={group}
-              isOpen={openSeatGroupIds.includes(group.id)}
-              toggle={() => toggleSeatGroup(group.id)}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+      {/* モーダル */}
+      {isModalOpen && (
+        <ScannerModal stageId={stage.id} onClose={handleCloseModal} />
+      )}
+
+      {/* 座席グループ */}
+      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+        <Box sx={{ mt: 2 }}>
+          {seatGroups
+            .filter((group) => group.stage_id === stage.id)
+            .map((group) => (
+              <ManageListSeatGroup
+                key={group.id}
+                seatGroup={group}
+                isOpen={openSeatGroupIds.includes(group.id)}
+                toggle={() => toggleSeatGroup(group.id)}
+              />
+            ))}
+        </Box>
+      </Collapse>
+    </Box>
   );
 };
 
