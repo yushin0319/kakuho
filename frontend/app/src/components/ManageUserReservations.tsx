@@ -1,5 +1,9 @@
-// app/src/components/ManageUserReservations.tsx
 import {
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  Grid2 as Grid,
   Table,
   TableBody,
   TableCell,
@@ -7,92 +11,141 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import {
-  ReservationDetail,
-  useReservationContext,
-} from "../context/ReservationContext";
+import { useReservationContext } from "../context/ReservationContext";
 import { toJST } from "../services/utils";
 
-type ManageUserReservationsProps = {
-  userId: number;
-};
-
-const ManageUserReservations = ({ userId }: ManageUserReservationsProps) => {
-  const [data, setData] = useState<ReservationDetail[]>([]);
+const ManageUserReservations = ({ userId }: { userId: number }) => {
   const { reservations } = useReservationContext();
-  const [isLoading, setIsLoading] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // ユーザーの予約データを取得
-  useEffect(() => {
-    setIsLoading(true);
-    const data = reservations.filter((res) => res.user.id === userId);
-    setData(data);
-    setIsLoading(false);
-  }, [reservations, userId]);
+  const userReservations = reservations.filter((res) => res.user.id === userId);
 
-  if (isLoading) {
-    return <div>データを読み込んでいます...</div>;
-  }
-
-  if (data.length === 0) {
-    return <div>予約データがありません</div>;
+  if (userReservations.length === 0) {
+    return (
+      <Box sx={{ textAlign: "center", p: 2 }}>
+        <Typography variant="body2" color="text.secondary">
+          現在、予約はありません。
+        </Typography>
+      </Box>
+    );
   }
 
   return (
-    <TableContainer>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <Typography variant="body1">イベント</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="body1">ステージ</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="body1">チケット</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="body1">予約日</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="body1">支払い状況</Typography>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((res) => (
-            <TableRow key={res.reservation.id}>
-              <TableCell>
-                <Typography variant="body2">{res.event.name}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="body2">
-                  {toJST(res.stage.start_time, "dateTime")}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="body2">
-                  {res.ticketType.type_name}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="body2">
-                  {toJST(res.reservation.created_at, "dateTime")}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="body2">
-                  {res.reservation.is_paid ? "支払い済" : "未払い"}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+      {isMobile ? (
+        // スマホ表示: カード形式
+        userReservations.map(({ event, stage, ticketType, reservation }) => (
+          <Card
+            key={reservation.id}
+            sx={{
+              mb: 2,
+              borderLeft: reservation.is_paid
+                ? "4px solid #4caf50"
+                : "4px solid #f44336",
+            }}
+          >
+            <CardContent>
+              <Grid container spacing={1}>
+                <Grid size={12}>
+                  <Typography variant="h6">{event.name}</Typography>
+                </Grid>
+                <Grid size={8}>
+                  <Typography variant="body2" color="secondary">
+                    日時：{toJST(stage.start_time, "dateTime")}
+                  </Typography>
+                </Grid>
+                <Grid size={4}>
+                  <Typography variant="body2">
+                    {ticketType.type_name}
+                  </Typography>
+                </Grid>
+                <Grid size={12}>
+                  <Divider />
+                </Grid>
+                <Grid size={8}>
+                  <Typography variant="body2" color="text.secondary">
+                    予約：{toJST(reservation.created_at, "dateTime")}
+                  </Typography>
+                </Grid>
+                <Grid size={4}>
+                  <Typography
+                    variant="body2"
+                    color={reservation.is_paid ? "success.main" : "error.main"}
+                  >
+                    {reservation.is_paid ? "受付済" : "受付前"}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        ))
+      ) : (
+        // PC表示: テーブル形式
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="body1">イベント</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body1">ステージ</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body1">チケット</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body1">予約日</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body1">支払い状況</Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {userReservations.map(
+                ({ event, stage, ticketType, reservation }) => (
+                  <TableRow key={reservation.id}>
+                    <TableCell>
+                      <Typography variant="body2">{event.name}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {toJST(stage.start_time, "dateTime")}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {ticketType.type_name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {toJST(reservation.created_at, "dateTime")}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body2"
+                        color={
+                          reservation.is_paid ? "success.main" : "error.main"
+                        }
+                      >
+                        {reservation.is_paid ? "受付済" : "受付前"}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </Box>
   );
 };
 
