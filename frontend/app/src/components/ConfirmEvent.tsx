@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useSnack } from "../context/SnackContext";
 import { seatProps } from "../pages/CreateEvent";
 import { createEvent } from "../services/api/event";
 import { createSeatGroup } from "../services/api/seatGroup";
@@ -46,6 +47,7 @@ const ConfirmEvent = ({
   const [errors, setErrors] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState<boolean>(false);
+  const { setSnack } = useSnack();
 
   // エラーチェック
   useEffect(() => {
@@ -120,7 +122,6 @@ const ConfirmEvent = ({
       const stagePromises = Object.values(completedTimes)
         .flat()
         .map((time) => {
-          // タイムゾーン補正を行う関数
           const start_time = toJST(time, "ISO8601");
           const end_time = toJST(addTime(time, { hours: 2 }), "ISO8601");
           return createStage(eventId, { start_time, end_time });
@@ -128,9 +129,9 @@ const ConfirmEvent = ({
 
       const stages = await Promise.all(stagePromises);
 
-      // 座席グループ作成
-      const seatGroupPromises = seatGroups.flatMap((seatGroup) =>
-        stages.map(async (stage) => {
+      // ステージごとにシートグループとチケットタイプを作成
+      for (const stage of stages) {
+        for (const seatGroup of seatGroups) {
           const fetchedSeatGroup = await createSeatGroup(
             stage.id,
             seatGroup.seatGroup
@@ -138,20 +139,24 @@ const ConfirmEvent = ({
           const seatGroupId = fetchedSeatGroup.id;
 
           // チケットタイプ作成
-          const ticketTypePromises = seatGroup.ticketTypes.map((ticketType) =>
-            createTicketType(seatGroupId, ticketType)
-          );
-          return Promise.all(ticketTypePromises);
-        })
-      );
-
-      await Promise.all(seatGroupPromises);
+          for (const ticketType of seatGroup.ticketTypes) {
+            await createTicketType(seatGroupId, ticketType);
+          }
+        }
+      }
 
       // 処理がすべて成功した場合
-      console.log("イベント作成成功");
+      setSnack({
+        message: "イベントを作成しました",
+        severity: "success",
+      });
     } catch (error) {
       // エラー処理
-      console.error("エラーが発生しました:", error);
+      console.error("Failed to create event:", error);
+      setSnack({
+        message: "イベントの作成に失敗しました",
+        severity: "error",
+      });
     } finally {
       setIsCreating(false);
       onConfirm();

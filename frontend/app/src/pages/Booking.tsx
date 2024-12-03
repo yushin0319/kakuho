@@ -48,8 +48,8 @@ const Booking = () => {
       {loading && <LoadingScreen />}
       {selectedEvent === null ? (
         <Box>
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            イベントをお選びください
+          <Typography variant="caption" color="textSecondary">
+            ご予約するイベントをお選びください
           </Typography>
           {events.map((event) => (
             <Card

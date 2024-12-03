@@ -64,7 +64,10 @@ const ManageListSeatGroup = ({
       <Grid
         container
         spacing={1}
-        sx={{ alignItems: "center" }}
+        sx={{
+          alignItems: "center",
+          cursor: "pointer",
+        }}
         onClick={toggle}
       >
         <Grid size={3}>
@@ -80,7 +83,11 @@ const ManageListSeatGroup = ({
             <LinearProgress
               variant="determinate"
               value={occupancyRate}
-              sx={{ height: 20, mb: 1 }}
+              sx={{
+                height: 20,
+                mb: 1,
+                borderRadius: 1,
+              }}
             />
             <LinearProgress
               variant="determinate"
@@ -93,6 +100,7 @@ const ManageListSeatGroup = ({
                 height: 20,
                 zIndex: 1,
                 opacity: 0.5,
+                borderRadius: 1,
               }}
             />
           </Box>

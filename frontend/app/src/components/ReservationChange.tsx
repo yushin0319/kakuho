@@ -22,7 +22,7 @@ import {
   updateReservation,
 } from "../services/api/reservation";
 import { StageResponse, TicketTypeResponse } from "../services/interfaces";
-import { toJST } from "../services/utils";
+import { NumComma, toJST } from "../services/utils";
 import ReservationSummary from "./ReservationSummary";
 
 interface ReservationChangeProps {
@@ -256,7 +256,7 @@ const ReservationChange = ({
                   >
                     {selectableTicketTypes.map((ticketType) => (
                       <MenuItem key={ticketType.id} value={ticketType.id}>
-                        {ticketType.type_name} - {ticketType.price}円
+                        {ticketType.type_name} - {NumComma(ticketType.price)}円
                       </MenuItem>
                     ))}
                   </TextField>

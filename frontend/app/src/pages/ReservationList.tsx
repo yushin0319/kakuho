@@ -1,5 +1,5 @@
 // app/src/pages/ReservationList.tsx
-import { Container } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import LoadingScreen from "../components/LoadingScreen";
 import ReservationCard from "../components/ReservationCard";
@@ -30,6 +30,9 @@ const ReservationList = () => {
 
   return (
     <Container>
+      <Typography variant="caption" color="textSecondary" sx={{ mb: 1 }}>
+        クリックするとQRコードが表示されます
+      </Typography>
       {reservations.map((item) => (
         <ReservationCard
           key={item.reservation.id}

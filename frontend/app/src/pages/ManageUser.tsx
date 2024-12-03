@@ -171,12 +171,23 @@ const ManageUser = () => {
           .map((user) => (
             <Accordion key={user.id}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>{user.nickname || user.email}</Typography>
+                <Typography
+                  sx={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {user.nickname || user.email}
+                </Typography>
                 <Typography
                   variant="caption"
                   sx={{
                     ml: 2,
                     color: "gray",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
                   }}
                 >
                   {user.email}

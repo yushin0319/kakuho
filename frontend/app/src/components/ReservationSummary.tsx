@@ -51,7 +51,12 @@ const ReservationSummary = ({
               {user.nickname || user.email}
             </Typography>
           </Grid>
-          <Grid size={12}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
             <Typography variant="subtitle2" color="secondary">
               日時
             </Typography>
@@ -60,19 +65,35 @@ const ReservationSummary = ({
               {toJST(stage.start_time, "time")}
             </Typography>
           </Grid>
-          <Grid size={4}>
+          <Grid
+            size={{
+              xs: 4,
+              md: 2,
+            }}
+          >
             <Typography variant="subtitle2" color="secondary">
               チケット
             </Typography>
             <Typography variant="h6">{ticketType.type_name}</Typography>
           </Grid>
-          <Grid size={4}>
+          <Grid
+            size={{
+              xs: 4,
+              md: 2,
+            }}
+          >
             <Typography variant="subtitle2" color="secondary">
               ご人数
             </Typography>
             <Typography variant="h6">{attendees}名</Typography>
           </Grid>
-          <Grid size={4} textAlign="center">
+          <Grid
+            size={{
+              xs: 4,
+              md: 2,
+            }}
+            textAlign="center"
+          >
             <Typography variant="subtitle2" color="secondary">
               合計金額
             </Typography>

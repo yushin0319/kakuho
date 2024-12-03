@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
+import ChairIcon from "@mui/icons-material/Chair";
 import {
   Box,
-  Typography,
-  Slider,
   Button,
   Chip,
-  Grid2 as Grid,
   Divider,
+  Grid2 as Grid,
+  Slider,
+  Typography,
 } from "@mui/material";
-import ChairIcon from "@mui/icons-material/Chair";
-import { EventResponse } from "../services/interfaces";
-import { updateSeatGroup } from "../services/api/seatGroup";
+import { useEffect, useState } from "react";
 import { useEventData } from "../context/EventDataContext";
-import { toJST } from "../services/utils";
 import { useSnack } from "../context/SnackContext";
+import { updateSeatGroup } from "../services/api/seatGroup";
+import { EventResponse } from "../services/interfaces";
+import { toJST } from "../services/utils";
 
 interface CapacityAdjusterProps {
   event: EventResponse;
@@ -59,7 +59,11 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={4}>
+    <Box display="flex" flexDirection="column" gap={2}>
+      <Typography variant="caption" color="textSecondary">
+        席数の変更は即時反映されません。保存ボタンを押すまで確定しません
+      </Typography>
+
       {error && <Typography color="error">{error}</Typography>}
       {stages
         .filter((stage) => stage.event_id === event.id)
@@ -67,7 +71,7 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
           <Box key={stage.id}>
             <Divider
               sx={{
-                my: 1,
+                mb: 1,
                 backgroundColor: "primary.main",
               }}
             />

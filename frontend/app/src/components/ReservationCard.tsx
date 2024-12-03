@@ -11,7 +11,7 @@ import {
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
 import { ReservationDetail } from "../context/ReservationContext";
-import { toJST } from "../services/utils";
+import { NumComma, toJST } from "../services/utils";
 import ReservationChange from "./ReservationChange";
 import ReservationDelete from "./ReservationDelete";
 
@@ -57,9 +57,9 @@ const ReservationCard = ({
       onClick={onCardClick}
       sx={{
         transition: "background-color 0.5s, box-shadow 0.3s",
-        backgroundColor: highlight ? "secondary.main" : "paper",
+        backgroundColor: highlight ? "secondary" : "paper",
         p: 2,
-        mb: 2,
+        my: 2,
 
         "@media (hover: hover)": {
           cursor: "pointer",
@@ -83,10 +83,10 @@ const ReservationCard = ({
             {ticketType.type_name}
           </Typography>
           <Typography variant="caption" color="secondary">
-            {ticketType.price} × {reservation.num_attendees}枚
+            {NumComma(ticketType.price)} × {reservation.num_attendees}枚
           </Typography>
           <Typography variant="body1">
-            {ticketType.price * reservation.num_attendees}円
+            {NumComma(ticketType.price * reservation.num_attendees)}円
           </Typography>
           <Grid container justifyContent="center" sx={{ mt: 2 }}>
             <QRCodeSVG value={`Kakuho-${reservation.id}`} size={128} />

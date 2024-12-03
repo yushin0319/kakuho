@@ -1,32 +1,22 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Backdrop, CircularProgress, Typography } from "@mui/material";
 
 const LoadingScreen = () => {
   return (
-    <Box
+    <Backdrop
+      open={true} // 表示/非表示を制御
       sx={{
-        position: "fixed", // 画面全体を覆う
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
+        color: "#fff", // プログレスとテキストの色
+        zIndex: (theme) => theme.zIndex.modal + 1, // モーダルより上に表示
         backgroundColor: "rgba(0, 0, 0, 0.5)", // 半透明の背景
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1300, // モーダルなどの上に表示されるように高めの値
       }}
     >
-      <Box
-        sx={{
-          textAlign: "center",
-        }}
-      >
+      <div style={{ textAlign: "center" }}>
         <CircularProgress size={60} thickness={4} color="inherit" />
         <Typography sx={{ mt: 2 }} variant="body1">
           読み込み中...
         </Typography>
-      </Box>
-    </Box>
+      </div>
+    </Backdrop>
   );
 };
 
