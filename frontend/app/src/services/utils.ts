@@ -1,5 +1,5 @@
 // app/src/services/utils.ts
-import { toZonedTime, format } from "date-fns-tz";
+import { format, toZonedTime } from "date-fns-tz";
 
 /**
  * JSTの日時を取得し、フォーマットする
@@ -69,4 +69,8 @@ export const addTime = (
     date.getDate() + days,
     date.getHours() + hours
   );
+};
+
+export const NumComma = (num: number): string => {
+  return new Intl.NumberFormat("ja-JP").format(num);
 };

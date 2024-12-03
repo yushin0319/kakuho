@@ -1,18 +1,15 @@
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Typography,
-  Card,
-  Box,
-  Grid2 as Grid,
 } from "@mui/material";
-import { toJST } from "../services/utils";
-import { deleteReservation } from "../services/api/reservation";
-import { ReservationDetail } from "../context/ReservationContext";
 import { useEventData } from "../context/EventDataContext";
+import { ReservationDetail } from "../context/ReservationContext";
+import { deleteReservation } from "../services/api/reservation";
+import ReservationSummary from "./ReservationSummary";
 
 interface ReservationDeleteProps {
   reservationDetail: ReservationDetail;
@@ -20,10 +17,11 @@ interface ReservationDeleteProps {
 }
 
 const ReservationDelete = ({
-  reservationDetail: { reservation, seatGroup, event, ticketType, stage },
+  reservationDetail: item,
   onClose,
 }: ReservationDeleteProps) => {
   const { changeSeatGroup } = useEventData();
+  const { reservation, seatGroup } = item;
 
   const handleDeleteConfirm = async () => {
     try {
@@ -38,61 +36,25 @@ const ReservationDelete = ({
 
   return (
     <Dialog open onClose={onClose} onClick={(e) => e.stopPropagation()}>
-      <DialogTitle>予約を削除しますか？</DialogTitle>
-      <DialogContent>
-        <Typography variant="body1" gutterBottom color="warning">
+      <DialogTitle
+        sx={{
+          backgroundColor: "error.main",
+          color: "error.contrastText",
+        }}
+      >
+        <Typography variant="h6">下記の予約を削除しますか？</Typography>
+        <Typography variant="body1" color="error.contrastText">
           この操作は取り消せません。
         </Typography>
-        <Card sx={{ p: 2 }} elevation={2}>
-          <Box sx={{ mt: 2 }}>
-            <Grid container spacing={2}>
-              <Grid size={12}>
-                <Typography variant="subtitle2" color="secondary">
-                  イベント
-                </Typography>
-                <Typography>{event.name}</Typography>
-              </Grid>
-              <Grid size={12}>
-                <Typography variant="subtitle2" color="secondary">
-                  日時
-                </Typography>
-                <Typography>{toJST(stage.start_time, "dateTime")}</Typography>
-              </Grid>
-              <Grid size={12}>
-                <Typography variant="subtitle2" color="secondary">
-                  チケット
-                </Typography>
-                <Typography>{ticketType.type_name}</Typography>
-              </Grid>
-              <Grid size={12}>
-                <Typography variant="subtitle2" color="secondary">
-                  価格
-                </Typography>
-                <Typography>{ticketType.price}円</Typography>
-              </Grid>
-              <Grid size={12}>
-                <Typography variant="subtitle2" color="secondary">
-                  枚数
-                </Typography>
-                <Typography>{reservation.num_attendees}</Typography>
-              </Grid>
-              <Grid size={12}>
-                <Typography variant="subtitle2" color="secondary">
-                  合計
-                </Typography>
-                <Typography>
-                  {ticketType.price * reservation.num_attendees}円
-                </Typography>
-              </Grid>
-            </Grid>
-          </Box>
-        </Card>
+      </DialogTitle>
+      <DialogContent sx={{ p: 0 }}>
+        <ReservationSummary item={item} />
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" onClick={handleDeleteConfirm}>
           削除
         </Button>
-        <Button variant="outlined" onClick={onClose}>
+        <Button variant="outlined" color="error" onClick={onClose}>
           キャンセル
         </Button>
       </DialogActions>

@@ -1,12 +1,13 @@
-// app/src/components/PaidStatusController.tsx
-import { useState, useEffect } from "react";
-import Modal from "../components/Modal";
-import { updateReservation } from "../services/api/reservation";
-import { toJST } from "../services/utils";
 import {
-  useReservationContext,
-  ReservationDetail,
-} from "../context/ReservationContext";
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+import { useReservationContext } from "../context/ReservationContext";
+import { updateReservation } from "../services/api/reservation";
+import ReservationSummary from "./ReservationSummary";
 
 interface PaidStatusControllerProps {
   reservationId: number;
@@ -17,75 +18,73 @@ const PaidStatusController = ({
   reservationId,
   onClose,
 }: PaidStatusControllerProps) => {
-  const [isPaid, setIsPaid] = useState<boolean>(false);
-  const [reservation, setReservation] = useState<ReservationDetail | null>(
-    null
+  const { reservations, reloadReservations } = useReservationContext();
+
+  // 該当する予約を直接取得
+  const reservation = reservations.find(
+    (res) => res.reservation.id === reservationId
   );
-  const { simpleReload, reservations } = useReservationContext();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-    const reservation = reservations.find(
-      (res) => res.reservation.id === reservationId
-    );
-    if (reservation) {
-      setReservation(reservation);
-      setIsPaid(reservation.reservation.is_paid);
-    }
-    setIsLoading(false);
-  }, [reservations, reservationId]);
-
-  const handleChangePaidStatus = async () => {
+  const handlePaidStatusChange = async () => {
     if (!reservation) return;
     try {
-      const data = {
+      await updateReservation(reservation.reservation.id, {
         user_id: reservation.user.id,
-        is_paid: !isPaid,
-      };
-      await updateReservation(reservation.reservation.id, data);
-    } catch (error: any) {
-      console.error(error);
+        is_paid: !reservation.reservation.is_paid,
+      });
+    } catch (error) {
+      console.error("Failed to update reservation:", error);
     } finally {
-      simpleReload();
+      reloadReservations();
       onClose();
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
   if (!reservation) {
-    return <div>Reservation not found</div>;
+    return (
+      <Dialog open onClose={onClose}>
+        <DialogTitle>予約が見つかりません</DialogTitle>
+        <DialogActions>
+          <Button variant="outlined" onClick={onClose}>
+            閉じる
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
   }
 
   return (
-    <Modal onClose={onClose}>
-      <div className="paid-status-content">
-        <h2>ご予約詳細</h2>
-        {reservation.user.nickname && (
-          <p>ご予約名: {reservation.user.nickname}</p>
-        )}
-        <p>イベント名：{reservation.event.name}</p>
-        <p>開始時間：{toJST(reservation.stage.start_time, "dateTime")}</p>
-        <p>
-          チケット種別：{reservation.ticketType.type_name}
-          {" - "}
-          {reservation.ticketType.price}円
-        </p>
-        <p>ご人数：{reservation.reservation.num_attendees}名様</p>
-        <p>
-          お支払い金額：
-          {reservation.ticketType.price * reservation.reservation.num_attendees}
-          円
-        </p>
-
-        <button onClick={handleChangePaidStatus}>
-          {isPaid ? "受付取消" : "受付完了"}
-        </button>
-        <button onClick={onClose}>キャンセル</button>
-      </div>
-    </Modal>
+    <Dialog open onClose={onClose}>
+      <DialogTitle
+        sx={{
+          backgroundColor: reservation.reservation.is_paid
+            ? "error.main"
+            : "primary.main",
+          color: reservation.reservation.is_paid
+            ? "error.contrastText"
+            : "white",
+        }}
+      >
+        {reservation.reservation.is_paid
+          ? "未受付に戻しますか？"
+          : "下記の予約を受付いたします"}
+      </DialogTitle>
+      <DialogContent sx={{ p: 0 }}>
+        <ReservationSummary item={reservation} />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          variant="contained"
+          color={reservation.reservation.is_paid ? "error" : "primary"}
+          onClick={handlePaidStatusChange}
+        >
+          {reservation.reservation.is_paid ? "受付取消" : "受付完了"}
+        </Button>
+        <Button variant="outlined" onClick={onClose}>
+          キャンセル
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

@@ -118,8 +118,19 @@ const ManageListSeatGroup = ({
               (a, b) =>
                 Number(a.reservation.is_paid) - Number(b.reservation.is_paid) // 支払い順
             )
-            .map((data) => (
-              <ManageListItem data={data} key={data.reservation.id} />
+            .map((data, index) => (
+              <Box
+                key={data.reservation.id}
+                sx={{
+                  backgroundColor: data.reservation.is_paid
+                    ? "rgba(0, 0, 0, 0.2)"
+                    : index % 2 === 0
+                    ? "inherit"
+                    : "rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                <ManageListItem data={data} />
+              </Box>
             ))}
         </Box>
       </Collapse>

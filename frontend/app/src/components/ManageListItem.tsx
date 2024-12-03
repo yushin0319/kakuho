@@ -1,9 +1,18 @@
 // app/src/components/ManageItem.tsx
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import { Box, Checkbox, IconButton, Typography } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  Box,
+  Checkbox,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { ReservationDetail } from "../context/ReservationContext";
+import { NumComma } from "../services/utils";
 import PaidStatusController from "./PaidStatusController";
 import ReservationChange from "./ReservationChange";
 import ReservationDelete from "./ReservationDelete";
@@ -13,6 +22,13 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const { reservation, user, ticketType } = data;
+  const [openMenu, setOpenMenu] = useState<{
+    anchor: HTMLElement | null;
+  }>({ anchor: null });
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setOpenMenu({ anchor: event.currentTarget });
+  };
 
   const handlePaying = () => {
     setIsPaying(true);
@@ -25,19 +41,61 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
         alignItems: "center",
         justifyContent: "space-between",
         px: 1,
-        borderBottom: "1px solid #ddd",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Checkbox checked={reservation.is_paid} onChange={handlePaying} />
-        <Typography variant="body2">{user.nickname || user.email}</Typography>
-        <Typography variant="body2">{ticketType.type_name}</Typography>
-        <Typography variant="body2">{reservation.num_attendees}</Typography>
-        <Typography variant="body2">
-          {ticketType.price * reservation.num_attendees}円
-        </Typography>
+      <Checkbox
+        checked={reservation.is_paid}
+        onChange={handlePaying}
+        sx={{ mr: 1 }}
+      />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          textAlign: "left",
+          width: "100%",
+        }}
+      >
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+            {user.nickname || user.email}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="caption" color="textSecondary">
+            {ticketType.type_name} × {reservation.num_attendees}枚
+          </Typography>
+          <Typography variant="body2">
+            {NumComma(ticketType.price * reservation.num_attendees)}円
+          </Typography>
+        </Box>
       </Box>
-      <Box>
+      {/* スマホ用 */}
+      <Box sx={{ display: { xs: "block", sm: "none" } }}>
+        <IconButton onClick={(e) => handleMenuClick(e)}>
+          <SettingsIcon />
+        </IconButton>
+        <Menu
+          anchorEl={openMenu.anchor}
+          open={Boolean(openMenu.anchor)}
+          onClose={() => setOpenMenu({ anchor: null })}
+        >
+          <MenuItem onClick={() => setIsChanging(true)}>変更</MenuItem>
+          <MenuItem onClick={() => setIsDeleting(true)}>削除</MenuItem>
+        </Menu>
+      </Box>
+      {/* PC用 */}
+      <Box
+        sx={{
+          display: { xs: "none", sm: "block" },
+          width: { xs: "100%", sm: "20%" },
+        }}
+      >
         <IconButton onClick={() => setIsChanging(true)}>
           <ModeEditIcon color="primary" />
         </IconButton>

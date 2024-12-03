@@ -1,16 +1,14 @@
 // app/src/components/ReservationChange.tsx
 import {
   Alert,
-  Box,
   Button,
-  Card,
   Dialog,
   DialogActions,
   DialogContent,
+  DialogTitle,
   Grid2 as Grid,
   MenuItem,
   TextField,
-  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -25,6 +23,7 @@ import {
 } from "../services/api/reservation";
 import { StageResponse, TicketTypeResponse } from "../services/interfaces";
 import { toJST } from "../services/utils";
+import ReservationSummary from "./ReservationSummary";
 
 interface ReservationChangeProps {
   reservationDetail: ReservationDetail;
@@ -39,7 +38,7 @@ interface ReservationChangeForm {
 }
 
 const ReservationChange = ({
-  reservationDetail: { reservation, event, stage, seatGroup, ticketType },
+  reservationDetail: { reservation, event, stage, ticketType, seatGroup, user },
   onClose,
 }: ReservationChangeProps) => {
   const [step, setStep] = useState(1);
@@ -190,15 +189,27 @@ const ReservationChange = ({
     <Dialog
       open
       onClose={onClose}
-      fullWidth
       onClick={(e) => {
         e.stopPropagation();
       }}
+      fullWidth
     >
-      <DialogContent>
+      <DialogTitle
+        sx={{
+          backgroundColor: "primary.main",
+          color: "white",
+        }}
+      >
+        {step === 1 ? "変更箇所を選択してください" : "変更してよろしいですか？"}
+      </DialogTitle>
+      <DialogContent
+        sx={{
+          p: 0,
+        }}
+      >
         {alertMessage && <Alert severity="error">{alertMessage}</Alert>}
         {step === 1 && (
-          <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid container spacing={2} sx={{ m: 2 }}>
             <Grid size={12}>
               <Controller
                 name="stage"
@@ -295,77 +306,25 @@ const ReservationChange = ({
           </Grid>
         )}
         {step === 2 && (
-          <Box>
-            <Typography variant="body1" gutterBottom color="warning">
-              以下の内容に変更してよろしいですか？
-            </Typography>
-            <Card sx={{ p: 2 }} elevation={2}>
-              <Box sx={{ mt: 2 }}>
-                <Grid container spacing={2}>
-                  <Grid size={12}>
-                    <Typography variant="subtitle2" color="secondary">
-                      イベント
-                    </Typography>
-                    <Typography>{event.name}</Typography>
-                  </Grid>
-                  <Grid size={12}>
-                    <Typography variant="subtitle2" color="secondary">
-                      日時
-                    </Typography>
-                    <Typography>
-                      {toJST(
-                        selectableStages.find(
-                          (stage) => stage.id === watchStage
-                        )?.start_time,
-                        "dateTime"
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid size={12}>
-                    <Typography variant="subtitle2" color="secondary">
-                      チケット
-                    </Typography>
-                    <Typography>
-                      {
-                        selectableTicketTypes.find(
-                          (type) => type.id === watchTicketType
-                        )?.type_name
-                      }
-                    </Typography>
-                  </Grid>
-                  <Grid size={12}>
-                    <Typography variant="subtitle2" color="secondary">
-                      価格
-                    </Typography>
-                    <Typography>
-                      {
-                        selectableTicketTypes.find(
-                          (type) => type.id === watchTicketType
-                        )?.price
-                      }
-                      円
-                    </Typography>
-                  </Grid>
-                  <Grid size={12}>
-                    <Typography variant="subtitle2" color="secondary">
-                      枚数
-                    </Typography>
-                    <Typography>{watchNumAttendees}</Typography>
-                  </Grid>
-                  <Grid size={12}>
-                    <Typography variant="subtitle2" color="secondary">
-                      合計
-                    </Typography>
-                    <Typography>
-                      {(ticketTypes.find((type) => type.id === watchTicketType)
-                        ?.price || 0) * watchNumAttendees}
-                      円
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Card>
-          </Box>
+          <ReservationSummary
+            item={
+              {
+                reservation: {
+                  ...reservation,
+                  num_attendees: watchNumAttendees,
+                },
+                event,
+                stage: selectableStages.find(
+                  (stage) => stage.id === watchStage
+                ),
+                ticketType: selectableTicketTypes.find(
+                  (type) => type.id === watchTicketType
+                ),
+                seatGroup,
+                user,
+              } as ReservationDetail
+            }
+          />
         )}
       </DialogContent>
       <DialogActions>

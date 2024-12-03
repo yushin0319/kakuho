@@ -1,21 +1,21 @@
 // app/src/pages/ManageEvent.tsx
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import {
-  Container,
-  Button,
   Accordion,
-  AccordionSummary,
   AccordionDetails,
-  Typography,
+  AccordionSummary,
   Box,
+  Button,
   ButtonGroup,
+  Card,
+  Container,
   Menu,
   MenuItem,
-  Card,
+  Typography,
 } from "@mui/material";
-import EventInfoManager from "../components/EventInfoManager";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import CapacityAdjuster from "../components/CapacityAdjuster";
+import EventInfoManager from "../components/EventInfoManager";
 import { useEventData } from "../context/EventDataContext";
 
 const ManageEvent = () => {
