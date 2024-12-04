@@ -1,27 +1,30 @@
+import { Box, Button, Grid2 as Grid, Typography } from "@mui/material";
+
 const CustomToolbar = (toolbar: any) => {
-  const goToBack = () => {
-    toolbar.onNavigate("PREV");
-  };
-
-  const goToNext = () => {
-    toolbar.onNavigate("NEXT");
-  };
-
-  const label = () => {
-    const date = toolbar.date;
-    return `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
-  };
-
   return (
-    <div className="rbc-toolbar">
-      <button type="button" onClick={goToBack}>
-        前
-      </button>
-      <span className="rbc-toolbar-label">{label()}</span>
-      <button type="button" onClick={goToNext}>
-        次
-      </button>
-    </div>
+    <Box sx={{ mb: 2 }}>
+      <Grid container justifyContent="space-between">
+        <Button
+          onClick={() => {
+            toolbar.onNavigate("PREV");
+          }}
+          variant="outlined"
+        >
+          前月
+        </Button>
+        <Typography variant="h6">{`${toolbar.date.getFullYear()}年 ${
+          toolbar.date.getMonth() + 1
+        }月`}</Typography>
+        <Button
+          onClick={() => {
+            toolbar.onNavigate("NEXT");
+          }}
+          variant="outlined"
+        >
+          次月
+        </Button>
+      </Grid>
+    </Box>
   );
 };
 

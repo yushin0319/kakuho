@@ -224,7 +224,6 @@ const ReservationChange = ({
                         ? watchStage
                         : ""
                     }
-                    label="ステージ選択"
                     fullWidth
                   >
                     {selectableStages.map((stage) => (
@@ -251,7 +250,6 @@ const ReservationChange = ({
                         ? watchTicketType
                         : ""
                     }
-                    label="チケット選択"
                     fullWidth
                   >
                     {selectableTicketTypes.map((ticketType) => (
@@ -271,7 +269,6 @@ const ReservationChange = ({
                   <TextField
                     select
                     {...field}
-                    label="枚数"
                     fullWidth
                     slotProps={{
                       select: {

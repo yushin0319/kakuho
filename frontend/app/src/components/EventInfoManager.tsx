@@ -1,9 +1,9 @@
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import { Box, TextField, Button, Typography } from "@mui/material";
-import { EventResponse } from "../services/interfaces";
-import { updateEvent } from "../services/api/event";
 import { useEventData } from "../context/EventDataContext";
 import { useSnack } from "../context/SnackContext";
+import { updateEvent } from "../services/api/event";
+import { EventResponse } from "../services/interfaces";
 
 interface EventInfoManagerProps {
   event: EventResponse;
@@ -37,7 +37,7 @@ const EventInfoManager = ({ event }: EventInfoManagerProps) => {
         disabled={loading}
       />
       <TextField
-        label="詳細"
+        label="イベント説明"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         fullWidth

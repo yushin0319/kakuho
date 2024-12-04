@@ -1,7 +1,7 @@
 // app/src/pages/Booking.tsx
 import { Box, Card, CardContent, Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import CalendarView from "../components/CalendarView";
+import Calendar from "../components/Calendar";
 import LoadingScreen from "../components/LoadingScreen";
 import { useEventData } from "../context/EventDataContext";
 import { EventResponse } from "../services/interfaces";
@@ -81,10 +81,7 @@ const Booking = () => {
           ))}
         </Box>
       ) : (
-        <CalendarView
-          event={selectedEvent}
-          onBack={() => setSelectedEvent(null)}
-        />
+        <Calendar event={selectedEvent} onBack={() => setSelectedEvent(null)} />
       )}
     </Container>
   );

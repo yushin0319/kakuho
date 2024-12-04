@@ -5,6 +5,7 @@ const theme = createTheme({
   palette: {
     primary: {
       main: "#795548", // 落ち着いたブラウン
+      light: "#a1887f", // 明るいブラウン
       dark: "#5d4037", // 濃いブラウン
     },
     secondary: {

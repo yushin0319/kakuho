@@ -44,6 +44,7 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
       }}
     >
       <Checkbox
+        id={reservation.id.toString()}
         checked={reservation.is_paid}
         onChange={handlePaying}
         sx={{ mr: 1 }}
@@ -85,8 +86,22 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
           open={Boolean(openMenu.anchor)}
           onClose={() => setOpenMenu({ anchor: null })}
         >
-          <MenuItem onClick={() => setIsChanging(true)}>変更</MenuItem>
-          <MenuItem onClick={() => setIsDeleting(true)}>削除</MenuItem>
+          <MenuItem
+            onClick={() => {
+              setIsChanging(true);
+              setOpenMenu({ anchor: null });
+            }}
+          >
+            変更
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setIsDeleting(true);
+              setOpenMenu({ anchor: null });
+            }}
+          >
+            削除
+          </MenuItem>
         </Menu>
       </Box>
       {/* PC用 */}

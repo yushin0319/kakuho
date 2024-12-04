@@ -80,7 +80,11 @@ const PaidStatusController = ({
         >
           {reservation.reservation.is_paid ? "受付取消" : "受付完了"}
         </Button>
-        <Button variant="outlined" onClick={onClose}>
+        <Button
+          variant="outlined"
+          color={reservation.reservation.is_paid ? "error" : "primary"}
+          onClick={onClose}
+        >
           キャンセル
         </Button>
       </DialogActions>
