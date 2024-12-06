@@ -25,11 +25,11 @@ const ReservationList = () => {
     setExpandCardId((prev) => (prev === id ? null : id));
   };
 
-  if (isLoading) return <LoadingScreen />;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <Container>
+      {isLoading && <LoadingScreen />}
       <Typography variant="caption" color="textSecondary" sx={{ mb: 1 }}>
         クリックするとQRコードが表示されます
       </Typography>
