@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useEventData } from "../context/EventDataContext";
 import { EventResponse, StageResponse } from "../services/interfaces";
 import { toJST, toJSTDate } from "../services/utils";
+import ReservationCreater from "./ReservationCreater";
 
 // カレンダー範囲を取得するヘルパー関数
 function getCalendarDays(targetDate: Date): Date[] {
@@ -34,9 +35,12 @@ interface CalendarProps {
 
 const Calendar = ({ event, onBack }: CalendarProps) => {
   const { stages } = useEventData();
-  const [currentDate, setCurrentDate] = useState<Date>(new Date(3000, 1, 1));
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
+  const [selectedStage, setSelectedStage] = useState<StageResponse>(stages[0]);
+  const [reservationCreaterOpen, setReservationCreaterOpen] = useState(false);
 
+  // イベントに紐づくステージを取得する
   useEffect(() => {
     let newCurrentDate = new Date(3000, 1, 1);
     const updatedStages = stages.filter((stage) => stage.event_id === event.id);
@@ -52,6 +56,7 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
     setSelectableStages(updatedStages);
   }, [stages, event]);
 
+  // 週のうち最大ステージ数のある日のステージ数を取得する
   const weeksMax = (day: Date) => {
     const firstDayOfWeek = startOfWeek(day, { weekStartsOn: 1 });
     let maxofWeek = 0;
@@ -142,6 +147,8 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
           {calendarDays.map((day, index) => {
             const isCurrentMonth =
               format(day, "M") === format(currentDate, "M");
+            const isToday =
+              toJST(day, "fullDate") === toJST(new Date(), "fullDate");
             return (
               <Grid size={12 / 7} key={index}>
                 <Box
@@ -150,7 +157,11 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                   justifyContent="flex-start"
                   height={weeksMax(day) * 40 + 50}
                   sx={{
-                    backgroundColor: isCurrentMonth ? "white" : "lightgray",
+                    backgroundColor: isToday
+                      ? "lightyellow"
+                      : isCurrentMonth
+                      ? "white"
+                      : "lightgray",
                     borderLeft: isCurrentMonth ? "1px solid #f0f0f0" : "none",
                     borderBottom: isCurrentMonth ? "1px solid #f0f0f0" : "none",
                   }}
@@ -186,7 +197,8 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                               borderRadius: 1,
                             }}
                             onClick={() => {
-                              console.log("clicked");
+                              setSelectedStage(stage);
+                              setReservationCreaterOpen(true);
                             }}
                           >
                             <Typography
@@ -211,6 +223,13 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
       <Button onClick={onBack} variant="outlined" fullWidth>
         <Typography variant="body1">イベント一覧に戻る</Typography>
       </Button>
+      {reservationCreaterOpen && (
+        <ReservationCreater
+          event={event}
+          stage={selectedStage}
+          onClose={() => setReservationCreaterOpen(false)}
+        />
+      )}
     </Box>
   );
 };

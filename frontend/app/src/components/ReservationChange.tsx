@@ -293,7 +293,7 @@ const ReservationChange = ({
                         value={watchNumAttendees}
                         disabled
                       >
-                        {watchNumAttendees} (超過)
+                        {watchNumAttendees}（超過）
                       </MenuItem>
                     )}
                   </TextField>
