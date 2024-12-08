@@ -42,7 +42,9 @@ const ReservationDelete = ({
           color: "error.contrastText",
         }}
       >
-        <Typography variant="h6">下記の予約を削除しますか？</Typography>
+        <Typography variant="h6" component="div">
+          下記の予約を削除しますか？
+        </Typography>
         <Typography variant="body1" color="error.contrastText">
           この操作は取り消せません。
         </Typography>

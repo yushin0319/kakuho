@@ -101,6 +101,7 @@ const ReservationCreater = ({
       return;
     }
 
+    // 予約可能な人数を計算
     const culcMaxAvailable = Math.min(newSeatGroup.capacity, 20);
     if (newNumAttendees > culcMaxAvailable) {
       setAlertMessage("予約可能な人数を超えています");
@@ -160,7 +161,7 @@ const ReservationCreater = ({
           color: "white",
         }}
       >
-        <Typography variant="h6">
+        <Typography variant="h6" component="div">
           {phase === "form"
             ? "券種と人数を選択して下さい"
             : "予約してよろしいですか？"}

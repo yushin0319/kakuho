@@ -124,7 +124,9 @@ const CreateEvent = () => {
 
   // シートグループの追加
   const handleAddSeatGroup = () => {
-    const newId = Math.max(...seatGroups.map((sg) => sg.id)) + 1;
+    const newId =
+      (seatGroups.length > 0 ? Math.max(...seatGroups.map((sg) => sg.id)) : 0) +
+      1;
     setSeatGroups((prev) => [
       ...prev,
       {

@@ -41,7 +41,7 @@ const ReservationChange = ({
   reservationDetail: { reservation, event, stage, ticketType, seatGroup, user },
   onClose,
 }: ReservationChangeProps) => {
-  const [step, setStep] = useState(1);
+  const [phase, setPhase] = useState<"form" | "summary">("form");
   const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
   const [selectableTicketTypes, setSelectableTicketTypes] = useState<
     TicketTypeResponse[]
@@ -141,11 +141,6 @@ const ReservationChange = ({
     setValue("ticketType", newTicketType.id);
   }, [watchStage]);
 
-  // ステップ変更処理
-  const handleStepChange = (step: number) => {
-    setStep(step);
-  };
-
   // 予約の確認と確定処理
   const onSubmit = async (data: ReservationChangeForm) => {
     const user_id = reservation.user_id;
@@ -200,7 +195,9 @@ const ReservationChange = ({
           color: "white",
         }}
       >
-        {step === 1 ? "変更箇所を選択してください" : "変更してよろしいですか？"}
+        {phase === "form"
+          ? "変更箇所を選択してください"
+          : "変更してよろしいですか？"}
       </DialogTitle>
       <DialogContent
         sx={{
@@ -208,7 +205,7 @@ const ReservationChange = ({
         }}
       >
         {alertMessage && <Alert severity="error">{alertMessage}</Alert>}
-        {step === 1 && (
+        {phase === "form" ? (
           <Grid container spacing={2} sx={{ m: 2 }}>
             <Grid size={12}>
               <Controller
@@ -301,8 +298,7 @@ const ReservationChange = ({
               />
             </Grid>
           </Grid>
-        )}
-        {step === 2 && (
+        ) : (
           <ReservationSummary
             item={
               {
@@ -324,37 +320,35 @@ const ReservationChange = ({
           />
         )}
       </DialogContent>
-      <DialogActions>
-        {step === 1 && (
-          <>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => handleStepChange(2)}
-              disabled={!!alertMessage}
-            >
-              変更
-            </Button>
-            <Button variant="outlined" onClick={onClose}>
-              キャンセル
-            </Button>
-          </>
-        )}
-        {step === 2 && (
-          <>
-            <Button
-              onClick={handleSubmit(onSubmit)}
-              variant="contained"
-              color="primary"
-            >
-              決定
-            </Button>
-            <Button variant="outlined" onClick={() => handleStepChange(1)}>
-              キャンセル
-            </Button>
-          </>
-        )}
-      </DialogActions>
+
+      {phase === "form" ? (
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setPhase("summary")}
+            disabled={!!alertMessage}
+          >
+            変更
+          </Button>
+          <Button variant="outlined" onClick={onClose}>
+            キャンセル
+          </Button>
+        </DialogActions>
+      ) : (
+        <DialogActions>
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            variant="contained"
+            color="primary"
+          >
+            決定
+          </Button>
+          <Button variant="outlined" onClick={() => setPhase("form")}>
+            キャンセル
+          </Button>
+        </DialogActions>
+      )}
     </Dialog>
   );
 };
