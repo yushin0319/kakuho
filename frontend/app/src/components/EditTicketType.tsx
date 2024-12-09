@@ -22,8 +22,6 @@ const EditTicketType = ({
     },
   });
 
-  const { handleSubmit } = methods;
-
   const onSubmit = (data: { type_name: string; price: string }) => {
     onUpdate({
       type_name: data.type_name,
@@ -33,32 +31,35 @@ const EditTicketType = ({
 
   return (
     <FormProvider {...methods}>
-      <form onBlur={handleSubmit(onSubmit)}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid container size={{ xs: 10, md: 11 }} spacing={1}>
-            {/* チケット種別 */}
-            <Grid size={6}>
-              <ValidatedForm
-                name="type_name"
-                label="チケット種別"
-                fieldType="title"
-              />
-            </Grid>
-
-            {/* 価格 */}
-            <Grid size={6}>
-              <ValidatedForm name="price" label="価格" fieldType="number" />
-            </Grid>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        onBlur={methods.handleSubmit(onSubmit)}
+      >
+        <Grid container size={{ xs: 10, md: 11 }} spacing={1}>
+          {/* チケット種別 */}
+          <Grid size={6}>
+            <ValidatedForm
+              name="type_name"
+              label="チケット種別"
+              fieldType="title"
+            />
           </Grid>
 
-          {/* 削除ボタン */}
-          <Grid size={{ xs: 2, md: 1 }}>
-            <IconButton aria-label="delete" onClick={onDelete}>
-              <DeleteForeverIcon />
-            </IconButton>
+          {/* 価格 */}
+          <Grid size={6}>
+            <ValidatedForm name="price" label="価格" fieldType="number" />
           </Grid>
         </Grid>
-      </form>
+
+        {/* 削除ボタン */}
+        <Grid size={{ xs: 2, md: 1 }}>
+          <IconButton aria-label="delete" onClick={onDelete}>
+            <DeleteForeverIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
     </FormProvider>
   );
 };

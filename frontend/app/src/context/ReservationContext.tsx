@@ -1,20 +1,20 @@
 // app/src/context/ReservationContext.tsx
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
-  fetchUserReservations,
   fetchReservations,
+  fetchUserReservations,
 } from "../services/api/reservation";
 
+import { useAuth } from "../context/AuthContext";
 import { fetchUsers } from "../services/api/user";
 import {
-  ReservationResponse,
-  TicketTypeResponse,
-  StageResponse,
-  SeatGroupResponse,
   EventResponse,
+  ReservationResponse,
+  SeatGroupResponse,
+  StageResponse,
+  TicketTypeResponse,
   UserResponse,
 } from "../services/interfaces";
-import { useAuth } from "../context/AuthContext";
 import { useEventData } from "./EventDataContext";
 
 export interface ReservationDetail {
@@ -31,7 +31,6 @@ interface ReservationContextType {
   isLoading: boolean;
   error: string | null;
   reloadReservations: () => void;
-  simpleReload: () => void;
 }
 
 const ReservationContext = createContext<ReservationContextType | null>(null);
@@ -40,11 +39,6 @@ const ReservationContext = createContext<ReservationContextType | null>(null);
 
 const cache = {
   users: new Map<number, UserResponse>(),
-};
-
-// キャッシュクリア関数
-const clearCache = () => {
-  cache.users.clear();
 };
 
 export const ReservationProvider = ({
@@ -120,11 +114,6 @@ export const ReservationProvider = ({
 
   // `reloadReservations` が呼ばれるとキャッシュをクリア
   const reloadReservations = () => {
-    clearCache();
-    loadReservations();
-  };
-
-  const simpleReload = () => {
     loadReservations();
   };
 
@@ -141,7 +130,6 @@ export const ReservationProvider = ({
         isLoading,
         error,
         reloadReservations,
-        simpleReload,
       }}
     >
       {children}

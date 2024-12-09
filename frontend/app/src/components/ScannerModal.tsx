@@ -1,10 +1,17 @@
-// app/src/components/SannerModal.tsx
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
-import { useZxing } from "react-zxing";
-import PaidStatusController from "./PaidStatusController";
 import { useReservationContext } from "../context/ReservationContext";
-import Modal from "./Modal";
-import "../assets/styles/ScannerModal.scss";
+import { useSnack } from "../context/SnackContext";
+import PaidStatusController from "./PaidStatusController";
+import QrReader from "./QrReader";
 
 interface ScannerModalProps {
   stageId: number;
@@ -12,35 +19,47 @@ interface ScannerModalProps {
 }
 
 const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
-  const [scanResult, setScanResult] = useState("");
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [scanResult, setScanResult] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isPaying, setIsPaying] = useState<boolean>(false);
   const { reservations } = useReservationContext();
-  const { ref } = useZxing({
-    onDecodeResult(result) {
-      if (!result.getText().startsWith("Kakuho-")) {
-        setAlertMessage("このQRコードは有効ではありません");
-        return;
-      }
-      const scannedId = result.getText().replace("Kakuho-", "");
-      setScanResult(scannedId);
-      handleCheckReservation(scannedId);
-    },
-  });
+  const { setSnack } = useSnack();
 
-  const handleCheckReservation = (reservationId: string) => {
+  // 予約情報を取得
+  const handleQrScanResult = (result: string) => {
+    if (!result.startsWith("Kakuho-")) {
+      setSnack({
+        message: "このQRコードは有効ではありません",
+        severity: "error",
+      });
+      return;
+    }
+
+    const scannedId = result.replace("Kakuho-", "");
+    setScanResult(scannedId);
+
     const reservation = reservations.find(
-      (res) => res.reservation.id === parseInt(reservationId, 10)
+      (res) => res.reservation.id === parseInt(scannedId, 10)
     );
+
     if (!reservation) {
-      setAlertMessage("ご予約が見つかりません");
+      setSnack({
+        message: "ご予約が見つかりません",
+        severity: "error",
+      });
       return;
     }
 
     if (reservation.stage.id !== stageId) {
-      setAlertMessage("このQRコードは他のステージのものです");
+      setSnack({
+        message: "このQRコードは他のステージのものです",
+        severity: "error",
+      });
     } else if (reservation.reservation.is_paid) {
-      setAlertMessage("このご予約はお支払い済です");
+      setSnack({
+        message: "このご予約はお支払い済です",
+        severity: "error",
+      });
     } else {
       setIsPaying(true);
     }
@@ -52,28 +71,49 @@ const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
   };
 
   return (
-    <Modal onClose={onClose}>
-      <div className="scanner-content">
-        <video ref={ref} />
-        <button onClick={onClose}>閉じる</button>
-
-        {alertMessage && (
-          <Modal onClose={() => setAlertMessage(null)}>
-            <div className="alert-modal-content">
-              <p>{alertMessage}</p>
-              <button onClick={() => setAlertMessage(null)}>閉じる</button>
-            </div>
-          </Modal>
-        )}
-
+    <Dialog open={true} onClose={handleClose}>
+      <DialogContent>
+        <Typography variant="body1">QRコードをスキャンしてください</Typography>
+        <Box
+          sx={{
+            height: "240px",
+            overflow: "hidden",
+          }}
+        >
+          {isLoading && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+          <QrReader
+            onResult={handleQrScanResult}
+            onReady={() => setIsLoading(false)}
+          />
+        </Box>
+        {/* 支払い処理 */}
         {isPaying && (
           <PaidStatusController
             reservationId={parseInt(scanResult, 10)}
-            onClose={handleClose}
+            onClose={() => {
+              setIsPaying(false);
+              setScanResult("");
+            }}
           />
         )}
-      </div>
-    </Modal>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="contained" onClick={handleClose}>
+          閉じる
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

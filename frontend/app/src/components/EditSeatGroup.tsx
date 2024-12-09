@@ -63,46 +63,44 @@ const EditSeatGroup = ({
 
   return (
     <FormProvider {...methods}>
-      <form onBlur={methods.handleSubmit(onSubmit)}>
-        <Card sx={{ p: 2, mb: 2 }}>
-          <Grid container spacing={1}>
-            <ValidatedForm
-              name="capacity"
-              label="座席数"
-              fieldType="number"
-              defaultValue={seatGroup.seatGroup.capacity.toString()}
-            />
-            <Grid container size={12} spacing={2}>
-              {seatGroup.ticketTypes.map((ticket, index) => (
-                <Grid container size={12} key={index}>
-                  <Card sx={{ p: 1, my: 1, width: "100%" }}>
-                    <EditTicketType
-                      key={index}
-                      ticket={ticket}
-                      onUpdate={(newTicket) =>
-                        handleUpdateTicketType(index, newTicket)
-                      }
-                      onDelete={() => handleDeleteTicketType(index)}
-                    />
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddTicketType}
-              fullWidth
-            >
-              チケット追加
-            </Button>
-            <IconButton aria-label="delete" onClick={onDelete}>
-              <DeleteForeverIcon />
-              <Typography>まとめて削除</Typography>
-            </IconButton>
+      <Card sx={{ p: 2, mb: 2 }}>
+        <Grid container spacing={1} onBlur={methods.handleSubmit(onSubmit)}>
+          <ValidatedForm
+            name="capacity"
+            label="座席数"
+            fieldType="number"
+            defaultValue={seatGroup.seatGroup.capacity.toString()}
+          />
+          <Grid container size={12} spacing={2}>
+            {seatGroup.ticketTypes.map((ticket, index) => (
+              <Grid container size={12} key={index}>
+                <Card sx={{ p: 1, my: 1, width: "100%" }}>
+                  <EditTicketType
+                    key={index}
+                    ticket={ticket}
+                    onUpdate={(newTicket) =>
+                      handleUpdateTicketType(index, newTicket)
+                    }
+                    onDelete={() => handleDeleteTicketType(index)}
+                  />
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        </Card>
-      </form>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddTicketType}
+            fullWidth
+          >
+            チケット追加
+          </Button>
+          <IconButton aria-label="delete" onClick={onDelete}>
+            <DeleteForeverIcon />
+            <Typography>まとめて削除</Typography>
+          </IconButton>
+        </Grid>
+      </Card>
     </FormProvider>
   );
 };
