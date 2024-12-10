@@ -97,44 +97,46 @@ def initialize_sample_data(db: Session):
     # サンプルイベント作成
     events = [
         Event(
-            name="日曜日に洗濯を",
-            description="コインランドリーでの出会いと別れ。機械の音が響く中、見知らぬ人々が織りなす本当にささやかな話。",
+            name="星空の語り部",
+            description="星が見えなくなった世界で、かつての星空を語り続ける語り部たち。彼らの語る物語の真実とは。",
         ),
         Event(
-            name="明日、透明人間になる",
-            description=(
-                "透明になっていく自分を受け入れた青年が、かつての恋人に「何か」を伝える旅に出る。限られた時間の中で、彼が最後に選ぶ言葉とは何か。"
-            ),
-        ),
-        Event(
-            name="バイバイ、階段の踊り場で",
-            description="階段の踊り場で交わされた一方的な別れの言葉。その理由を理解できずにいたが、自分自身の中に眠る本当の感情に気付いていく。",
+            name="消えゆく街のメロディ",
+            description="取り壊される商店街の最後の夜。店主たちが奏でる音楽と、そこで交わされる想いが紡ぐ物語。",
         ),
     ]
 
     db.add_all(events)
     db.commit()
 
-    # サンプルステージ作成
+    # サンプルステージ作成（3日分で計8ステージ）
     stages = []
-    base_date = datetime(2024, 12, 10)
+    base_date = datetime(2025, 1, 4)
     for i, event in enumerate(events):
-        event_date = base_date + timedelta(days=30 * i)
-        stages.append(
-            Stage(
-                event_id=event.id,
-                start_time=event_date.replace(hour=10),
-                end_time=event_date.replace(hour=12),
+        for day_offset in range(3):  # 各イベントに3日分のステージ
+            event_date = base_date + timedelta(days=day_offset)
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=event_date.replace(hour=10),
+                    end_time=event_date.replace(hour=12),
+                )
             )
-        )
-        event_date = event_date + timedelta(days=1)
-        stages.append(
-            Stage(
-                event_id=event.id,
-                start_time=event_date.replace(hour=14),
-                end_time=event_date.replace(hour=16),
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=event_date.replace(hour=14),
+                    end_time=event_date.replace(hour=16),
+                )
             )
-        )
+            if day_offset == 2:  # 最終日はステージ1つだけ
+                stages.append(
+                    Stage(
+                        event_id=event.id,
+                        start_time=event_date.replace(hour=18),
+                        end_time=event_date.replace(hour=20),
+                    )
+                )
 
     db.add_all(stages)
     db.commit()
@@ -142,10 +144,10 @@ def initialize_sample_data(db: Session):
     # サンプルシートグループ作成
     seat_groups = []
     for stage in stages:
-        # 一般・学生共通のシートグループ
-        seat_groups.append(SeatGroup(stage_id=stage.id, capacity=150))
-        # 特別なS席のシートグループ
-        seat_groups.append(SeatGroup(stage_id=stage.id, capacity=10))
+        # 前売り・ペア・当日のシートグループ
+        seat_groups.append(SeatGroup(stage_id=stage.id, capacity=200))
+        # S席のシートグループ
+        seat_groups.append(SeatGroup(stage_id=stage.id, capacity=20))
 
     db.add_all(seat_groups)
     db.commit()
@@ -153,16 +155,19 @@ def initialize_sample_data(db: Session):
     # サンプルチケットタイプ作成
     ticket_types = []
     for i in range(0, len(seat_groups), 2):
-        # 一般・学生のチケットタイプ（同じシートグループ）
+        # 前売り・ペア・当日のチケットタイプ（同じシートグループ）
         ticket_types.append(
-            TicketType(seat_group_id=seat_groups[i].id, type_name="一般", price=3000)
+            TicketType(seat_group_id=seat_groups[i].id, type_name="前売り", price=3000)
         )
         ticket_types.append(
-            TicketType(seat_group_id=seat_groups[i].id, type_name="学生", price=2500)
+            TicketType(seat_group_id=seat_groups[i].id, type_name="ペア", price=5000)
+        )
+        ticket_types.append(
+            TicketType(seat_group_id=seat_groups[i].id, type_name="当日", price=3500)
         )
         # S席のチケットタイプ（別のシートグループ）
         ticket_types.append(
-            TicketType(seat_group_id=seat_groups[i + 1].id, type_name="S席", price=5000)
+            TicketType(seat_group_id=seat_groups[i + 1].id, type_name="S席", price=8000)
         )
 
     db.add_all(ticket_types)
@@ -170,7 +175,7 @@ def initialize_sample_data(db: Session):
 
     # サンプル予約作成
     reservations = []
-    reservation_count = 50  # 目標予約数
+    reservation_count = 500  # 目標予約数
 
     for _ in range(reservation_count):
         ticket_type = random.choice(ticket_types)

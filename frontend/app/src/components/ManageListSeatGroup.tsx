@@ -114,33 +114,35 @@ const ManageListSeatGroup = ({
 
       {/* 予約一覧 (Collapseで開閉) */}
       <Collapse in={isOpen}>
-        <Box sx={{ mt: 2 }}>
-          {reservations
-            .filter((data) => data.seatGroup.id === seatGroup.id)
-            .sort((a, b) => {
-              const nameA = a.user.nickname || a.user.email;
-              const nameB = b.user.nickname || b.user.email;
-              return nameA.localeCompare(nameB); // 名前順
-            })
-            .sort(
-              (a, b) =>
-                Number(a.reservation.is_paid) - Number(b.reservation.is_paid) // 支払い順
-            )
-            .map((data, index) => (
-              <Box
-                key={data.reservation.id}
-                sx={{
-                  backgroundColor: data.reservation.is_paid
-                    ? "rgba(0, 0, 0, 0.2)"
-                    : index % 2 === 0
-                    ? "inherit"
-                    : "rgba(0, 0, 0, 0.05)",
-                }}
-              >
-                <ManageListItem data={data} />
-              </Box>
-            ))}
-        </Box>
+        {isOpen && (
+          <Box sx={{ mt: 2 }}>
+            {reservations
+              .filter((data) => data.seatGroup.id === seatGroup.id)
+              .sort((a, b) => {
+                const nameA = a.user.nickname || a.user.email;
+                const nameB = b.user.nickname || b.user.email;
+                return nameA.localeCompare(nameB); // 名前順
+              })
+              .sort(
+                (a, b) =>
+                  Number(a.reservation.is_paid) - Number(b.reservation.is_paid) // 支払い順
+              )
+              .map((data, index) => (
+                <Box
+                  key={data.reservation.id}
+                  sx={{
+                    backgroundColor: data.reservation.is_paid
+                      ? "rgba(0, 0, 0, 0.2)"
+                      : index % 2 === 0
+                      ? "inherit"
+                      : "rgba(0, 0, 0, 0.05)",
+                  }}
+                >
+                  <ManageListItem data={data} />
+                </Box>
+              ))}
+          </Box>
+        )}
       </Collapse>
     </Box>
   );

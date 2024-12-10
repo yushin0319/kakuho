@@ -1,18 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { fetchEvent, fetchEvents } from "../services/api/event";
-import { fetchStage, fetchEventStages } from "../services/api/stage";
-import {
-  fetchSeatGroup,
-  fetchStageSeatGroups,
-} from "../services/api/seatGroup";
-import {
-  fetchTicketType,
-  fetchSeatGroupTicketTypes,
-} from "../services/api/ticketType";
+import { fetchSeatGroup, fetchSeatGroups } from "../services/api/seatGroup";
+import { fetchStage, fetchStages } from "../services/api/stage";
+import { fetchTicketType, fetchTicketTypes } from "../services/api/ticketType";
 import {
   EventResponse,
-  StageResponse,
   SeatGroupResponse,
+  StageResponse,
   TicketTypeResponse,
 } from "../services/interfaces";
 
@@ -61,42 +55,28 @@ export const EventDataProvider = ({
       addTask();
       setError(null);
       try {
-        const eventsData = await fetchEvents();
+        const [eventsData, stagesData, seatGroupsData, ticketTypesData] =
+          await Promise.all([
+            fetchEvents(),
+            fetchStages(),
+            fetchSeatGroups(),
+            fetchTicketTypes(),
+          ]);
+
         setEvents(eventsData);
-
-        const stagesData = (
-          await Promise.all(
-            eventsData.map((event) => fetchEventStages(event.id))
-          )
-        ).flat();
         setStages(stagesData);
-
-        const seatGroupsData = (
-          await Promise.all(
-            stagesData.map((stage) => fetchStageSeatGroups(stage.id))
-          )
-        ).flat();
         setSeatGroups(seatGroupsData);
-
-        const ticketTypesData = (
-          await Promise.all(
-            seatGroupsData.map((sg) => fetchSeatGroupTicketTypes(sg.id))
-          )
-        ).flat();
         setTicketTypes(ticketTypesData);
 
-        const ticketTypeMap = Object.fromEntries(
-          await Promise.all(
-            seatGroupsData.map(async (sg) => [
-              sg.id,
-              (
-                await fetchSeatGroupTicketTypes(sg.id)
-              ).map((tt) => tt.type_name),
-            ])
-          )
+        const nameMap = Object.fromEntries(
+          seatGroupsData.map((sg) => [
+            sg.id,
+            ticketTypesData
+              .filter((tt) => tt.seat_group_id === sg.id)
+              .map((tt) => tt.type_name),
+          ])
         );
-
-        setSeatGroupNames(ticketTypeMap);
+        setSeatGroupNames(nameMap);
       } catch (e) {
         setError("データの取得に失敗しました");
       } finally {

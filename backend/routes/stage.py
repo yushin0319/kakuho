@@ -21,6 +21,14 @@ def read_stage(stage_id: int, db: Session = Depends(get_db)) -> StageResponse:
     return stage
 
 
+# Stage一覧取得（管理者・ユーザー共通）
+@stage_router.get("/stages", response_model=list[StageResponse])
+def read_stages(db: Session = Depends(get_db)) -> list[StageResponse]:
+    stage_crud = CrudStage(db)
+    stages = stage_crud.read_all()
+    return stages
+
+
 # Eventに紐づくStage一覧取得（管理者・ユーザー共通）
 @stage_router.get("/events/{event_id}/stages", response_model=list[StageResponse])
 def read_stages_by_event_id(

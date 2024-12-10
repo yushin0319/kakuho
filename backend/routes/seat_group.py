@@ -23,6 +23,14 @@ def read_seat_group(
     return seat_group
 
 
+# SeatGroup一覧取得（管理者・ユーザー共通）
+@seat_group_router.get("/seat_groups", response_model=list[SeatGroupResponse])
+def read_seat_groups(db: Session = Depends(get_db)) -> list[SeatGroupResponse]:
+    seat_group_crud = CrudSeatGroup(db)
+    seat_groups = seat_group_crud.read_all()
+    return seat_groups
+
+
 # Stageに紐づくSeatGroup一覧取得（管理者・ユーザー共通）
 @seat_group_router.get(
     "/stages/{stage_id}/seat_groups", response_model=list[SeatGroupResponse]

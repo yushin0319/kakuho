@@ -1,6 +1,6 @@
 // app/src/pages/Login.tsx
 import { Box, Button, Container, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import ValidatedForm from "../components/ValidatedForm";
@@ -34,10 +34,6 @@ const Login = () => {
       );
     }
   };
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
   return (
     <Container sx={{ mt: 5 }}>

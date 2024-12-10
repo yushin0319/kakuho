@@ -1,19 +1,24 @@
-import api from "./api";
-import { handleApiRequest } from "./utils";
 import {
   TicketTypeCreate,
-  TicketTypeUpdate,
   TicketTypeResponse,
+  TicketTypeUpdate,
 } from "../interfaces";
+import api from "./api";
+import { handleApiRequest } from "./utils";
 
-// 1. 単一のチケットタイプを取得
+// 1. すべてのチケットタイプを取得
+export const fetchTicketTypes = async (): Promise<TicketTypeResponse[]> => {
+  return handleApiRequest(api.get("/ticket_types"));
+};
+
+// 2. 単一のチケットタイプを取得
 export const fetchTicketType = async (
   id: number
 ): Promise<TicketTypeResponse> => {
   return handleApiRequest(api.get(`/ticket_types/${id}`));
 };
 
-// 2. SeatGroupに紐づくチケットタイプ一覧を取得
+// 3. SeatGroupに紐づくチケットタイプ一覧を取得
 export const fetchSeatGroupTicketTypes = async (
   seat_group_id: number
 ): Promise<TicketTypeResponse[]> => {
@@ -22,7 +27,7 @@ export const fetchSeatGroupTicketTypes = async (
   );
 };
 
-// 3. チケットタイプを作成（管理者のみ）
+// 4. チケットタイプを作成（管理者のみ）
 export const createTicketType = async (
   seat_group_id: number,
   data: TicketTypeCreate
@@ -32,7 +37,7 @@ export const createTicketType = async (
   );
 };
 
-// 4. チケットタイプを更新（管理者のみ）
+// 5. チケットタイプを更新（管理者のみ）
 export const updateTicketType = async (
   id: number,
   data: TicketTypeUpdate
@@ -40,7 +45,7 @@ export const updateTicketType = async (
   return handleApiRequest(api.put(`/ticket_types/${id}`, data));
 };
 
-// 5. チケットタイプを削除（管理者のみ）
+// 6. チケットタイプを削除（管理者のみ）
 export const deleteTicketType = async (id: number): Promise<void> => {
   return handleApiRequest(api.delete(`/ticket_types/${id}`));
 };

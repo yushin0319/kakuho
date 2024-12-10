@@ -25,6 +25,14 @@ def read_ticket_type(
     return ticket_type
 
 
+# TicketType一覧取得（管理者・ユーザー共通）
+@ticket_type_router.get("/ticket_types", response_model=list[TicketTypeResponse])
+def read_ticket_types(db: Session = Depends(get_db)) -> list[TicketTypeResponse]:
+    ticket_type_crud = CrudTicketType(db)
+    ticket_types = ticket_type_crud.read_all()
+    return ticket_types
+
+
 # SeatGroupに紐づくTicketType一覧取得（管理者・ユーザー共通）
 @ticket_type_router.get(
     "/seat_groups/{seat_group_id}/ticket_types", response_model=list[TicketTypeResponse]
