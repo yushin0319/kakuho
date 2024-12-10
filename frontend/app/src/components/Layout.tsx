@@ -17,13 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <Container sx={{ p: 0, m: 0 }}>
-      {!isLoginOrRegisterPage ? (
-        <Header />
-      ) : (
-        <div className="login-header-bar">
-          {/* ログイン・新規登録ページ用のオレンジバー */}
-        </div>
-      )}
+      {!isLoginOrRegisterPage && <Header />}
       <Container
         fixed
         sx={{

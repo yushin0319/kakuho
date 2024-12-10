@@ -11,7 +11,9 @@ import {
   logout as apiLogout,
   getCurrentUser,
 } from "../services/api/auth";
-import { UserResponse } from "../services/interfaces";
+import { signupUser } from "../services/api/user";
+import { UserCreate, UserResponse } from "../services/interfaces";
+import { useSnack } from "./SnackContext";
 
 // AuthContextの型定義
 type AuthContextType = {
@@ -19,6 +21,7 @@ type AuthContextType = {
   user: UserResponse | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  signup: (data: UserCreate) => Promise<void>;
   logout: () => void;
   setUser: React.Dispatch<React.SetStateAction<UserResponse | null>>; // 追加
 };
@@ -35,6 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const { setSnack } = useSnack();
 
   // ログイン関数
   const login = async (email: string, password: string) => {
@@ -45,6 +49,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setIsAuthenticated(true);
     } catch (error) {
       console.error("Login failed:", error);
+      throw error;
+    }
+  };
+
+  // 新規登録関数
+  const signup = async (data: UserCreate) => {
+    try {
+      const newUser = await signupUser(data);
+      await login(newUser.email, data.password);
+    } catch (error) {
+      console.error("Signup failed:", error);
       throw error;
     }
   };
@@ -72,6 +87,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     fetchCurrentUser();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      setSnack({
+        message: `こんにちは、 ${user.nickname || user.email}さん！`,
+        severity: "success",
+      });
+    }
+  }, [user]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -79,6 +103,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         user,
         loading,
         login,
+        signup,
         logout,
         setUser, // 追加
       }}

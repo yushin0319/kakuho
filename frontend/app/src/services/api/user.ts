@@ -1,6 +1,7 @@
+// app/src/services/api/user.ts
+import { UserCreate, UserResponse, UserUpdate } from "../interfaces";
 import api from "./api";
 import { handleApiRequest } from "./utils";
-import { UserCreate, UserUpdate, UserResponse } from "../interfaces";
 
 // 1. ユーザーを新規作成（サインアップ）
 export const signupUser = async (data: UserCreate): Promise<UserResponse> => {

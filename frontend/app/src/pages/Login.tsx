@@ -1,76 +1,99 @@
 // app/src/pages/Login.tsx
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // AuthContextをインポート
-import "../assets/styles/Login.scss";
+import { Box, Button, Container, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import ValidatedForm from "../components/ValidatedForm";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth(); // AuthContextのlogin関数を取得
+  const { user, login } = useAuth();
+  const [error, setError] = useState("");
 
-  const validateEmail = (email: string): boolean => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
+  // React Hook Formの設定
+  const methods = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // フロントエンドでの簡易バリデーション
-    if (!validateEmail(email)) {
-      setError("Invalid email format.");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      return;
-    }
+  const handleLogin = async (data: { email: string; password: string }) => {
+    const { email, password } = data;
 
     try {
       // ログイン処理を実行
       await login(email, password);
       navigate("/"); // ログイン成功時にホームへリダイレクト
+      console.log(user);
     } catch (error) {
-      setError("Login failed. Please check your email and password."); // エラーメッセージを表示
+      setError(
+        "ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。"
+      );
     }
   };
 
-  return (
-    <div className="login-container">
-      <h2>Login</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleLogin}>
-        <div className="input-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="input-group">
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="login-button">
-          Log In
-        </button>
-      </form>
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
-      <p>
-        Don't have an account? <Link to="/register">Register here</Link>
-      </p>
-    </div>
+  return (
+    <Container sx={{ mt: 5 }}>
+      <Typography variant="h4" gutterBottom>
+        ログイン
+      </Typography>
+
+      {error && (
+        <Typography variant="body1" color="error" gutterBottom>
+          {error}
+        </Typography>
+      )}
+
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(handleLogin)}>
+          <Box
+            sx={{
+              mt: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
+            <ValidatedForm
+              name="email"
+              label="メールアドレス"
+              fieldType="email"
+            />
+            <ValidatedForm
+              name="password"
+              label="パスワード"
+              fieldType="password"
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 3 }}
+            >
+              ログイン
+            </Button>
+          </Box>
+        </form>
+      </FormProvider>
+
+      <Typography variant="body2" sx={{ mt: 2 }}>
+        アカウントをお持ちでないですか？{" "}
+        <Link
+          to="/register"
+          style={{ textDecoration: "none", color: "#1976d2" }}
+        >
+          新規登録はこちら
+        </Link>
+      </Typography>
+    </Container>
   );
 };
 

@@ -1,5 +1,6 @@
-import api from "./api";
+// app/src/services/api/auth.ts
 import { UserResponse } from "../interfaces";
+import api from "./api";
 
 // ログインしてアクセストークンを取得する関数
 export const login = async (

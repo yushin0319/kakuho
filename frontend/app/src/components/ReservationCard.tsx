@@ -30,15 +30,16 @@ const ReservationCard = ({
 }: ReservationCardProps) => {
   const [isChanging, setIsChanging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [highlight, setHighlight] = useState(isNew);
+  const [highlight, setHighlight] = useState<boolean>(false);
   const { reservation, event, stage, ticketType } = item;
 
   // 新規予約のハイライトを解除
   useEffect(() => {
     if (isNew) {
+      setHighlight(true);
       setTimeout(() => {
         setHighlight(false);
-      }, 50);
+      }, 500);
     }
   }, [isNew]);
 
@@ -57,7 +58,7 @@ const ReservationCard = ({
       onClick={onCardClick}
       sx={{
         transition: "background-color 0.5s, box-shadow 0.3s",
-        backgroundColor: highlight ? "secondary" : "paper",
+        backgroundColor: highlight ? "lightblue" : "paper",
         p: 2,
         my: 2,
 
