@@ -56,6 +56,7 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
           textAlign: "left",
           width: "100%",
         }}
+        onClick={handlePaying}
       >
         <Box>
           <Typography variant="body2" sx={{ fontWeight: "bold" }}>

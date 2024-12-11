@@ -56,6 +56,7 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
       {/* ヘッダー部分 */}
       <Box
         sx={{
+          px: 4,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -72,6 +73,15 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
           {toJST(stage.start_time, "dateTime")}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center" }}>
+          <IconButton size="small">
+            {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* 座席グループ */}
+      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+        <Box sx={{ mt: 2 }}>
           <Button
             variant="contained"
             color="secondary"
@@ -80,20 +90,6 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
           >
             QR受付
           </Button>
-          <IconButton size="small">
-            {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </IconButton>
-        </Box>
-      </Box>
-
-      {/* モーダル */}
-      {isModalOpen && (
-        <ScannerModal stageId={stage.id} onClose={handleCloseModal} />
-      )}
-
-      {/* 座席グループ */}
-      <Collapse in={isOpen} timeout="auto" unmountOnExit>
-        <Box sx={{ mt: 2 }}>
           {seatGroups
             .filter((group) => group.stage_id === stage.id)
             .map((group) => (
@@ -106,6 +102,11 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
             ))}
         </Box>
       </Collapse>
+
+      {/* モーダル */}
+      {isModalOpen && (
+        <ScannerModal stageId={stage.id} onClose={handleCloseModal} />
+      )}
     </Box>
   );
 };
