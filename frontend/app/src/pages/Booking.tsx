@@ -51,34 +51,38 @@ const Booking = () => {
           <Typography variant="caption" color="textSecondary">
             ご予約するイベントをお選びください
           </Typography>
-          {events.map((event) => (
-            <Card
-              key={event.id}
-              onClick={() => setSelectedEvent(event)}
-              sx={{
-                my: 2,
-                p: 2,
-                cursor: "pointer",
-              }}
-            >
-              <CardContent>
-                <Typography variant="h5" sx={{ mb: 2 }}>
-                  {event.name}
-                </Typography>
-                <Typography variant="body2" color="secondary">
-                  {startDate[event.id] && endDate[event.id]
-                    ? `${toJST(startDate[event.id], "fullDate")} - ${toJST(
-                        endDate[event.id],
-                        "fullDate"
-                      )}`
-                    : ""}
-                </Typography>
-                <Typography variant="body1" sx={{ mt: 2 }}>
-                  {event.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+          {/* 終了日前のイベントのみ表示　*/}
+
+          {events
+            .filter((event) => startDate[event.id] > new Date())
+            .map((event) => (
+              <Card
+                key={event.id}
+                onClick={() => setSelectedEvent(event)}
+                sx={{
+                  my: 2,
+                  p: 2,
+                  cursor: "pointer",
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h5" sx={{ mb: 2 }}>
+                    {event.name}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    {startDate[event.id] && endDate[event.id]
+                      ? `${toJST(startDate[event.id], "fullDate")} - ${toJST(
+                          endDate[event.id],
+                          "fullDate"
+                        )}`
+                      : ""}
+                  </Typography>
+                  <Typography variant="body1" sx={{ mt: 2 }}>
+                    {event.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
         </Box>
       ) : (
         <Calendar event={selectedEvent} onBack={() => setSelectedEvent(null)} />

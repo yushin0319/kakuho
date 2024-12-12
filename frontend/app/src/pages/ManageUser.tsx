@@ -171,28 +171,46 @@ const ManageUser = () => {
           .map((user) => (
             <Accordion key={user.id}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography
+                <Box
                   sx={{
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
                   }}
                 >
-                  {user.nickname || user.email}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    ml: 2,
-                    color: "gray",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {user.email}
-                </Typography>
+                  {/* ニックネーム部分 */}
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      ml: 2,
+                      lineHeight: 1.2,
+                      whiteSpace: "nowrap", // 改行しない
+                      overflow: "hidden", // はみ出しを隠す
+                      textAlign: "left",
+                      textOverflow: "ellipsis", // はみ出し部分を「…」にする
+                    }}
+                  >
+                    {user.nickname || user.email}
+                  </Typography>
+
+                  {/* メールアドレス部分 */}
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      ml: 1,
+                      lineHeight: 1,
+                      color: "lightgray",
+                      whiteSpace: "nowrap", // 改行しない
+                      textAlign: "left",
+                      overflow: "hidden", // はみ出しを隠す
+                      textOverflow: "ellipsis", // はみ出し部分を「…」にする
+                    }}
+                  >
+                    {user.email}
+                  </Typography>
+                </Box>
               </AccordionSummary>
+
               <AccordionDetails>
                 <ManageUserReservations userId={user.id} />
               </AccordionDetails>

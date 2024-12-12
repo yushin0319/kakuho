@@ -1,5 +1,6 @@
-// app/src/components/ReservationCard.tsx
+// ReservationCard.tsx
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -57,27 +58,71 @@ const ReservationCard = ({
     <Card
       onClick={onCardClick}
       sx={{
-        transition: "background-color 0.5s, box-shadow 0.3s",
-        backgroundColor: highlight ? "lightblue" : "paper",
+        position: "relative",
+        backgroundColor: highlight ? "lightblue" : "white",
+        borderRadius: 2,
         p: 2,
         my: 2,
-
-        "@media (hover: hover)": {
-          cursor: "pointer",
-          "&:hover": {
-            boxShadow: 4,
-          },
-        },
+        cursor: "pointer",
+        transition: "background-color 0.3s",
       }}
     >
+      {/* 点線デザイン */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          width: "3%",
+          height: "100%",
+          backgroundColor: reservation.is_paid ? "background.default" : "white",
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "5%",
+            transform: "translateX(-10%)",
+            width: "5px",
+            height: "90%",
+            backgroundImage:
+              "radial-gradient(circle, gray 2px, transparent 2px)", // 点線の穴
+            backgroundSize: "2px 12px", // 点線間隔
+            backgroundRepeat: "repeat-y",
+          }}
+        />
+      </Box>
+
+      {/* メインコンテンツ */}
       <CardContent>
         <Typography variant="h5" component="div">
           {event.name}
         </Typography>
-        <Typography variant="body1" color="secondary">
-          {toJST(stage.start_time, "dateTime")}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-around",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="body1" color="secondary">
+            {toJST(stage.start_time, "dateTime")}
+          </Typography>
+          <Typography variant="caption" color="textSecondary">
+            {new Date(stage.start_time).getTime() < Date.now()
+              ? reservation.is_paid
+                ? "ご来場ありがとう！"
+                : "ステージは終了しました"
+              : `あと${Math.ceil(
+                  (new Date(stage.start_time).getTime() - Date.now()) /
+                    (1000 * 60 * 60 * 24)
+                )}日`}
+          </Typography>
+        </Box>
       </CardContent>
+
+      {/* 開閉コンテンツ */}
       <Collapse in={isExpanded}>
         <CardContent>
           <Typography variant="h6" component="div">
@@ -122,6 +167,8 @@ const ReservationCard = ({
           </Button>
         </CardActions>
       </Collapse>
+
+      {/* モーダルコンテンツ */}
       {isChanging && (
         <ReservationChange
           reservationDetail={item}

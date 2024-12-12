@@ -56,7 +56,7 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
       {/* ヘッダー部分 */}
       <Box
         sx={{
-          px: 4,
+          px: 8,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -87,6 +87,7 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
             color="secondary"
             startIcon={<QrCodeIcon />}
             onClick={handleOpenModal}
+            sx={{ mb: 2, width: "80%" }}
           >
             QR受付
           </Button>

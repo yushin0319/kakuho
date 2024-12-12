@@ -33,15 +33,21 @@ const ReservationList = () => {
       <Typography variant="caption" color="textSecondary" sx={{ mb: 1 }}>
         クリックするとQRコードが表示されます
       </Typography>
-      {reservations.map((item) => (
-        <ReservationCard
-          key={item.reservation.id}
-          reservationDetail={item}
-          isExpanded={expandCardId === item.reservation.id}
-          isNew={newItems.includes(item.reservation.id)}
-          onCardClick={() => handleCardClick(item.reservation.id)}
-        />
-      ))}
+      {reservations
+        .sort(
+          (a, b) =>
+            new Date(b.stage.start_time).getTime() -
+            new Date(a.stage.start_time).getTime()
+        )
+        .map((item) => (
+          <ReservationCard
+            key={item.reservation.id}
+            reservationDetail={item}
+            isExpanded={expandCardId === item.reservation.id}
+            isNew={newItems.includes(item.reservation.id)}
+            onCardClick={() => handleCardClick(item.reservation.id)}
+          />
+        ))}
     </Container>
   );
 };

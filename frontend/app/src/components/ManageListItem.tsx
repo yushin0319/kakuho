@@ -55,11 +55,20 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
           flexDirection: "column",
           textAlign: "left",
           width: "100%",
+          cursor: "pointer",
         }}
         onClick={handlePaying}
       >
         <Box>
-          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: "bold",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
             {user.nickname || user.email}
           </Typography>
         </Box>
@@ -107,9 +116,10 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
       </Box>
       {/* PC用 */}
       <Box
+        display="flex"
         sx={{
           display: { xs: "none", sm: "block" },
-          width: { xs: "100%", sm: "20%" },
+          width: { xs: "100%", sm: "30%" },
         }}
       >
         <IconButton onClick={() => setIsChanging(true)}>
