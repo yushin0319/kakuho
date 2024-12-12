@@ -29,6 +29,8 @@ export interface ReservationDetail {
 
 interface AppDataContextType {
   events: EventResponse[];
+  eventStartDates: Record<number, Date>;
+  eventEndDates: Record<number, Date>;
   stages: StageResponse[];
   seatGroups: SeatGroupResponse[];
   seatGroupNames: Record<number, string[]>;
@@ -54,6 +56,10 @@ export const AppDataProvider = ({
   const [ticketTypes, setTicketTypes] = useState<TicketTypeResponse[]>([]);
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [reservations, setReservations] = useState<ReservationDetail[]>([]);
+  const [eventStartDates, setEventStartDates] = useState<Record<number, Date>>(
+    {}
+  );
+  const [eventEndDates, setEventEndDates] = useState<Record<number, Date>>({});
   const [seatGroupNames, setSeatGroupNames] = useState<
     Record<number, string[]>
   >({});
@@ -88,6 +94,29 @@ export const AppDataProvider = ({
       setSeatGroups(seatGroupsData);
       setTicketTypes(ticketTypesData);
       setUsers(usersData);
+
+      // EventStartDatesの生成
+      const newStartDates: Record<number, Date> = {};
+      const newEndDates: Record<number, Date> = {};
+      eventsData.forEach((event) => {
+        let start_date = new Date(3000, 1, 1);
+        let end_date = new Date(1000, 1, 1);
+
+        stagesData.forEach((stage) => {
+          if (stage.event_id === event.id) {
+            const stageStartDate = new Date(stage.start_time);
+            const stageEndDate = new Date(stage.end_time);
+
+            if (stageStartDate < start_date) start_date = stageStartDate;
+            if (stageEndDate > end_date) end_date = stageEndDate;
+          }
+        });
+
+        newStartDates[event.id] = start_date;
+        newEndDates[event.id] = end_date;
+      });
+      setEventStartDates(newStartDates);
+      setEventEndDates(newEndDates);
 
       // SeatGroupNamesの生成
       const nameMap = Object.fromEntries(
@@ -153,6 +182,8 @@ export const AppDataProvider = ({
     <AppDataContext.Provider
       value={{
         events,
+        eventStartDates,
+        eventEndDates,
         stages,
         seatGroups,
         seatGroupNames,

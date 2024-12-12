@@ -1,45 +1,18 @@
 // app/src/pages/Booking.tsx
 import { Box, Card, CardContent, Container, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Calendar from "../components/Calendar";
 import LoadingScreen from "../components/LoadingScreen";
 import { useAppData } from "../context/AppData";
 import { EventResponse } from "../services/interfaces";
-import { toJST, toJSTDate } from "../services/utils";
+import { toJST } from "../services/utils";
 
 const Booking = () => {
-  const { events, stages, loading, error } = useAppData();
+  const { events, eventStartDates, eventEndDates, loading, error } =
+    useAppData();
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
     null
   );
-  const [startDate, setStartDate] = useState<Record<number, Date>>({});
-  const [endDate, setEndDate] = useState<Record<number, Date>>({});
-
-  // イベントの開始日と終了日を取得
-  useEffect(() => {
-    const newStartDates: Record<number, Date> = {};
-    const newEndDates: Record<number, Date> = {};
-
-    events.forEach((event) => {
-      let start_date = new Date(3000, 1, 1);
-      let end_date = new Date(1000, 1, 1);
-
-      stages.forEach((stage) => {
-        if (stage.event_id === event.id) {
-          const stageStartDate = toJSTDate(stage.start_time);
-
-          if (stageStartDate < start_date) start_date = stageStartDate;
-          if (stageStartDate > end_date) end_date = stageStartDate;
-        }
-      });
-
-      newStartDates[event.id] = start_date;
-      newEndDates[event.id] = end_date;
-    });
-
-    setStartDate(newStartDates);
-    setEndDate(newEndDates);
-  }, [events, stages]);
 
   if (error) return <div>エラーが発生しました</div>;
 
@@ -54,7 +27,7 @@ const Booking = () => {
           {/* 終了日前のイベントのみ表示　*/}
 
           {events
-            .filter((event) => startDate[event.id] > new Date())
+            .filter((event) => eventEndDates[event.id] > new Date())
             .map((event) => (
               <Card
                 key={event.id}
@@ -70,11 +43,11 @@ const Booking = () => {
                     {event.name}
                   </Typography>
                   <Typography variant="body2" color="secondary">
-                    {startDate[event.id] && endDate[event.id]
-                      ? `${toJST(startDate[event.id], "fullDate")} - ${toJST(
-                          endDate[event.id],
+                    {eventStartDates[event.id] && eventEndDates[event.id]
+                      ? `${toJST(
+                          eventStartDates[event.id],
                           "fullDate"
-                        )}`
+                        )} - ${toJST(eventEndDates[event.id], "fullDate")}`
                       : ""}
                   </Typography>
                   <Typography variant="body1" sx={{ mt: 2 }}>

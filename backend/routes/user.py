@@ -2,12 +2,28 @@
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
-from schemas import UserResponse, UserUpdate, UserCreate
+from schemas import (
+    UserResponse,
+    UserUpdate,
+    UserCreate,
+    SeatGroupResponse,
+    SeatGroupUpdate,
+)
 from crud.user import CrudUser
 from crud.reservation import CrudReservation
+from crud.ticket_type import CrudTicketType
+from crud.seat_group import CrudSeatGroup
 from routes.auth import check_admin, get_current_user
 
 user_router = APIRouter()
+
+
+# SeatGroupのcapacityを更新する
+def update_capacity(seat_group: SeatGroupResponse, delta: int, db: Session) -> None:
+    seat_group_crud = CrudSeatGroup(db)
+    seat_group_crud.update(
+        seat_group.id, SeatGroupUpdate(capacity=seat_group.capacity + delta)
+    )
 
 
 # User関連のエンドポイント
@@ -82,6 +98,8 @@ def delete_user(
 ) -> None:
     user_crud = CrudUser(db)
     reservation_crud = CrudReservation(db)
+    ticket_type_crud = CrudTicketType(db)
+    seat_group_crud = CrudSeatGroup(db)
 
     # 削除対象のユーザーを取得
     delete_user = user_crud.read_by_id(user_id)
@@ -97,10 +115,12 @@ def delete_user(
         raise HTTPException(status_code=403, detail="Permission denied")
 
     try:
-        with db.begin():
-            reservations = reservation_crud.read_by_user_id(user_id)
-            for reservation in reservations:
-                reservation_crud.delete(reservation.id)
-            user_crud.delete(user_id)
+        reservations = reservation_crud.read_by_user_id(user_id)
+        for reservation in reservations:
+            ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
+            seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
+            update_capacity(seat_group, reservation.num_attendees, db)
+            reservation_crud.delete(reservation.id)
+        user_crud.delete(user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
