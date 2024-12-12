@@ -1,5 +1,5 @@
 import { Box, Grid2 as Grid, Typography } from "@mui/material";
-import { ReservationDetail } from "../context/ReservationContext";
+import { ReservationDetail } from "../context/AppData";
 import { NumComma, toJST } from "../services/utils";
 
 type ReservationSummaryProps =

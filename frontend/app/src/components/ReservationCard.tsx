@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
-import { ReservationDetail } from "../context/ReservationContext";
+import { ReservationDetail } from "../context/AppData";
 import { NumComma, toJST } from "../services/utils";
-import ReservationChange from "./ReservationChange";
-import ReservationDelete from "./ReservationDelete";
+import ReservationChanger from "./ReservationChanger";
+import ReservationDeleter from "./ReservationDeleter";
 
 interface ReservationCardProps {
   reservationDetail: ReservationDetail;
@@ -170,7 +170,7 @@ const ReservationCard = ({
 
       {/* モーダルコンテンツ */}
       {isChanging && (
-        <ReservationChange
+        <ReservationChanger
           reservationDetail={item}
           onClose={() => {
             setIsChanging(false);
@@ -178,7 +178,7 @@ const ReservationCard = ({
         />
       )}
       {isDeleting && (
-        <ReservationDelete
+        <ReservationDeleter
           reservationDetail={item}
           onClose={() => setIsDeleting(false)}
         />

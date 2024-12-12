@@ -7,6 +7,10 @@ import {
   Box,
   Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Drawer,
   FormControl,
@@ -21,9 +25,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import LoadingScreen from "../components/LoadingScreen";
 import ManageUserReservations from "../components/ManageUserReservations";
-import { useEventData } from "../context/EventDataContext";
-import { useReservationContext } from "../context/ReservationContext";
-import { fetchUsers } from "../services/api/user";
+import { useAppData } from "../context/AppData";
+import { deleteUser } from "../services/api/user";
 import { StageResponse, UserResponse } from "../services/interfaces";
 import { toJST } from "../services/utils";
 
@@ -34,13 +37,13 @@ interface ManageUserForm {
 }
 
 const ManageUser = () => {
-  const [users, setUsers] = useState<UserResponse[]>([]);
   const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
   const [openSearch, setOpenSearch] = useState(false);
   const [page, setPage] = useState(1);
   const pageLimit = 10;
-  const { reservations } = useReservationContext();
-  const { events, stages, loading, error } = useEventData();
+  const { events, stages, users, reservations, loading, error, reloadData } =
+    useAppData();
+  const [deletingUser, setDeletingUser] = useState<UserResponse | null>(null);
   const { control, watch, setValue } = useForm<ManageUserForm>({
     defaultValues: {
       searchTerm: "",
@@ -51,19 +54,6 @@ const ManageUser = () => {
   const searchTerm = watch("searchTerm");
   const selectedEvent = watch("selectedEvent");
   const selectedStage = watch("selectedStage");
-
-  // ユーザー情報を取得
-  useEffect(() => {
-    const fetchUsersData = async () => {
-      try {
-        const users = await fetchUsers();
-        setUsers(users);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-    fetchUsersData();
-  }, []);
 
   // イベントが選択されたら、そのイベントのステージを取得
   useEffect(() => {
@@ -78,6 +68,16 @@ const ManageUser = () => {
   useEffect(() => {
     setPage(1); // フィルタリング条件が変わったらページをリセット
   }, [searchTerm, selectedEvent, selectedStage, users]);
+
+  // ユーザー削除
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      await deleteUser(userId);
+      reloadData();
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+    }
+  };
 
   // ユーザーの絞り込み
   const filteredUsers = useMemo(() => {
@@ -182,7 +182,7 @@ const ManageUser = () => {
                   <Typography
                     variant="body1"
                     sx={{
-                      ml: 2,
+                      ml: 1,
                       lineHeight: 1.2,
                       whiteSpace: "nowrap", // 改行しない
                       overflow: "hidden", // はみ出しを隠す
@@ -213,6 +213,14 @@ const ManageUser = () => {
 
               <AccordionDetails>
                 <ManageUserReservations userId={user.id} />
+                <Button
+                  onClick={() => setDeletingUser(user)}
+                  variant="outlined"
+                  color="error"
+                  sx={{ mt: 2 }}
+                >
+                  ユーザーを削除
+                </Button>
               </AccordionDetails>
             </Accordion>
           ))}
@@ -229,7 +237,10 @@ const ManageUser = () => {
       <Button
         onClick={() => setOpenSearch(!openSearch)}
         variant="outlined"
-        sx={{ margin: 4 }}
+        sx={{
+          my: 4,
+          px: 8,
+        }}
       >
         検索
       </Button>
@@ -255,6 +266,103 @@ const ManageUser = () => {
             />
           </Box>
         </Drawer>
+      )}
+      {deletingUser && (
+        <Dialog
+          open={Boolean(deletingUser)}
+          onClose={() => setDeletingUser(null)}
+          onClick={(e) => e.stopPropagation()}
+          fullWidth
+        >
+          <DialogTitle
+            sx={{
+              backgroundColor: "error.main",
+              color: "error.contrastText",
+            }}
+          >
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                mb: 2,
+              }}
+            >
+              ユーザを削除しますか？
+            </Typography>
+            <Typography variant="body2" color="error.contrastText">
+              紐づく予約も削除されます。
+            </Typography>
+            <Typography variant="body2" color="error.contrastText">
+              この操作は取り消せません。
+            </Typography>
+          </DialogTitle>
+          <DialogContent>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                mt: 2,
+              }}
+            >
+              <Typography variant="subtitle2" color="secondary">
+                ユーザー名
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 1,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  fontWeight: "bold",
+                }}
+              >
+                {deletingUser.nickname || deletingUser.email}
+              </Typography>
+              <Typography variant="subtitle2" color="secondary">
+                メールアドレス
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {deletingUser.email}
+              </Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-around",
+                width: "100%",
+                mt: 2,
+              }}
+            >
+              <Button
+                onClick={() => {
+                  handleDeleteUser(deletingUser.id);
+                  setDeletingUser(null);
+                }}
+                variant="contained"
+                color="error"
+              >
+                削除
+              </Button>
+              <Button
+                onClick={() => setDeletingUser(null)}
+                variant="outlined"
+                color="error"
+              >
+                キャンセル
+              </Button>
+            </Box>
+          </DialogActions>
+        </Dialog>
       )}
     </Container>
   );

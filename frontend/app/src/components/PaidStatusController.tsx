@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import { useReservationContext } from "../context/ReservationContext";
+import { useAppData } from "../context/AppData";
 import { updateReservation } from "../services/api/reservation";
 import ReservationSummary from "./ReservationSummary";
 
@@ -18,7 +18,7 @@ const PaidStatusController = ({
   reservationId,
   onClose,
 }: PaidStatusControllerProps) => {
-  const { reservations, reloadReservations } = useReservationContext();
+  const { reservations, reloadData } = useAppData();
 
   // 該当する予約を直接取得
   const reservation = reservations.find(
@@ -35,7 +35,7 @@ const PaidStatusController = ({
     } catch (error) {
       console.error("Failed to update reservation:", error);
     } finally {
-      reloadReservations();
+      reloadData();
       onClose();
     }
   };

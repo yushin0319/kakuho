@@ -9,8 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useMemo } from "react";
-import { useEventData } from "../context/EventDataContext";
-import { useReservationContext } from "../context/ReservationContext";
+import { useAppData } from "../context/AppData";
 import { SeatGroupResponse } from "../services/interfaces";
 import ManageListItem from "./ManageListItem";
 
@@ -25,8 +24,7 @@ const ManageListSeatGroup = ({
   isOpen,
   toggle,
 }: ManageListSeatGroupProps) => {
-  const { seatGroupNames } = useEventData();
-  const { reservations } = useReservationContext();
+  const { seatGroupNames, reservations } = useAppData();
 
   // 予約数とパーセンテージを計算 (useMemoで効率化)
   const { totalReservations, totalSeats, occupancyRate, paidRate } =

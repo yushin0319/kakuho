@@ -3,10 +3,9 @@ import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./assets/styles/theme";
 import Layout from "./components/Layout";
+import { AppDataProvider } from "./context/AppData";
 import { AuthProvider } from "./context/AuthContext";
-import { EventDataProvider } from "./context/EventDataContext";
 import { NewItemProvider } from "./context/NewItemContext";
-import { ReservationProvider } from "./context/ReservationContext";
 import { SnackProvider } from "./context/SnackContext";
 import AppRouter from "./routes/AppRouter";
 
@@ -16,15 +15,13 @@ const App = () => {
       <CssBaseline />
       <SnackProvider>
         <AuthProvider>
-          <EventDataProvider>
-            <ReservationProvider>
-              <NewItemProvider>
-                <Layout>
-                  <AppRouter />
-                </Layout>
-              </NewItemProvider>
-            </ReservationProvider>
-          </EventDataProvider>
+          <AppDataProvider>
+            <NewItemProvider>
+              <Layout>
+                <AppRouter />
+              </Layout>
+            </NewItemProvider>
+          </AppDataProvider>
         </AuthProvider>
       </SnackProvider>
     </ThemeProvider>

@@ -14,11 +14,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useReservationContext } from "../context/ReservationContext";
+import { useAppData } from "../context/AppData";
 import { toJST } from "../services/utils";
 
 const ManageUserReservations = ({ userId }: { userId: number }) => {
-  const { reservations } = useReservationContext();
+  const { reservations } = useAppData();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 

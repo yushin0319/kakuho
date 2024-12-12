@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useEventData } from "../context/EventDataContext";
+import { useAppData } from "../context/AppData";
 import { useSnack } from "../context/SnackContext";
 import { updateSeatGroup } from "../services/api/seatGroup";
 import { EventResponse } from "../services/interfaces";
@@ -23,8 +23,8 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
   const [newCapacities, setNewCapacities] = useState<Record<number, number>>(
     {}
   );
-  const { stages, seatGroups, seatGroupNames, error, changeSeatGroup } =
-    useEventData();
+  const { stages, seatGroups, seatGroupNames, error, reloadData } =
+    useAppData();
   const { setSnack } = useSnack();
 
   // 席数の初期化
@@ -32,7 +32,7 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
     setNewCapacities(
       Object.fromEntries(seatGroups.map((sg) => [sg.id, sg.capacity]))
     );
-  }, [event, seatGroups]);
+  }, [seatGroups]);
 
   // 席数の変更処理
   const handleCapacityChange = (id: number, newCapacity: number) => {
@@ -48,13 +48,15 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
           .map((sg) =>
             updateSeatGroup(sg.id, {
               capacity: newCapacities[sg.id],
-            }).then(() => changeSeatGroup(sg.id))
+            })
           )
       );
       setSnack({ message: "正常に保存されました", severity: "success" });
     } catch (e) {
       console.error(e);
       setSnack({ message: "保存中にエラーが発生しました", severity: "error" });
+    } finally {
+      reloadData();
     }
   };
 

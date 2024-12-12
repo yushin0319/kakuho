@@ -12,7 +12,7 @@ import {
 } from "date-fns";
 import { ja } from "date-fns/locale";
 import { useEffect, useState } from "react";
-import { useEventData } from "../context/EventDataContext";
+import { useAppData } from "../context/AppData";
 import { EventResponse, StageResponse } from "../services/interfaces";
 import { toJST, toJSTDate } from "../services/utils";
 import ReservationCreater from "./ReservationCreater";
@@ -34,7 +34,7 @@ interface CalendarProps {
 }
 
 const Calendar = ({ event, onBack }: CalendarProps) => {
-  const { stages } = useEventData();
+  const { stages } = useAppData();
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
   const [selectedStage, setSelectedStage] = useState<StageResponse>(stages[0]);

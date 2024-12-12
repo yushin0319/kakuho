@@ -3,12 +3,12 @@ import { Box, Card, CardContent, Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import Calendar from "../components/Calendar";
 import LoadingScreen from "../components/LoadingScreen";
-import { useEventData } from "../context/EventDataContext";
+import { useAppData } from "../context/AppData";
 import { EventResponse } from "../services/interfaces";
 import { toJST, toJSTDate } from "../services/utils";
 
 const Booking = () => {
-  const { events, stages, loading, error } = useEventData();
+  const { events, stages, loading, error } = useAppData();
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
     null
   );

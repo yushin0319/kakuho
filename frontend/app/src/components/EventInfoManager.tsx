@@ -1,6 +1,6 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import { useEventData } from "../context/EventDataContext";
+import { useAppData } from "../context/AppData";
 import { useSnack } from "../context/SnackContext";
 import { updateEvent } from "../services/api/event";
 import { EventResponse } from "../services/interfaces";
@@ -12,13 +12,13 @@ interface EventInfoManagerProps {
 const EventInfoManager = ({ event }: EventInfoManagerProps) => {
   const [name, setName] = useState(event.name);
   const [description, setDescription] = useState(event.description || "");
-  const { loading, error, changeEvent } = useEventData();
+  const { loading, error, reloadData } = useAppData();
   const { setSnack } = useSnack();
 
   const handleUpdate = async () => {
     try {
       await updateEvent(event.id, { name, description });
-      changeEvent(event.id);
+      reloadData();
       setSnack({ message: "正常に保存されました", severity: "success" });
     } catch (e) {
       console.error(e);

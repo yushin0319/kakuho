@@ -17,10 +17,10 @@ export const toJST = (
   if (!date) return "";
   const jstDate = toZonedTime(new Date(date), "Asia/Tokyo");
   const formats = {
-    fullDate: "yyyy/MM/dd (E)",
-    monthDate: "MM/dd (E)",
+    fullDate: "yyyy/M/d (E)",
+    monthDate: "M/d (E)",
     time: "HH:mm",
-    dateTime: "MM/dd (E) HH:mm",
+    dateTime: "M/d (E) HH:mm",
     ISO8601: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
   };
   const dayOfWeekMap = {

@@ -3,11 +3,11 @@ import { Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import LoadingScreen from "../components/LoadingScreen";
 import ReservationCard from "../components/ReservationCard";
+import { useAppData } from "../context/AppData";
 import { useNewItemContext } from "../context/NewItemContext";
-import { useReservationContext } from "../context/ReservationContext";
 
 const ReservationList = () => {
-  const { reservations, isLoading, error } = useReservationContext();
+  const { reservations, loading, error } = useAppData();
   const [expandCardId, setExpandCardId] = useState<number | null>(null);
   const { newItems, clearNewItems } = useNewItemContext();
 
@@ -29,15 +29,41 @@ const ReservationList = () => {
 
   return (
     <Container>
-      {isLoading && <LoadingScreen />}
+      {loading && <LoadingScreen />}
       <Typography variant="caption" color="textSecondary" sx={{ mb: 1 }}>
         クリックするとQRコードが表示されます
       </Typography>
       {reservations
         .sort(
           (a, b) =>
+            new Date(a.stage.start_time).getTime() -
+            new Date(b.stage.start_time).getTime()
+        )
+        .filter(
+          (item) =>
+            new Date(item.stage.start_time).getTime() >= new Date().getTime()
+        )
+        .map((item) => (
+          <ReservationCard
+            key={item.reservation.id}
+            reservationDetail={item}
+            isExpanded={expandCardId === item.reservation.id}
+            isNew={newItems.includes(item.reservation.id)}
+            onCardClick={() => handleCardClick(item.reservation.id)}
+          />
+        ))}
+      <Typography variant="caption" color="textSecondary" sx={{ mb: 1 }}>
+        過去のイベント
+      </Typography>
+      {reservations
+        .sort(
+          (a, b) =>
             new Date(b.stage.start_time).getTime() -
             new Date(a.stage.start_time).getTime()
+        )
+        .filter(
+          (item) =>
+            new Date(item.stage.start_time).getTime() < new Date().getTime()
         )
         .map((item) => (
           <ReservationCard

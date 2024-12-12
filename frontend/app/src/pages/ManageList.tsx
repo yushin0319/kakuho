@@ -3,10 +3,10 @@ import { Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import LoadingScreen from "../components/LoadingScreen";
 import ManageListEvent from "../components/ManageListEvent";
-import { useEventData } from "../context/EventDataContext";
+import { useAppData } from "../context/AppData";
 
 const ManageList = () => {
-  const { events, stages, loading, error } = useEventData();
+  const { events, stages, loading, error } = useAppData();
   const [startDate, setStartDate] = useState<Record<number, Date>>({});
   const [openEventIds, setOpenEventIds] = useState<number[]>([]);
 
@@ -29,7 +29,7 @@ const ManageList = () => {
     });
 
     setStartDate(newStartDates);
-  }, []);
+  }, [loading]);
 
   // イベントの展開状態を切り替える
   const toggleEvent = (id: number) => {

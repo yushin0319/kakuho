@@ -12,9 +12,8 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useEventData } from "../context/EventDataContext";
+import { ReservationDetail, useAppData } from "../context/AppData";
 import { useNewItemContext } from "../context/NewItemContext";
-import { ReservationDetail } from "../context/ReservationContext";
 import { useSnack } from "../context/SnackContext";
 import {
   createReservation,
@@ -25,22 +24,22 @@ import { StageResponse, TicketTypeResponse } from "../services/interfaces";
 import { NumComma, toJST } from "../services/utils";
 import ReservationSummary from "./ReservationSummary";
 
-interface ReservationChangeProps {
+interface ReservationChangerProps {
   reservationDetail: ReservationDetail;
   onClose: () => void;
 }
 
 // 予約変更フォームの入力値
-interface ReservationChangeForm {
+interface ReservationChangerForm {
   stage: number;
   ticketType: number;
   numAttendees: number;
 }
 
-const ReservationChange = ({
+const ReservationChanger = ({
   reservationDetail: { reservation, event, stage, ticketType, seatGroup, user },
   onClose,
-}: ReservationChangeProps) => {
+}: ReservationChangerProps) => {
   const [phase, setPhase] = useState<"form" | "summary">("form");
   const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
   const [selectableTicketTypes, setSelectableTicketTypes] = useState<
@@ -58,13 +57,13 @@ const ReservationChange = ({
     stages,
     seatGroups,
     ticketTypes,
-    changeSeatGroup,
+    reloadData,
     loading: eventLoading,
-  } = useEventData();
+  } = useAppData();
 
   // フォームの初期値を設定
   const { control, handleSubmit, watch, setValue } =
-    useForm<ReservationChangeForm>({
+    useForm<ReservationChangerForm>({
       defaultValues: {
         stage: stage.id,
         ticketType: ticketType.id,
@@ -142,7 +141,7 @@ const ReservationChange = ({
   }, [watchStage]);
 
   // 予約の確認と確定処理
-  const onSubmit = async (data: ReservationChangeForm) => {
+  const onSubmit = async (data: ReservationChangerForm) => {
     const user_id = reservation.user_id;
     try {
       if (ticketType.id !== data.ticketType) {
@@ -156,7 +155,6 @@ const ReservationChange = ({
         if (!type) {
           throw new Error("TicketType not found");
         }
-        changeSeatGroup(type.seat_group_id);
       } else {
         await updateReservation(reservation.id, {
           num_attendees: data.numAttendees,
@@ -164,7 +162,6 @@ const ReservationChange = ({
         });
         addNewItem(reservation.id);
       }
-      changeSeatGroup(seatGroup.id);
       setSnack({
         message: "予約を変更しました",
         severity: "success",
@@ -176,6 +173,7 @@ const ReservationChange = ({
         severity: "error",
       });
     } finally {
+      reloadData();
       onClose();
     }
   };
@@ -353,4 +351,4 @@ const ReservationChange = ({
   );
 };
 
-export default ReservationChange;
+export default ReservationChanger;

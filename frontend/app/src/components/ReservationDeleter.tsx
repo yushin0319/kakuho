@@ -6,22 +6,21 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import { useEventData } from "../context/EventDataContext";
-import { ReservationDetail } from "../context/ReservationContext";
+import { ReservationDetail, useAppData } from "../context/AppData";
 import { deleteReservation } from "../services/api/reservation";
 import ReservationSummary from "./ReservationSummary";
 
-interface ReservationDeleteProps {
+interface ReservationDeleterProps {
   reservationDetail: ReservationDetail;
   onClose: () => void;
 }
 
-const ReservationDelete = ({
+const ReservationDeleter = ({
   reservationDetail: item,
   onClose,
-}: ReservationDeleteProps) => {
-  const { changeSeatGroup } = useEventData();
-  const { reservation, seatGroup } = item;
+}: ReservationDeleterProps) => {
+  const { reloadData } = useAppData();
+  const { reservation } = item;
 
   const handleDeleteConfirm = async () => {
     try {
@@ -29,7 +28,7 @@ const ReservationDelete = ({
     } catch (error) {
       console.error("Failed to delete reservation:", error);
     } finally {
-      changeSeatGroup(seatGroup.id);
+      reloadData();
       onClose();
     }
   };
@@ -64,4 +63,4 @@ const ReservationDelete = ({
   );
 };
 
-export default ReservationDelete;
+export default ReservationDeleter;

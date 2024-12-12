@@ -13,10 +13,9 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { ReservationDetail, useAppData } from "../context/AppData";
 import { useAuth } from "../context/AuthContext";
-import { useEventData } from "../context/EventDataContext";
 import { useNewItemContext } from "../context/NewItemContext";
-import { ReservationDetail } from "../context/ReservationContext";
 import { useSnack } from "../context/SnackContext";
 import { createReservation } from "../services/api/reservation";
 import {
@@ -53,12 +52,7 @@ const ReservationCreater = ({
   const { addNewItem } = useNewItemContext();
   const { setSnack } = useSnack();
   const { user } = useAuth();
-  const {
-    seatGroups,
-    ticketTypes,
-    changeSeatGroup,
-    loading: eventLoading,
-  } = useEventData();
+  const { seatGroups, ticketTypes, reloadData, loading } = useAppData();
 
   const { control, handleSubmit, watch, setValue } =
     useForm<ReservationCreaterForm>({
@@ -73,7 +67,7 @@ const ReservationCreater = ({
 
   // 初期化処理
   useEffect(() => {
-    if (!eventLoading) {
+    if (!loading) {
       const groups = seatGroups.filter((group) => group.stage_id === stage.id);
       const types = ticketTypes.filter((type) =>
         groups.find((group) => group.id === type.seat_group_id)
@@ -85,7 +79,7 @@ const ReservationCreater = ({
           ?.capacity || 0
       );
     }
-  }, [eventLoading, stage]);
+  }, [stage]);
 
   // ticketTypeを変更時、availableを再計算
   useEffect(() => {
@@ -123,14 +117,6 @@ const ReservationCreater = ({
         user_id: user.id,
       });
       addNewItem(newItem.id);
-      const newSeatGroup = seatGroups.find(
-        (group) =>
-          group.id ===
-          ticketTypes.find((type) => type.id === data.ticketType)?.seat_group_id
-      );
-      if (newSeatGroup) {
-        changeSeatGroup(newSeatGroup.id);
-      }
       setSnack({
         message: "予約を作成しました",
         severity: "success",
@@ -142,6 +128,7 @@ const ReservationCreater = ({
         severity: "error",
       });
     } finally {
+      reloadData();
       onClose();
     }
   };

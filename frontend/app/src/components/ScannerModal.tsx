@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useReservationContext } from "../context/ReservationContext";
+import { useAppData } from "../context/AppData";
 import { useSnack } from "../context/SnackContext";
 import PaidStatusController from "./PaidStatusController";
 import QrReader from "./QrReader";
@@ -22,7 +22,7 @@ const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
   const [scanResult, setScanResult] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isPaying, setIsPaying] = useState<boolean>(false);
-  const { reservations } = useReservationContext();
+  const { reservations } = useAppData();
   const { setSnack } = useSnack();
 
   // 予約情報を取得

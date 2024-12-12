@@ -1,6 +1,4 @@
 // app/src/components/ManageItem.tsx
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {
   Box,
@@ -11,11 +9,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { ReservationDetail } from "../context/ReservationContext";
+import { ReservationDetail } from "../context/AppData";
 import { NumComma } from "../services/utils";
 import PaidStatusController from "./PaidStatusController";
-import ReservationChange from "./ReservationChange";
-import ReservationDelete from "./ReservationDelete";
+import ReservationChanger from "./ReservationChanger";
+import ReservationDeleter from "./ReservationDeleter";
 
 const ManageListItem = ({ data }: { data: ReservationDetail }) => {
   const [isChanging, setIsChanging] = useState(false);
@@ -87,7 +85,7 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
         </Box>
       </Box>
       {/* スマホ用 */}
-      <Box sx={{ display: { xs: "block", sm: "none" } }}>
+      <Box>
         <IconButton onClick={(e) => handleMenuClick(e)}>
           <SettingsIcon />
         </IconButton>
@@ -114,29 +112,14 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
           </MenuItem>
         </Menu>
       </Box>
-      {/* PC用 */}
-      <Box
-        display="flex"
-        sx={{
-          display: { xs: "none", sm: "block" },
-          width: { xs: "100%", sm: "30%" },
-        }}
-      >
-        <IconButton onClick={() => setIsChanging(true)}>
-          <ModeEditIcon color="primary" />
-        </IconButton>
-        <IconButton onClick={() => setIsDeleting(true)}>
-          <DeleteForeverIcon color="error" />
-        </IconButton>
-      </Box>
       {isChanging && (
-        <ReservationChange
+        <ReservationChanger
           reservationDetail={data}
           onClose={() => setIsChanging(false)}
         />
       )}
       {isDeleting && (
-        <ReservationDelete
+        <ReservationDeleter
           reservationDetail={data}
           onClose={() => setIsDeleting(false)}
         />

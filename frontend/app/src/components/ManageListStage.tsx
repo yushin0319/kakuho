@@ -3,7 +3,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { Box, Button, Collapse, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useEventData } from "../context/EventDataContext";
+import { useAppData } from "../context/AppData";
 import { StageResponse } from "../services/interfaces";
 import { toJST } from "../services/utils";
 import ManageListSeatGroup from "./ManageListSeatGroup";
@@ -18,7 +18,7 @@ interface ManageListStageProps {
 const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
   const [openSeatGroupIds, setOpenSeatGroupIds] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { seatGroups } = useEventData();
+  const { seatGroups } = useAppData();
 
   useEffect(() => {
     if (!isOpen) {

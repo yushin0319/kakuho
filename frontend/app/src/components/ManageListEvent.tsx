@@ -2,7 +2,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Box, Card, Collapse, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useEventData } from "../context/EventDataContext";
+import { useAppData } from "../context/AppData";
 import { EventResponse } from "../services/interfaces";
 import ManageListStage from "./ManageListStage";
 
@@ -14,7 +14,7 @@ interface ManageListEventProps {
 
 const ManageListEvent = ({ event, isOpen, toggle }: ManageListEventProps) => {
   const [openStageIds, setOpenStageIds] = useState<number[]>([]);
-  const { stages } = useEventData();
+  const { stages } = useAppData();
 
   useEffect(() => {
     if (!isOpen) {

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from config import get_db
 from schemas import UserResponse, UserUpdate, UserCreate
 from crud.user import CrudUser
+from crud.reservation import CrudReservation
 from routes.auth import check_admin, get_current_user
 
 user_router = APIRouter()
@@ -80,6 +81,7 @@ def delete_user(
     current_user: UserResponse = Depends(get_current_user),
 ) -> None:
     user_crud = CrudUser(db)
+    reservation_crud = CrudReservation(db)
 
     # 削除対象のユーザーを取得
     delete_user = user_crud.read_by_id(user_id)
@@ -91,7 +93,14 @@ def delete_user(
         raise HTTPException(status_code=400, detail="Cannot delete an admin user")
 
     # 削除を実行
-    if current_user.is_admin:
-        user_crud.delete(user_id)
-    else:
+    if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Permission denied")
+
+    try:
+        with db.begin():
+            reservations = reservation_crud.read_by_user_id(user_id)
+            for reservation in reservations:
+                reservation_crud.delete(reservation.id)
+            user_crud.delete(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
