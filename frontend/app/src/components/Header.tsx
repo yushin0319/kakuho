@@ -1,8 +1,8 @@
+import { AppBar, Box, Button, Toolbar } from "@mui/material";
 import { useState } from "react";
-import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import { NavLink } from "react-router-dom";
-import UserInfo from "./UserInfo";
 import { useAuth } from "../context/AuthContext";
+import UserInfo from "./UserInfo";
 
 const Header = () => {
   const { user } = useAuth(); // 認証情報を取得するフック
@@ -31,7 +31,7 @@ const Header = () => {
           <Button component={NavLink} to="/my-reservations" color="inherit">
             マイチケット
           </Button>
-          <Button component={NavLink} to="/manage-list" color="inherit">
+          <Button component={NavLink} to="/check-in-list" color="inherit">
             予約管理
           </Button>
           <Button component={NavLink} to="/manage-user" color="inherit">

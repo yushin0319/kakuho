@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { user, login } = useAuth();
+  const { login } = useAuth();
   const [error, setError] = useState("");
 
   // React Hook Formの設定
@@ -27,7 +27,6 @@ const Login = () => {
       // ログイン処理を実行
       await login(email, password);
       navigate("/"); // ログイン成功時にホームへリダイレクト
-      console.log(user);
     } catch (error) {
       setError(
         "ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。"

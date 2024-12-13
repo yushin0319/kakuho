@@ -11,19 +11,19 @@ import {
 import { useMemo } from "react";
 import { useAppData } from "../context/AppData";
 import { SeatGroupResponse } from "../services/interfaces";
-import ManageListItem from "./ManageListItem";
+import CheckInItem from "./CheckInItem";
 
-interface ManageListSeatGroupProps {
+interface CheckInSeatGroupProps {
   seatGroup: SeatGroupResponse;
   isOpen: boolean;
   toggle: () => void;
 }
 
-const ManageListSeatGroup = ({
+const CheckInSeatGroup = ({
   seatGroup,
   isOpen,
   toggle,
-}: ManageListSeatGroupProps) => {
+}: CheckInSeatGroupProps) => {
   const { seatGroupNames, reservations } = useAppData();
 
   // 予約数とパーセンテージを計算 (useMemoで効率化)
@@ -136,7 +136,7 @@ const ManageListSeatGroup = ({
                       : "rgba(0, 0, 0, 0.05)",
                   }}
                 >
-                  <ManageListItem data={data} />
+                  <CheckInItem data={data} />
                 </Box>
               ))}
           </Box>
@@ -146,4 +146,4 @@ const ManageListSeatGroup = ({
   );
 };
 
-export default ManageListSeatGroup;
+export default CheckInSeatGroup;

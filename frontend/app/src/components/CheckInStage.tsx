@@ -6,16 +6,16 @@ import { useEffect, useState } from "react";
 import { useAppData } from "../context/AppData";
 import { StageResponse } from "../services/interfaces";
 import { toJST } from "../services/utils";
-import ManageListSeatGroup from "./ManageListSeatGroup";
+import CheckInSeatGroup from "./CheckInSeatGroup";
 import ScannerModal from "./ScannerModal";
 
-interface ManageListStageProps {
+interface CheckInStageProps {
   stage: StageResponse;
   isOpen: boolean;
   toggle: () => void;
 }
 
-const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
+const CheckInStage = ({ stage, isOpen, toggle }: CheckInStageProps) => {
   const [openSeatGroupIds, setOpenSeatGroupIds] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { seatGroups } = useAppData();
@@ -94,7 +94,7 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
           {seatGroups
             .filter((group) => group.stage_id === stage.id)
             .map((group) => (
-              <ManageListSeatGroup
+              <CheckInSeatGroup
                 key={group.id}
                 seatGroup={group}
                 isOpen={openSeatGroupIds.includes(group.id)}
@@ -112,4 +112,4 @@ const ManageListStage = ({ stage, isOpen, toggle }: ManageListStageProps) => {
   );
 };
 
-export default ManageListStage;
+export default CheckInStage;

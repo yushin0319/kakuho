@@ -7,22 +7,27 @@ import {
   Typography,
 } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
-import { seatProps } from "../pages/CreateEvent";
-import { TicketTypeCreate } from "../services/interfaces";
-import EditTicketType from "./EditTicketType";
+import { SeatGroupCreate, TicketTypeCreate } from "../services/interfaces";
+import CreateTicketType from "./CreateTicketType";
 import ValidatedForm from "./ValidatedForm";
 
-interface EditSeatGroupProps {
-  seatGroup: seatProps;
-  onUpdate: (seatGroup: seatProps) => void;
+interface CreateSeatGroupProps {
+  id: number;
+  seatGroup: SeatGroupCreate;
+  ticketTypes: TicketTypeCreate[];
+  onUpdate: (
+    seatGroup: SeatGroupCreate,
+    ticketTypes: TicketTypeCreate[]
+  ) => void;
   onDelete: () => void;
 }
 
-const EditSeatGroup = ({
+const CreateSeatGroup = ({
   seatGroup,
+  ticketTypes,
   onUpdate,
   onDelete,
-}: EditSeatGroupProps) => {
+}: CreateSeatGroupProps) => {
   const methods = useForm({
     defaultValues: {
       capacity: "0",
@@ -30,35 +35,32 @@ const EditSeatGroup = ({
   });
 
   // チケット種別の追加
-  const handleAddTicketType = () => {
+  const addTicketType = () => {
     const newTicketType: TicketTypeCreate = { type_name: "", price: 0 };
-    const newSeatGroup = { ...seatGroup };
-    newSeatGroup.ticketTypes.push(newTicketType);
-    onUpdate(newSeatGroup);
+    ticketTypes.push(newTicketType);
+    onUpdate(seatGroup, ticketTypes);
   };
 
   // チケット種別の更新
-  const handleUpdateTicketType = (index: number, ticket: TicketTypeCreate) => {
-    const newSeatGroup = { ...seatGroup };
-    newSeatGroup.ticketTypes[index] = ticket;
-    onUpdate(newSeatGroup);
+  const updateTicketType = (index: number, ticketType: TicketTypeCreate) => {
+    ticketTypes[index] = ticketType;
+    onUpdate(seatGroup, ticketTypes);
   };
 
   // チケット種別の削除
-  const handleDeleteTicketType = (index: number) => {
-    const newSeatGroup = { ...seatGroup };
-    newSeatGroup.ticketTypes.splice(index, 1);
-    onUpdate(newSeatGroup);
+  const deleteTicketType = (index: number) => {
+    ticketTypes.splice(index, 1);
+    onUpdate(seatGroup, ticketTypes);
   };
 
   const onSubmit = (data: { capacity: string }) => {
-    onUpdate({
-      ...seatGroup,
-      seatGroup: {
-        ...seatGroup.seatGroup,
-        capacity: parseInt(data.capacity, 10),
+    onUpdate(
+      {
+        ...seatGroup,
+        capacity: parseInt(data.capacity),
       },
-    });
+      ticketTypes
+    );
   };
 
   return (
@@ -69,19 +71,19 @@ const EditSeatGroup = ({
             name="capacity"
             label="座席数"
             fieldType="number"
-            defaultValue={seatGroup.seatGroup.capacity.toString()}
+            defaultValue={seatGroup.capacity.toString()}
           />
           <Grid container size={12} spacing={2}>
-            {seatGroup.ticketTypes.map((ticket, index) => (
+            {ticketTypes.map((ticketType, index) => (
               <Grid container size={12} key={index}>
                 <Card sx={{ p: 1, my: 1, width: "100%" }}>
-                  <EditTicketType
+                  <CreateTicketType
                     key={index}
-                    ticket={ticket}
-                    onUpdate={(newTicket) =>
-                      handleUpdateTicketType(index, newTicket)
+                    ticketType={ticketType}
+                    onUpdate={(newTicketType) =>
+                      updateTicketType(index, newTicketType)
                     }
-                    onDelete={() => handleDeleteTicketType(index)}
+                    onDelete={() => deleteTicketType(index)}
                   />
                 </Card>
               </Grid>
@@ -90,7 +92,7 @@ const EditSeatGroup = ({
           <Button
             variant="contained"
             color="primary"
-            onClick={handleAddTicketType}
+            onClick={addTicketType}
             fullWidth
           >
             チケット追加
@@ -105,4 +107,4 @@ const EditSeatGroup = ({
   );
 };
 
-export default EditSeatGroup;
+export default CreateSeatGroup;

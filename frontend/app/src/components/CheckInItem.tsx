@@ -15,7 +15,7 @@ import PaidStatusController from "./PaidStatusController";
 import ReservationChanger from "./ReservationChanger";
 import ReservationDeleter from "./ReservationDeleter";
 
-const ManageListItem = ({ data }: { data: ReservationDetail }) => {
+const CheckInItem = ({ data }: { data: ReservationDetail }) => {
   const [isChanging, setIsChanging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
@@ -134,4 +134,4 @@ const ManageListItem = ({ data }: { data: ReservationDetail }) => {
   );
 };
 
-export default ManageListItem;
+export default CheckInItem;

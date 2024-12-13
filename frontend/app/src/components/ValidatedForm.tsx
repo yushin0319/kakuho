@@ -65,6 +65,7 @@ interface CustomFieldProps {
   disabled?: boolean;
   variant?: "filled" | "outlined" | "standard";
   defaultValue?: string;
+  sx?: any;
 }
 
 const ValidatedForm = ({
@@ -74,6 +75,7 @@ const ValidatedForm = ({
   disabled = false,
   variant = "outlined",
   defaultValue = "",
+  sx = {},
 }: CustomFieldProps) => {
   const {
     control,
@@ -123,6 +125,9 @@ const ValidatedForm = ({
               : "text"
           }
           onBlur={(e) => handleBlur(e, field.onChange)}
+          multiline={fieldType === "description"}
+          rows={fieldType === "description" ? 3 : 1}
+          sx={sx}
         />
       )}
     />

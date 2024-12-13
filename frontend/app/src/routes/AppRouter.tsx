@@ -2,10 +2,10 @@
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Booking from "../pages/Booking";
+import CheckInList from "../pages/CheckInList";
 import CreateEvent from "../pages/CreateEvent";
 import Login from "../pages/Login";
 import ManageEvent from "../pages/ManageEvent";
-import ManageList from "../pages/ManageList";
 import ManageUser from "../pages/ManageUser";
 import Register from "../pages/Register";
 import ReservationList from "../pages/ReservationList";
@@ -49,10 +49,10 @@ const AppRouter = () => {
 
         {/* 「予約管理」 */}
         <Route
-          path="/manage-list"
+          path="/check-in-list"
           element={
             <PrivateRoute>
-              <ManageList />
+              <CheckInList />
             </PrivateRoute>
           }
         />

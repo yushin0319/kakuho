@@ -4,20 +4,20 @@ import { FormProvider, useForm } from "react-hook-form";
 import { TicketTypeCreate } from "../services/interfaces";
 import ValidatedForm from "./ValidatedForm";
 
-interface EditTicketTypeProps {
-  ticket: TicketTypeCreate;
+interface CreateTicketTypeProps {
+  ticketType: TicketTypeCreate;
   onUpdate: (newTicket: TicketTypeCreate) => void;
   onDelete: () => void;
 }
 
-const EditTicketType = ({
-  ticket,
+const CreateTicketType = ({
+  ticketType,
   onUpdate,
   onDelete,
-}: EditTicketTypeProps) => {
+}: CreateTicketTypeProps) => {
   const methods = useForm({
     defaultValues: {
-      type_name: ticket.type_name,
+      type_name: ticketType.type_name,
       price: "0",
     },
   });
@@ -64,4 +64,4 @@ const EditTicketType = ({
   );
 };
 
-export default EditTicketType;
+export default CreateTicketType;

@@ -4,15 +4,15 @@ import { Box, Card, Collapse, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAppData } from "../context/AppData";
 import { EventResponse } from "../services/interfaces";
-import ManageListStage from "./ManageListStage";
+import CheckInStage from "./CheckInStage";
 
-interface ManageListEventProps {
+interface CheckInEventProps {
   event: EventResponse;
   isOpen: boolean;
   toggle: () => void;
 }
 
-const ManageListEvent = ({ event, isOpen, toggle }: ManageListEventProps) => {
+const CheckInEvent = ({ event, isOpen, toggle }: CheckInEventProps) => {
   const [openStageIds, setOpenStageIds] = useState<number[]>([]);
   const { stages } = useAppData();
 
@@ -68,7 +68,7 @@ const ManageListEvent = ({ event, isOpen, toggle }: ManageListEventProps) => {
           {stages
             .filter((stage) => stage.event_id === event.id)
             .map((stage) => (
-              <ManageListStage
+              <CheckInStage
                 key={stage.id}
                 stage={stage}
                 isOpen={openStageIds.includes(stage.id)}
@@ -81,4 +81,4 @@ const ManageListEvent = ({ event, isOpen, toggle }: ManageListEventProps) => {
   );
 };
 
-export default ManageListEvent;
+export default CheckInEvent;

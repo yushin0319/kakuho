@@ -1,11 +1,11 @@
 // app/src/pages/ManageList.tsx
 import { Container, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
+import CheckInEvent from "../components/CheckInEvent";
 import LoadingScreen from "../components/LoadingScreen";
-import ManageListEvent from "../components/ManageListEvent";
 import { useAppData } from "../context/AppData";
 
-const ManageList = () => {
+const CheckInList = () => {
   const { events, eventStartDates, loading, error } = useAppData();
   const [openEventIds, setOpenEventIds] = useState<number[]>([]);
 
@@ -39,7 +39,7 @@ const ManageList = () => {
         開催中のイベント
       </Typography>
       {futureEvents.map((event) => (
-        <ManageListEvent
+        <CheckInEvent
           key={event.id}
           event={event}
           isOpen={openEventIds.includes(event.id)}
@@ -50,7 +50,7 @@ const ManageList = () => {
         過去のイベント
       </Typography>
       {pastEvents.map((event) => (
-        <ManageListEvent
+        <CheckInEvent
           key={event.id}
           event={event}
           isOpen={openEventIds.includes(event.id)}
@@ -61,4 +61,4 @@ const ManageList = () => {
   );
 };
 
-export default ManageList;
+export default CheckInList;

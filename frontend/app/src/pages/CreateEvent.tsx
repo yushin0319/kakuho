@@ -1,234 +1,258 @@
 // app/src/pages/CreateEvent.tsx
-import { Button, Card, Container, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import ConfirmEvent from "../components/ConfirmEvent";
-import EditSeatGroup from "../components/EditSeatGroup";
-import EditStage from "../components/EditStage";
+
+import {
+  Box,
+  Button,
+  Card,
+  Chip,
+  Container,
+  Divider,
+  Grid2 as Grid,
+  Typography,
+} from "@mui/material";
+import { useEffect, useMemo } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import CreateSeatGroup from "../components/CreateSeatGroup";
+import ValidatedDatePicker from "../components/ValidatedDatePicker";
+import ValidatedForm from "../components/ValidatedForm";
+import ValidatedTimePicker from "../components/ValidatedTimePicker";
 import { SeatGroupCreate, TicketTypeCreate } from "../services/interfaces";
+import { addTime, toJST } from "../services/utils";
 
-export type seatProps = {
-  id: number;
-  seatGroup: SeatGroupCreate;
-  ticketTypes: TicketTypeCreate[];
-};
-
-const initialize = () => {
-  try {
-    const data = localStorage.getItem("createEventData");
-    if (data) {
-      const parsedData = JSON.parse(data);
-      return {
-        completedTimes: Object.fromEntries(
-          Object.entries(parsedData.completedTimes || {}).map(
-            ([key, times]) => [
-              key,
-              (times as string[]).map((time: string) => new Date(time)), // 配列内の文字列をDateオブジェクトに変換
-            ]
-          )
-        ),
-        seatGroups: parsedData.seatGroups as seatProps[] | [],
-        startDate: parsedData.startDate ? new Date(parsedData.startDate) : null,
-        endDate: parsedData.endDate ? new Date(parsedData.endDate) : null,
-        title: parsedData.title,
-        description: parsedData.description,
-      };
-    }
-  } catch (e) {
-    console.error(e);
-  }
-
-  return {
-    completedTimes: {},
-    seatGroups: [
-      {
-        id: 0,
-        seatGroup: {
-          capacity: 0,
-        },
-        ticketTypes: [{ type_name: "一般", price: 0 }],
-      },
-    ],
-    startDate: null,
-    endDate: null,
-    title: "",
-    description: "",
+type seatDict = {
+  [id: number]: {
+    seatGroup: SeatGroupCreate;
+    ticketTypes: TicketTypeCreate[];
   };
 };
 
 const CreateEvent = () => {
-  const {
-    completedTimes: initialCompletedTimes,
-    seatGroups: initialSeatGroups,
-    startDate: initialStartDate,
-    endDate: initialEndDate,
-    title: initialTitle,
-    description: initialDescription,
-  } = initialize();
-  const [title, setTitle] = useState<string>(initialTitle);
-  const [description, setDescription] = useState<string>(initialDescription);
-  const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
-  const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
-  const [completedTimes, setCompletedTimes] = useState<Record<string, Date[]>>(
-    initialCompletedTimes
-  );
-  const [seatGroups, setSeatGroups] = useState<seatProps[]>(initialSeatGroups);
-  const [open, setOpen] = useState<boolean>(false);
+  const methods = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      startDate: null,
+      endDate: null,
+      schedule: {} as Record<string, Date[]>,
+      seatDict: {
+        0: {
+          seatGroup: {
+            capacity: 0,
+          },
+          ticketTypes: [{ type_name: "一般", price: 0 }],
+        },
+      } as seatDict,
+    },
+  });
 
-  useEffect(() => {
-    localStorage.setItem(
-      "createEventData",
-      JSON.stringify({
-        completedTimes,
-        seatGroups,
-        startDate,
-        endDate,
-        title,
-        description,
-      })
-    );
-  }, [completedTimes, seatGroups, startDate, endDate, title, description]);
+  const { setValue, getValues, handleSubmit, watch } = methods;
 
-  // startDate, endDateの変更時にcompletedTimesのうち、範囲外のデータを削除
-  useEffect(() => {
-    if (startDate && endDate) {
-      const newCompletedTimes: Record<string, Date[]> = {};
-      Object.entries(completedTimes).forEach(([date, times]) => {
-        if (new Date(date) >= startDate && new Date(date) <= endDate) {
-          newCompletedTimes[date] = times;
-        }
-      });
-      setCompletedTimes(newCompletedTimes);
+  const watchStartDate = watch("startDate");
+  const watchEndDate = watch("endDate");
+  const watchSchedule = watch("schedule");
+  const watchSeatDict = watch("seatDict");
+
+  // 開始日から終了日までの日付リストを生成
+  const eventDates = useMemo(() => {
+    if (!watchStartDate || !watchEndDate) return [];
+    const dates = [];
+    let currentDate = new Date(watchStartDate);
+    while (currentDate <= new Date(watchEndDate)) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
     }
-  }, [startDate, endDate]);
+    return dates;
+  }, [watchStartDate, watchEndDate]);
 
-  // 決定ボタンの処理
-  const handleComplete = (date: string, time: Date) => {
-    const existingTimes = completedTimes[date] || [];
-    if (existingTimes.some((t) => t.getTime() === time.getTime())) {
-      return;
-    }
-    setCompletedTimes((prev) => {
-      const newTimes = prev[date] ? [...prev[date], time] : [time];
-      newTimes.sort((a, b) => a.getTime() - b.getTime());
-      return { ...prev, [date]: newTimes };
+  // 日付変更時にscheduleの更新
+  useEffect(() => {
+    const now = getValues("schedule");
+    const updated: Record<string, Date[]> = {};
+    eventDates.forEach((date) => {
+      const key = toJST(date, "fullDate");
+      updated[key] = now[key] || [];
     });
+    setValue("schedule", updated);
+  }, [eventDates]);
+
+  // スケジュールの追加
+  const addSchedule = (date: string, time: Date) => {
+    const now = getValues("schedule");
+    const newItem = new Date(date);
+    newItem.setHours(time.getHours());
+    newItem.setMinutes(time.getMinutes());
+    newItem.setSeconds(0);
+    const isDuplicate = now[date]?.some(
+      (t: Date) => t.getTime() === newItem.getTime()
+    );
+    if (!isDuplicate) {
+      const updated = {
+        ...now,
+        [date]: [...(now[date] || []), newItem],
+      };
+      setValue("schedule", updated);
+    }
   };
 
-  // 削除ボタンの処理
-  const handleDelete = (date: string, time: Date) => {
-    setCompletedTimes((prev) => {
-      const newTimes = prev[date].filter((t) => t.getTime() !== time.getTime());
-      return { ...prev, [date]: newTimes };
-    });
+  // スケジュールの削除
+  const deleteSchedule = (date: string, time: Date) => {
+    const now = getValues("schedule");
+    const updated = {
+      ...now,
+      [date]: now[date].filter((t: Date) => t.getTime() !== time.getTime()),
+    };
+    setValue("schedule", updated);
   };
 
   // シートグループの追加
-  const handleAddSeatGroup = () => {
+  const addSeatGroup = () => {
+    const seatDict = { ...watchSeatDict };
     const newId =
-      (seatGroups.length > 0 ? Math.max(...seatGroups.map((sg) => sg.id)) : 0) +
-      1;
-    setSeatGroups((prev) => [
-      ...prev,
-      {
-        id: newId,
-        seatGroup: { capacity: 0 },
-        ticketTypes: [{ type_name: "S席", price: 0 }],
-      },
-    ]);
-  };
-
-  // シートグループの更新
-  const handleUpdateSeatGroup = (id: number, updatedGroup: seatProps) => {
-    setSeatGroups((prev) =>
-      prev.map((group) => (group.id === id ? updatedGroup : group))
-    );
+      Object.keys(seatDict).length === 0
+        ? 0
+        : Math.max(...Object.keys(seatDict).map((id) => parseInt(id))) + 1;
+    seatDict[newId] = {
+      seatGroup: { capacity: 0 },
+      ticketTypes: [{ type_name: "S席", price: 0 }],
+    };
+    setValue("seatDict", seatDict);
   };
 
   // シートグループの削除
-  const handleDeleteSeatGroup = (id: number) => {
-    const newSeatGroups = seatGroups.filter((group) => group.id !== id);
-    setSeatGroups(newSeatGroups);
+  const deleteSeatGroup = (id: number) => {
+    const newSeatDict = { ...watchSeatDict };
+    delete newSeatDict[id];
+    setValue("seatDict", newSeatDict);
   };
 
-  // デバッグ用
-  const info = () => {
-    console.log(completedTimes);
-    console.log(seatGroups);
-  };
-
-  // ConfirmEventの開閉
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  // リセット
-  const handleReset = () => {
-    localStorage.removeItem("createEventData");
-    window.location.reload();
+  // 確認画面へ遷移
+  const onSubmit = (data: Record<string, any>) => {
+    console.log(data);
   };
 
   return (
     <Container>
-      <Typography variant="h5" margin={2}>
-        基本情報入力
-      </Typography>
-      <Card sx={{ p: 4 }}>
-        <TextField
-          label="イベント名"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          variant="outlined"
-          fullWidth
-          autoComplete="off"
-          margin="normal"
-        />
-        <TextField
-          label="詳細"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          variant="outlined"
-          multiline
-          fullWidth
-          margin="normal"
-        />
-      </Card>
-      <Typography variant="h5" margin={2}>
-        ステージ時間選択
-      </Typography>
-      <EditStage
-        startDate={startDate}
-        endDate={endDate}
-        completedTimes={completedTimes}
-        setStartDate={setStartDate}
-        setEndDate={setEndDate}
-        handleComplete={handleComplete}
-        handleDelete={handleDelete}
-      />
-      <Typography variant="h5" margin={2}>
-        チケット情報入力
-      </Typography>
-      {seatGroups.map((sg) => (
-        <EditSeatGroup
-          key={sg.id}
-          seatGroup={sg}
-          onUpdate={(seatGroup) => {
-            handleUpdateSeatGroup(sg.id, seatGroup);
-          }}
-          onDelete={() => handleDeleteSeatGroup(sg.id)}
-        />
-      ))}
-      <Button onClick={() => handleAddSeatGroup()}>特別席追加</Button>
-      <Button onClick={info}>情報</Button>
-      <Button onClick={() => setOpen(true)}>確認</Button>
-      <ConfirmEvent
-        title={title}
-        description={description}
-        completedTimes={completedTimes}
-        seatGroups={seatGroups}
-        open={open}
-        onClose={handleClose}
-        onConfirm={handleReset}
-      />
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            新規イベント作成
+          </Typography>
+          <Card sx={{ p: 2 }}>
+            <ValidatedForm name="title" label="イベント名" fieldType="title" />
+            <ValidatedForm
+              name="description"
+              label="詳細"
+              fieldType="description"
+              sx={{
+                mt: 2,
+              }}
+            />
+          </Card>
+          <Typography variant="body1" margin={2}>
+            ステージ時間選択
+          </Typography>
+          <Card sx={{ px: 2, pb: 1 }}>
+            <Grid container spacing={2}>
+              <Grid size={6}>
+                <ValidatedDatePicker
+                  name="startDate"
+                  label="開始日"
+                  minDate={new Date()}
+                  maxDate={addTime(new Date(), { years: 1 })}
+                />
+              </Grid>
+              <Grid size={6}>
+                <ValidatedDatePicker
+                  name="endDate"
+                  label="終了日"
+                  minDate={watchStartDate ? watchStartDate : new Date()}
+                  maxDate={
+                    watchStartDate
+                      ? addTime(watchStartDate, { months: 3 })
+                      : addTime(new Date(), { years: 1 })
+                  }
+                />
+              </Grid>
+            </Grid>
+            {eventDates.map((date: Date) => (
+              <Box key={date.getTime()}>
+                <Typography variant="subtitle1">
+                  {toJST(date, "fullDate")}
+                </Typography>
+                {watchSchedule[toJST(date, "fullDate")] &&
+                  watchSchedule[toJST(date, "fullDate")]
+                    .sort((a, b) => a.getTime() - b.getTime())
+                    .map((time: Date) => (
+                      <Chip
+                        key={time.getTime()}
+                        label={toJST(time, "time")}
+                        variant="outlined"
+                        color="primary"
+                        onDelete={() =>
+                          deleteSchedule(toJST(date, "fullDate"), time)
+                        }
+                        sx={{ mr: 1, mb: 1 }}
+                      />
+                    ))}
+                <ValidatedTimePicker
+                  label="時間を追加"
+                  date={toJST(date, "fullDate")}
+                  addSchedule={addSchedule}
+                />
+                <Divider sx={{ my: 2 }} />
+              </Box>
+            ))}
+          </Card>
+          <Typography variant="body1" margin={2}>
+            チケット情報入力
+          </Typography>
+          {Object.entries(watchSeatDict).map(([id, seatDict]) => (
+            <CreateSeatGroup
+              key={id}
+              id={parseInt(id)}
+              seatGroup={seatDict.seatGroup}
+              ticketTypes={seatDict.ticketTypes}
+              onUpdate={(newSeatGroup, newTicketTypes) => {
+                const newSeatDict = { ...watchSeatDict };
+                newSeatDict[parseInt(id)] = {
+                  seatGroup: newSeatGroup,
+                  ticketTypes: newTicketTypes,
+                };
+                setValue("seatDict", newSeatDict);
+              }}
+              onDelete={() => deleteSeatGroup(parseInt(id))}
+            />
+          ))}
+          <Button onClick={addSeatGroup} variant="contained" sx={{ mt: 2 }}>
+            特別席追加
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2, ml: 2 }}
+          >
+            確認
+          </Button>
+          <Card
+            sx={{
+              px: 2,
+              py: 1,
+              backgroundColor: "#f4f4f4",
+              textAlign: "left",
+            }}
+          >
+            <Typography variant="body2">startDate:</Typography>
+            <pre>{JSON.stringify(watchStartDate, null, 2)}</pre>
+            <Typography variant="body2">endDate:</Typography>
+            <pre>{JSON.stringify(watchEndDate, null, 2)}</pre>
+            <Typography variant="body2">schedule:</Typography>
+            <pre>{JSON.stringify(watchSchedule, null, 2)}</pre>
+            <Typography variant="body2">seatDict:</Typography>
+            <pre>{JSON.stringify(watchSeatDict, null, 2)}</pre>
+          </Card>
+        </form>
+      </FormProvider>
     </Container>
   );
 };
