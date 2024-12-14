@@ -69,6 +69,7 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
       {error && <Typography color="error">{error}</Typography>}
       {stages
         .filter((stage) => stage.event_id === event.id)
+        .sort((a, b) => a.start_time.localeCompare(b.start_time))
         .map((stage) => (
           <Box key={stage.id}>
             <Divider

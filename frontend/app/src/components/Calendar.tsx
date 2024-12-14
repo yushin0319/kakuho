@@ -182,6 +182,7 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                           toJST(stage.start_time, "fullDate") ===
                           toJST(day, "fullDate")
                       )
+                      .sort((a, b) => a.start_time.localeCompare(b.start_time))
                       .map((stage) => {
                         return (
                           <Button
