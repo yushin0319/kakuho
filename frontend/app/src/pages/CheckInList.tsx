@@ -1,12 +1,12 @@
 // app/src/pages/ManageList.tsx
 import { Container, Typography } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import CheckInEvent from "../components/CheckInEvent";
 import LoadingScreen from "../components/LoadingScreen";
 import { useAppData } from "../context/AppData";
 
 const CheckInList = () => {
-  const { events, eventStartDates, loading, error } = useAppData();
+  const { futureEvents, pastEvents, loading, error } = useAppData();
   const [openEventIds, setOpenEventIds] = useState<number[]>([]);
 
   // イベントの展開状態を切り替える
@@ -17,16 +17,6 @@ const CheckInList = () => {
       setOpenEventIds([...openEventIds, id]);
     }
   };
-
-  const futureEvents = useMemo(
-    () => events.filter((event) => eventStartDates[event.id] > new Date()),
-    [events, eventStartDates]
-  );
-
-  const pastEvents = useMemo(
-    () => events.filter((event) => eventStartDates[event.id] <= new Date()),
-    [events, eventStartDates]
-  );
 
   if (error) {
     return <div>Error: {error}</div>;

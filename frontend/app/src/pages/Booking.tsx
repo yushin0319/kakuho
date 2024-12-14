@@ -8,7 +8,7 @@ import { EventResponse } from "../services/interfaces";
 import { toJST } from "../services/utils";
 
 const Booking = () => {
-  const { events, eventStartDates, eventEndDates, loading, error } =
+  const { futureEvents, eventStartDates, eventEndDates, loading, error } =
     useAppData();
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
     null
@@ -26,7 +26,7 @@ const Booking = () => {
           </Typography>
           {/* 終了日前のイベントのみ表示　*/}
 
-          {events
+          {futureEvents
             .filter((event) => eventEndDates[event.id] > new Date())
             .map((event) => (
               <Card

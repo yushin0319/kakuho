@@ -42,8 +42,8 @@ const ManageUser = () => {
   const [page, setPage] = useState(1);
   const pageLimit = 10;
   const {
-    events,
-    eventStartDates,
+    futureEvents,
+    pastEvents,
     stages,
     users,
     reservations,
@@ -129,20 +129,16 @@ const ManageUser = () => {
             <InputLabel htmlFor="event-select">イベント</InputLabel>
             <Select {...field} inputProps={{ id: "event-select" }}>
               <MenuItem value="">すべてのイベント</MenuItem>
-              {events
-                .filter((event) => eventStartDates[event.id] > new Date())
-                .map((event) => (
-                  <MenuItem key={event.id} value={event.id}>
-                    {event.name}
-                  </MenuItem>
-                ))}
-              {events
-                .filter((event) => eventStartDates[event.id] <= new Date())
-                .map((event) => (
-                  <MenuItem key={event.id} value={event.id}>
-                    {event.name} (終了)
-                  </MenuItem>
-                ))}
+              {futureEvents.map((event) => (
+                <MenuItem key={event.id} value={event.id}>
+                  {event.name}
+                </MenuItem>
+              ))}
+              {pastEvents.map((event) => (
+                <MenuItem key={event.id} value={event.id}>
+                  {event.name} (終了)
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         )}

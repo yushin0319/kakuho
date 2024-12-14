@@ -10,8 +10,9 @@ import {
   Grid2 as Grid,
   Typography,
 } from "@mui/material";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import ConfirmEvent from "../components/ConfirmEvent";
 import CreateSeatGroup from "../components/CreateSeatGroup";
 import ValidatedDatePicker from "../components/ValidatedDatePicker";
 import ValidatedForm from "../components/ValidatedForm";
@@ -19,7 +20,7 @@ import ValidatedTimePicker from "../components/ValidatedTimePicker";
 import { SeatGroupCreate, TicketTypeCreate } from "../services/interfaces";
 import { addTime, toJST } from "../services/utils";
 
-type seatDict = {
+export type seatDict = {
   [id: number]: {
     seatGroup: SeatGroupCreate;
     ticketTypes: TicketTypeCreate[];
@@ -44,6 +45,7 @@ const CreateEvent = () => {
       } as seatDict,
     },
   });
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const { setValue, getValues, handleSubmit, watch } = methods;
 
@@ -231,6 +233,7 @@ const CreateEvent = () => {
             variant="contained"
             color="primary"
             sx={{ mt: 2, ml: 2 }}
+            onClick={() => setIsConfirmOpen(true)}
           >
             確認
           </Button>
@@ -252,6 +255,18 @@ const CreateEvent = () => {
             <pre>{JSON.stringify(watchSeatDict, null, 2)}</pre>
           </Card>
         </form>
+        <ConfirmEvent
+          title={getValues("title")}
+          description={getValues("description")}
+          schedule={watchSchedule}
+          seatDict={watchSeatDict}
+          open={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={() => {
+            setIsConfirmOpen(false);
+            methods.reset();
+          }}
+        />
       </FormProvider>
     </Container>
   );

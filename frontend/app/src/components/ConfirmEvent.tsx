@@ -16,9 +16,9 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSnack } from "../context/SnackContext";
-import { seatProps } from "../pages/CreateEvent";
+import { seatDict } from "../pages/CreateEvent";
 import { createEvent } from "../services/api/event";
 import { createSeatGroup } from "../services/api/seatGroup";
 import { createStage } from "../services/api/stage";
@@ -28,8 +28,8 @@ import { addTime, toJST } from "../services/utils";
 interface ConfirmEventProps {
   title: string;
   description: string;
-  completedTimes: Record<string, Date[]>;
-  seatGroups: seatProps[];
+  schedule: Record<string, Date[]>;
+  seatDict: seatDict;
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -38,76 +38,35 @@ interface ConfirmEventProps {
 const ConfirmEvent = ({
   title,
   description,
-  completedTimes,
-  seatGroups,
+  schedule,
+  seatDict,
   open,
   onClose,
   onConfirm,
 }: ConfirmEventProps) => {
-  const [errors, setErrors] = useState<string[]>([]);
-  const [warnings, setWarnings] = useState<string[]>([]);
+  const errors: string[] = [];
+  const warnings: string[] = [];
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const { setSnack } = useSnack();
 
-  // エラーチェック
-  useEffect(() => {
-    const check = () => {
-      const errors = [];
-      const warnings = [];
-      // titleが空の場合
-      if (title === "") {
-        errors.push("イベント名を入力してください");
-      }
-      // descriptionが空の場合
-      if (description === "") {
-        errors.push("詳細説明を入力してください");
-      }
-      // ステージが1つも選択されていない場合
-      if (
-        Object.values(completedTimes as Record<string, Date[]>).every(
-          (times) => times.length === 0
-        )
-      ) {
-        errors.push("ステージを1つ以上選択してください");
-      }
-      // チケット種別が1つもない場合
-      if (seatGroups.length === 0) {
-        errors.push("チケット種別を1つ以上入力してください");
-      }
-      // チケット名が空のものがある場合
-      if (
-        seatGroups.some((seatGroup) =>
-          seatGroup.ticketTypes.some(
-            (ticketType) => ticketType.type_name === ""
-          )
-        )
-      ) {
+  if (!title.trim()) errors.push("イベント名を入力してください");
+  if (!description.trim()) errors.push("詳細説明を入力してください");
+  if (Object.values(schedule).every((times) => times.length === 0))
+    errors.push("ステージを1つ以上選択してください");
+  if (Object.values(seatDict).length === 0)
+    errors.push("チケット種別を1つ以上入力してください");
+  Object.values(seatDict).forEach(({ seatGroup, ticketTypes }) => {
+    if (!seatGroup.capacity) warnings.push("座席数が0のチケットがあります");
+    if (ticketTypes.length === 0)
+      warnings.push(
+        "座席数のみ入力されているものがあります（チケット追加が必要です）"
+      );
+    ticketTypes.forEach((ticketType) => {
+      if (!ticketType.type_name.trim())
         errors.push("未入力のチケット名があります");
-      }
-      // 座席数が0のグループがある場合
-      if (seatGroups.some((seatGroup) => seatGroup.seatGroup.capacity === 0)) {
-        warnings.push("座席数が0のチケットがあります");
-      }
-      // 価格が0のチケットがある場合
-      if (
-        seatGroups.some((seatGroup) =>
-          seatGroup.ticketTypes.some((ticketType) => ticketType.price === 0)
-        )
-      ) {
-        warnings.push("価格が0円のチケットがあります");
-      }
-      // 座席数のみ入力されているグループがある場合
-      if (seatGroups.some((seatGroup) => seatGroup.ticketTypes.length === 0)) {
-        warnings.push(
-          "座席数のみ入力されているものがあります（チケット追加が必要です）"
-        );
-      }
-
-      setErrors(errors);
-      setWarnings(warnings);
-    };
-    check();
-  }, [title, description, completedTimes, seatGroups]);
+      if (!ticketType.price) warnings.push("価格が0円のチケットがあります");
+    });
+  });
 
   // 確定ボタンの処理
   const handleConfirm = async () => {
@@ -119,7 +78,7 @@ const ConfirmEvent = ({
       const eventId = event.id;
 
       // ステージ作成
-      const stagePromises = Object.values(completedTimes)
+      const stagePromises = Object.values(schedule)
         .flat()
         .map((time) => {
           const start_time = toJST(time, "ISO8601");
@@ -131,15 +90,15 @@ const ConfirmEvent = ({
 
       // ステージごとにシートグループとチケットタイプを作成
       for (const stage of stages) {
-        for (const seatGroup of seatGroups) {
+        for (const seats of Object.values(seatDict)) {
           const fetchedSeatGroup = await createSeatGroup(
             stage.id,
-            seatGroup.seatGroup
+            seats.seatGroup
           );
           const seatGroupId = fetchedSeatGroup.id;
 
           // チケットタイプ作成
-          for (const ticketType of seatGroup.ticketTypes) {
+          for (const ticketType of seats.ticketTypes) {
             await createTicketType(seatGroupId, ticketType);
           }
         }
@@ -164,7 +123,7 @@ const ConfirmEvent = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle>
         <Typography variant="h6" fontWeight="bold" component="div">
           この内容でイベントを作成してもよろしいですか？
@@ -204,9 +163,7 @@ const ConfirmEvent = ({
         </Box>
 
         {/* 日程情報 */}
-        {Object.entries(completedTimes).some(
-          ([_, times]) => times.length > 0
-        ) && (
+        {Object.entries(schedule).some(([_, times]) => times.length > 0) && (
           <Box mb={3}>
             <Table size="small">
               <TableHead>
@@ -216,7 +173,7 @@ const ConfirmEvent = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Object.entries(completedTimes)
+                {Object.entries(schedule)
                   .sort(([a], [b]) => (a < b ? -1 : 1))
                   .map(([date, times]) => {
                     if (times.length === 0) return null; // 空のtimesをスキップ
@@ -245,36 +202,34 @@ const ConfirmEvent = ({
         )}
 
         {/* 座席情報 */}
-        {seatGroups.length > 0 && (
-          <>
-            {seatGroups.map((seatGroup) => (
-              <Box key={seatGroup.id} my={2}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ width: "50%" }}>チケット種別</TableCell>
-                      <TableCell sx={{ width: "50%" }}>価格</TableCell>
+        <Box>
+          {Object.entries(seatDict).map(([id, { seatGroup, ticketTypes }]) => (
+            <Box key={id} my={2}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ width: "50%" }}>チケット種別</TableCell>
+                    <TableCell sx={{ width: "50%" }}>価格</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {ticketTypes.map((ticketType) => (
+                    <TableRow key={ticketType.type_name}>
+                      <TableCell>{ticketType.type_name}</TableCell>
+                      <TableCell>{ticketType.price}円</TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {seatGroup.ticketTypes.map((ticketType) => (
-                      <TableRow key={ticketType.type_name}>
-                        <TableCell>{ticketType.type_name}</TableCell>
-                        <TableCell>{ticketType.price}円</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <Box p={2} display="flex" alignItems="center">
-                  <ChairIcon sx={{ color: "primary.main", mr: 1 }} />
-                  <Typography variant="body1" component="div">
-                    {seatGroup.seatGroup.capacity}席
-                  </Typography>
-                </Box>
+                  ))}
+                </TableBody>
+              </Table>
+              <Box p={2} display="flex" alignItems="center">
+                <ChairIcon sx={{ color: "primary.main", mr: 1 }} />
+                <Typography variant="body1" component="div">
+                  {seatGroup.capacity}席
+                </Typography>
               </Box>
-            ))}
-          </>
-        )}
+            </Box>
+          ))}
+        </Box>
       </DialogContent>
 
       <DialogActions>

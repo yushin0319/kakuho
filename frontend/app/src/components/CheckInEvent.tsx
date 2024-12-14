@@ -67,6 +67,11 @@ const CheckInEvent = ({ event, isOpen, toggle }: CheckInEventProps) => {
         <Box>
           {stages
             .filter((stage) => stage.event_id === event.id)
+            .sort(
+              (a, b) =>
+                new Date(a.start_time).getTime() -
+                new Date(b.start_time).getTime()
+            )
             .map((stage) => (
               <CheckInStage
                 key={stage.id}

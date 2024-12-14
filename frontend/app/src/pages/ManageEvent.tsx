@@ -12,7 +12,7 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import CapacityAdjuster from "../components/CapacityAdjuster";
 import EventInfoManager from "../components/EventInfoManager";
@@ -20,7 +20,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import { useAppData } from "../context/AppData";
 
 const ManageEvent = () => {
-  const { events, eventStartDates, loading } = useAppData();
+  const { futureEvents, pastEvents, loading } = useAppData();
   const [openMenu, setOpenMenu] = useState<{
     id: number | null;
     anchor: HTMLElement | null;
@@ -29,16 +29,6 @@ const ManageEvent = () => {
     null
   );
   const [activeAction, setActiveAction] = useState<string>("");
-
-  const futureEvents = useMemo(
-    () => events.filter((event) => eventStartDates[event.id] > new Date()),
-    [events, eventStartDates]
-  );
-
-  const pastEvents = useMemo(
-    () => events.filter((event) => eventStartDates[event.id] <= new Date()),
-    [events, eventStartDates]
-  );
 
   // メニューを開く
   const handleMenuClick = (

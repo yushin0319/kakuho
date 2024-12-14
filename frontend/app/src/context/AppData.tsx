@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAuth } from "../context/AuthContext";
 import { fetchEvents } from "../services/api/event";
 import {
@@ -31,6 +37,8 @@ interface AppDataContextType {
   events: EventResponse[];
   eventStartDates: Record<number, Date>;
   eventEndDates: Record<number, Date>;
+  futureEvents: EventResponse[];
+  pastEvents: EventResponse[];
   stages: StageResponse[];
   seatGroups: SeatGroupResponse[];
   seatGroupNames: Record<number, string[]>;
@@ -178,12 +186,38 @@ export const AppDataProvider = ({
     loadData();
   }, [user]);
 
+  const futureEvents = useMemo(
+    () =>
+      events
+        .filter((event) => eventStartDates[event.id] > new Date())
+        .sort(
+          (a, b) =>
+            new Date(eventStartDates[a.id]).getTime() -
+            new Date(eventStartDates[b.id]).getTime()
+        ),
+    [events, eventStartDates]
+  );
+
+  const pastEvents = useMemo(
+    () =>
+      events
+        .filter((event) => eventStartDates[event.id] <= new Date())
+        .sort(
+          (a, b) =>
+            new Date(eventStartDates[b.id]).getTime() -
+            new Date(eventStartDates[a.id]).getTime()
+        ),
+    [events, eventStartDates]
+  );
+
   return (
     <AppDataContext.Provider
       value={{
         events,
         eventStartDates,
         eventEndDates,
+        futureEvents,
+        pastEvents,
         stages,
         seatGroups,
         seatGroupNames,
