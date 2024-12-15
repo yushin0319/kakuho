@@ -66,7 +66,7 @@ const CheckInStage = ({ stage, isOpen, toggle }: CheckInStageProps) => {
       >
         <Typography
           variant="h6"
-          color="secondary"
+          color="text.secondary"
           fontWeight="bold"
           sx={{ ml: 1 }}
         >

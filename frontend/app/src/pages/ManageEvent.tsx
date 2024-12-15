@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import CapacityAdjuster from "../components/CapacityAdjuster";
 import EventInfoManager from "../components/EventInfoManager";
 import LoadingScreen from "../components/LoadingScreen";
+import TicketTypeManager from "../components/TicketTypeManager";
 import { useAppData } from "../context/AppData";
 
 const ManageEvent = () => {
@@ -107,16 +108,15 @@ const ManageEvent = () => {
                 open={openMenu.id === event.id}
                 onClose={handleMenuClose}
               >
-                <MenuItem onClick={() => handleExpand(event.id, "add-stage")}>
-                  ステージ追加
+                <MenuItem
+                  onClick={() => handleExpand(event.id, "manage-stage")}
+                >
+                  ステージ編集
                 </MenuItem>
                 <MenuItem
-                  onClick={() => handleExpand(event.id, "delete-stage")}
+                  onClick={() => handleExpand(event.id, "manage-ticket")}
                 >
-                  ステージ削除
-                </MenuItem>
-                <MenuItem onClick={() => handleExpand(event.id, "add-seat")}>
-                  特別席追加
+                  チケット編集
                 </MenuItem>
                 <MenuItem onClick={() => handleExpand(event.id, "duplicate")}>
                   イベント複製
@@ -133,12 +133,10 @@ const ManageEvent = () => {
                     <EventInfoManager event={event} />
                   ) : activeAction === "seat" ? (
                     <CapacityAdjuster event={event} />
-                  ) : activeAction === "add-stage" ? (
-                    <Typography>ステージ追加</Typography>
-                  ) : activeAction === "delete-stage" ? (
-                    <Typography>ステージ削除</Typography>
-                  ) : activeAction === "add-seat" ? (
-                    <Typography>特別席追加</Typography>
+                  ) : activeAction === "manage-stage" ? (
+                    <Typography>ステージ編集</Typography>
+                  ) : activeAction === "manage-ticket" ? (
+                    <TicketTypeManager event={event} />
                   ) : activeAction === "duplicate" ? (
                     <Typography>イベント複製</Typography>
                   ) : activeAction === "delete" ? (
@@ -197,16 +195,15 @@ const ManageEvent = () => {
                 open={openMenu.id === event.id}
                 onClose={handleMenuClose}
               >
-                <MenuItem onClick={() => handleExpand(event.id, "add-stage")}>
-                  ステージ追加
+                <MenuItem
+                  onClick={() => handleExpand(event.id, "manage-stage")}
+                >
+                  ステージ編集
                 </MenuItem>
                 <MenuItem
-                  onClick={() => handleExpand(event.id, "delete-stage")}
+                  onClick={() => handleExpand(event.id, "manage-ticket")}
                 >
-                  ステージ削除
-                </MenuItem>
-                <MenuItem onClick={() => handleExpand(event.id, "add-seat")}>
-                  特別席追加
+                  チケット編集
                 </MenuItem>
                 <MenuItem onClick={() => handleExpand(event.id, "duplicate")}>
                   イベント複製
@@ -223,12 +220,10 @@ const ManageEvent = () => {
                     <EventInfoManager event={event} />
                   ) : activeAction === "seat" ? (
                     <CapacityAdjuster event={event} />
-                  ) : activeAction === "add-stage" ? (
-                    <Typography>ステージ追加</Typography>
-                  ) : activeAction === "delete-stage" ? (
-                    <Typography>ステージ削除</Typography>
-                  ) : activeAction === "add-seat" ? (
-                    <Typography>特別席追加</Typography>
+                  ) : activeAction === "manage-stage" ? (
+                    <Typography>ステージ編集</Typography>
+                  ) : activeAction === "manage-ticket" ? (
+                    <TicketTypeManager event={event} />
                   ) : activeAction === "duplicate" ? (
                     <Typography>イベント複製</Typography>
                   ) : activeAction === "delete" ? (

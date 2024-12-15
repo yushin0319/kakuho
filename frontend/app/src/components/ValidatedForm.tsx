@@ -64,6 +64,7 @@ interface CustomFieldProps {
     | "default";
   disabled?: boolean;
   variant?: "filled" | "outlined" | "standard";
+  size?: "small" | "medium";
   defaultValue?: string;
   sx?: any;
 }
@@ -74,6 +75,7 @@ const ValidatedForm = ({
   fieldType = "default",
   disabled = false,
   variant = "outlined",
+  size = "medium",
   defaultValue = "",
   sx = {},
 }: CustomFieldProps) => {
@@ -114,6 +116,7 @@ const ValidatedForm = ({
           fullWidth
           autoComplete="off"
           variant={variant}
+          size={size}
           disabled={disabled}
           error={!!errors[name]}
           helperText={errors[name]?.message as string}

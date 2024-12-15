@@ -1,11 +1,5 @@
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import {
-  Button,
-  Card,
-  Grid2 as Grid,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Add, Delete } from "@mui/icons-material";
+import { Button, Card, Grid2 as Grid } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import { SeatGroupCreate, TicketTypeCreate } from "../services/interfaces";
 import CreateTicketType from "./CreateTicketType";
@@ -70,37 +64,35 @@ const CreateSeatGroup = ({
           <ValidatedForm
             name="capacity"
             label="座席数"
+            variant="standard"
+            size="small"
             fieldType="number"
             defaultValue={seatGroup.capacity.toString()}
           />
-          <Grid container size={12} spacing={2}>
+          <Grid container size={12} spacing={1}>
             {ticketTypes.map((ticketType, index) => (
-              <Grid container size={12} key={index}>
-                <Card sx={{ p: 1, my: 1, width: "100%" }}>
-                  <CreateTicketType
-                    key={index}
-                    ticketType={ticketType}
-                    onUpdate={(newTicketType) =>
-                      updateTicketType(index, newTicketType)
-                    }
-                    onDelete={() => deleteTicketType(index)}
-                  />
-                </Card>
-              </Grid>
+              <CreateTicketType
+                key={index}
+                ticketType={ticketType}
+                onUpdate={(newTicketType) =>
+                  updateTicketType(index, newTicketType)
+                }
+                onDelete={() => deleteTicketType(index)}
+              />
             ))}
           </Grid>
           <Button
-            variant="contained"
+            startIcon={<Add />}
+            variant="outlined"
             color="primary"
             onClick={addTicketType}
             fullWidth
           >
-            チケット追加
+            券種追加
           </Button>
-          <IconButton aria-label="delete" onClick={onDelete}>
-            <DeleteForeverIcon />
-            <Typography>まとめて削除</Typography>
-          </IconButton>
+          <Button startIcon={<Delete />} onClick={onDelete}>
+            まとめて削除
+          </Button>
         </Grid>
       </Card>
     </FormProvider>

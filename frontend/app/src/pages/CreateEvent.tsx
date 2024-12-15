@@ -1,5 +1,6 @@
 // app/src/pages/CreateEvent.tsx
 
+import { Add } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -225,8 +226,13 @@ const CreateEvent = () => {
               onDelete={() => deleteSeatGroup(parseInt(id))}
             />
           ))}
-          <Button onClick={addSeatGroup} variant="contained" sx={{ mt: 2 }}>
-            特別席追加
+          <Button
+            onClick={addSeatGroup}
+            startIcon={<Add />}
+            variant="contained"
+            sx={{ mt: 2 }}
+          >
+            特別席追加（座席数独立）
           </Button>
           <Button
             type="submit"

@@ -1,5 +1,5 @@
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Grid2 as Grid, IconButton } from "@mui/material";
+import { Delete } from "@mui/icons-material";
+import { Box, Grid2 as Grid, IconButton } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import { TicketTypeCreate } from "../services/interfaces";
 import ValidatedForm from "./ValidatedForm";
@@ -31,35 +31,50 @@ const CreateTicketType = ({
 
   return (
     <FormProvider {...methods}>
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        onBlur={methods.handleSubmit(onSubmit)}
+      <Box
+        sx={{
+          border: "1px solid #ddd",
+          borderRadius: 1,
+          py: 2,
+          px: 1,
+        }}
       >
-        <Grid container size={{ xs: 10, md: 11 }} spacing={1}>
-          {/* チケット種別 */}
-          <Grid size={6}>
-            <ValidatedForm
-              name="type_name"
-              label="チケット種別"
-              fieldType="title"
-            />
+        <Grid
+          container
+          spacing={2}
+          alignItems="center"
+          onBlur={methods.handleSubmit(onSubmit)}
+        >
+          <Grid container size={{ xs: 10, md: 11 }} spacing={1}>
+            {/* チケット種別 */}
+            <Grid size={6}>
+              <ValidatedForm
+                name="type_name"
+                label="チケット種別"
+                size="small"
+                fieldType="title"
+              />
+            </Grid>
+
+            {/* 価格 */}
+            <Grid size={6}>
+              <ValidatedForm
+                name="price"
+                label="価格"
+                size="small"
+                fieldType="number"
+              />
+            </Grid>
           </Grid>
 
-          {/* 価格 */}
-          <Grid size={6}>
-            <ValidatedForm name="price" label="価格" fieldType="number" />
+          {/* 削除ボタン */}
+          <Grid size={{ xs: 2, md: 1 }}>
+            <IconButton aria-label="delete" color="error" onClick={onDelete}>
+              <Delete />
+            </IconButton>
           </Grid>
         </Grid>
-
-        {/* 削除ボタン */}
-        <Grid size={{ xs: 2, md: 1 }}>
-          <IconButton aria-label="delete" onClick={onDelete}>
-            <DeleteForeverIcon />
-          </IconButton>
-        </Grid>
-      </Grid>
+      </Box>
     </FormProvider>
   );
 };
