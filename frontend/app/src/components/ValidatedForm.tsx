@@ -42,6 +42,7 @@ const validationRules = {
     },
   },
   number: {
+    required: "数字を入力してください",
     pattern: {
       value: /^[0-9０-９]+$/,
       message: "数字のみで入力してください",

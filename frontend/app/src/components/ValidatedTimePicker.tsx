@@ -47,6 +47,9 @@ const ValidatedTimePicker = ({
               variant: "standard",
               error: false, // バリデーションエラーを適用する場合はここで調整
             },
+            popper: {
+              disablePortal: true,
+            },
           }}
         />
         <Button

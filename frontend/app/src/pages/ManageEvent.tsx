@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import CapacityAdjuster from "../components/CapacityAdjuster";
 import EventInfoManager from "../components/EventInfoManager";
 import LoadingScreen from "../components/LoadingScreen";
+import StageManager from "../components/StageManager";
 import TicketTypeManager from "../components/TicketTypeManager";
 import { useAppData } from "../context/AppData";
 
@@ -134,7 +135,7 @@ const ManageEvent = () => {
                   ) : activeAction === "seat" ? (
                     <CapacityAdjuster event={event} />
                   ) : activeAction === "manage-stage" ? (
-                    <Typography>ステージ編集</Typography>
+                    <StageManager event={event} />
                   ) : activeAction === "manage-ticket" ? (
                     <TicketTypeManager event={event} />
                   ) : activeAction === "duplicate" ? (
@@ -221,7 +222,7 @@ const ManageEvent = () => {
                   ) : activeAction === "seat" ? (
                     <CapacityAdjuster event={event} />
                   ) : activeAction === "manage-stage" ? (
-                    <Typography>ステージ編集</Typography>
+                    <StageManager event={event} />
                   ) : activeAction === "manage-ticket" ? (
                     <TicketTypeManager event={event} />
                   ) : activeAction === "duplicate" ? (

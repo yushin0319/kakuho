@@ -49,7 +49,7 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
       ticketTypes: {},
     },
   });
-  const { watch, setValue } = methods;
+  const { watch, setValue, trigger } = methods;
   const { setSnack } = useSnack();
 
   const filteredStages = useMemo(
@@ -89,7 +89,7 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
     setHasReservations(hasReservations);
   }, [filteredTicketTypes, reservations]);
 
-  useMemo(() => {
+  useEffect(() => {
     const ticketTypeValues = filteredTicketTypes.reduce(
       (acc, type) => ({ ...acc, [type.id]: type }),
       {}
@@ -100,9 +100,25 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
   const watchTicketTypes = watch("ticketTypes");
 
   // チケットタイプの更新
-  const handleSave = async (id: number, data: any) => {
-    await updateTicketType(id, data);
-    reloadData();
+  const handleSave = async (id: number, data: TicketTypeResponse) => {
+    // 指定したフィールドをバリデーション
+    const isValid = await trigger("ticketTypes");
+    const existing = ticketTypes
+      .filter((tt) => tt.seat_group_id === data.seat_group_id)
+      .find((tt) => tt.type_name === data.type_name);
+
+    if (!isValid || existing) {
+      setSnack({ message: "入力内容に誤りがあります", severity: "error" });
+      return; // バリデーションエラーなら中断
+    }
+
+    try {
+      await updateTicketType(id, data);
+      reloadData();
+    } catch (error) {
+      console.error("Error updating ticket type:", error);
+      setSnack({ message: "保存中にエラーが発生しました", severity: "error" });
+    }
   };
 
   // チケットタイプの削除
@@ -124,8 +140,16 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
 
   // ticketTypeの新規作成
   const handleAddTicketType = async (seatGroupId: number) => {
+    let newName = "券名";
+    let count = 1;
+    while (
+      Object.values(watchTicketTypes).some((tt) => tt.type_name === newName)
+    ) {
+      count++;
+      newName = `券名${count}`;
+    }
     await createTicketType(seatGroupId, {
-      type_name: "名前を入力して下さい",
+      type_name: newName,
       price: 0,
     });
     reloadData();
@@ -137,9 +161,18 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
 
   // seatGroup & ticketTypeの新規作成
   const handleAddSeatGroup = async (stageId: number) => {
+    let newName = "特別席";
+    let count = 1;
+    while (
+      Object.values(watchTicketTypes).some((tt) => tt.type_name === newName)
+    ) {
+      count++;
+      newName = `特別席${count}`;
+    }
+
     const seatGroup = await createSeatGroup(stageId, { capacity: 0 });
     await createTicketType(seatGroup.id, {
-      type_name: "名前を入力して下さい",
+      type_name: newName,
       price: 0,
     });
     reloadData();
@@ -155,156 +188,160 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
 
   return (
     <FormProvider {...methods}>
-      <Box display="flex" flexDirection="column" alignItems="center">
-        {loading && <LoadingScreen />}
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          チケット編集
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          予約の存在する券種は削除できません。
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          予約管理画面からキャンセルしてください。
-        </Typography>
-        {/* ステージごとのチケットタイプ管理 */}
-        {filteredStages
-          .sort((a, b) => a.start_time.localeCompare(b.start_time))
-          .map((stage) => (
-            <Box
-              key={stage.id}
-              sx={{
-                mt: 1,
-                mb: 1,
-                border: "1px solid #ddd",
-                borderRadius: 2,
-                p: 1,
-              }}
-            >
+      <form>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          {loading && <LoadingScreen />}
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            チケット編集
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            予約の存在する券種は削除できません。
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            予約管理画面からキャンセルしてください。
+          </Typography>
+          {/* ステージごとのチケットタイプ管理 */}
+          {filteredStages
+            .sort((a, b) => a.start_time.localeCompare(b.start_time))
+            .map((stage) => (
               <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-around"
-                onClick={() => setOpenId(openId === stage.id ? null : stage.id)}
+                key={stage.id}
+                sx={{
+                  mt: 1,
+                  mb: 1,
+                  border: "1px solid #ddd",
+                  borderRadius: 2,
+                  p: 1,
+                }}
               >
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "text.secondary",
-                  }}
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-around"
+                  onClick={() =>
+                    setOpenId(openId === stage.id ? null : stage.id)
+                  }
                 >
-                  {toJST(stage.start_time, "dateTime")}
-                </Typography>
-                <IconButton size="small">
-                  {openId === stage.id ? (
-                    <ExpandLessIcon />
-                  ) : (
-                    <ExpandMoreIcon />
-                  )}
-                </IconButton>
-              </Box>
-              <Collapse in={openId === stage.id}>
-                <Box>
-                  {filteredSeatGroups
-                    .filter((sg) => sg.stage_id === stage.id)
-                    .map((sg) => (
-                      <Box
-                        key={sg.id}
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="space-between"
-                        sx={{ mt: 2 }}
-                      >
-                        {filteredTicketTypes
-                          .filter((tt) => tt.seat_group_id === sg.id)
-                          .map((tt) => (
-                            <Box
-                              key={tt.id}
-                              display="flex"
-                              alignItems="center"
-                              gap={2}
-                              onBlur={() =>
-                                handleSave(tt.id, watchTicketTypes[tt.id])
-                              }
-                              sx={{ mt: 1 }}
-                            >
-                              <ValidatedForm
-                                name={`ticketTypes.${tt.id}.type_name`}
-                                label=""
-                                size="small"
-                                fieldType="title"
-                                defaultValue={tt.type_name}
-                              />
-                              <ValidatedForm
-                                name={`ticketTypes.${tt.id}.price`}
-                                label=""
-                                size="small"
-                                fieldType="number"
-                                defaultValue={tt.price.toString()}
-                              />
-                              <Tooltip
-                                title={
-                                  hasReservations[tt.id]
-                                    ? "予約が存在するため削除できません"
-                                    : ""
-                                }
-                              >
-                                <span>
-                                  <IconButton
-                                    onClick={() => handleDelete(tt.id)}
-                                    color="error"
-                                    disabled={hasReservations[tt.id]}
-                                  >
-                                    <Delete />
-                                  </IconButton>
-                                </span>
-                              </Tooltip>
-                            </Box>
-                          ))}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      color: "text.secondary",
+                    }}
+                  >
+                    {toJST(stage.start_time, "dateTime")}
+                  </Typography>
+                  <IconButton size="small">
+                    {openId === stage.id ? (
+                      <ExpandLessIcon />
+                    ) : (
+                      <ExpandMoreIcon />
+                    )}
+                  </IconButton>
+                </Box>
+                <Collapse in={openId === stage.id}>
+                  <Box>
+                    {filteredSeatGroups
+                      .filter((sg) => sg.stage_id === stage.id)
+                      .map((sg) => (
                         <Box
-                          width="100%"
+                          key={sg.id}
                           display="flex"
-                          alignItems="end"
-                          justifyContent="space-around"
-                          sx={{ mt: 1 }}
+                          flexDirection="column"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          sx={{ mt: 2 }}
                         >
-                          <Typography
-                            variant="body1"
-                            sx={{
-                              fontWeight: "bold",
-                              color: "text.secondary",
-                            }}
-                          >
-                            空席：{sg.capacity}席
-                          </Typography>
-                          <Button
-                            variant="text"
-                            size="small"
-                            startIcon={<Add />}
-                            onClick={() => handleAddTicketType(sg.id)}
+                          {filteredTicketTypes
+                            .filter((tt) => tt.seat_group_id === sg.id)
+                            .map((tt) => (
+                              <Box
+                                key={tt.id}
+                                display="flex"
+                                alignItems="center"
+                                gap={2}
+                                onBlur={() =>
+                                  handleSave(tt.id, watchTicketTypes[tt.id])
+                                }
+                                sx={{ mt: 1 }}
+                              >
+                                <ValidatedForm
+                                  name={`ticketTypes.${tt.id}.type_name`}
+                                  label=""
+                                  size="small"
+                                  fieldType="title"
+                                  defaultValue={tt.type_name}
+                                />
+                                <ValidatedForm
+                                  name={`ticketTypes.${tt.id}.price`}
+                                  label=""
+                                  size="small"
+                                  fieldType="number"
+                                  defaultValue={tt.price.toString()}
+                                />
+                                <Tooltip
+                                  title={
+                                    hasReservations[tt.id]
+                                      ? "予約が存在するため削除できません"
+                                      : ""
+                                  }
+                                >
+                                  <span>
+                                    <IconButton
+                                      onClick={() => handleDelete(tt.id)}
+                                      color="error"
+                                      disabled={hasReservations[tt.id]}
+                                    >
+                                      <Delete />
+                                    </IconButton>
+                                  </span>
+                                </Tooltip>
+                              </Box>
+                            ))}
+                          <Box
+                            width="100%"
+                            display="flex"
+                            alignItems="end"
+                            justifyContent="space-around"
                             sx={{ mt: 1 }}
                           >
-                            券種追加
-                          </Button>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                fontWeight: "bold",
+                                color: "text.secondary",
+                              }}
+                            >
+                              空席：{sg.capacity}席
+                            </Typography>
+                            <Button
+                              variant="text"
+                              size="small"
+                              startIcon={<Add />}
+                              onClick={() => handleAddTicketType(sg.id)}
+                              sx={{ mt: 1 }}
+                            >
+                              券種追加
+                            </Button>
+                          </Box>
+                          <Divider sx={{ width: "100%", mt: 2 }} />
                         </Box>
-                        <Divider sx={{ width: "100%", mt: 2 }} />
-                      </Box>
-                    ))}
-                </Box>
-                {/* 新規追加ボタン */}
-                <Button
-                  variant="outlined"
-                  startIcon={<Add />}
-                  onClick={() => handleAddSeatGroup(stage.id)}
-                  sx={{ mt: 2 }}
-                >
-                  特別席追加（座席数独立）
-                </Button>
-              </Collapse>
-            </Box>
-          ))}
-      </Box>
+                      ))}
+                  </Box>
+                  {/* 新規追加ボタン */}
+                  <Button
+                    variant="outlined"
+                    startIcon={<Add />}
+                    onClick={() => handleAddSeatGroup(stage.id)}
+                    sx={{ mt: 2 }}
+                  >
+                    特別席追加（座席数独立）
+                  </Button>
+                </Collapse>
+              </Box>
+            ))}
+        </Box>
+      </form>
     </FormProvider>
   );
 };

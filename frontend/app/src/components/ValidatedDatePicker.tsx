@@ -9,11 +9,13 @@ const ValidatedDatePicker = ({
   label,
   minDate,
   maxDate,
+  onDateChange,
 }: {
   name: string;
   label: string;
   minDate?: Date;
   maxDate?: Date;
+  onDateChange?: (value: Date | null) => void;
 }) => {
   const {
     control,
@@ -62,7 +64,10 @@ const ValidatedDatePicker = ({
         >
           <DatePicker
             {...field}
-            onChange={(value) => field.onChange(value)}
+            onChange={(value) => {
+              field.onChange(value);
+              onDateChange && onDateChange(value);
+            }}
             slotProps={{
               textField: {
                 variant: "outlined",
@@ -75,6 +80,9 @@ const ValidatedDatePicker = ({
               toolbar: { toolbarFormat: "yyyy年MM月dd日" },
               dialog: {
                 sx: styles.mobiledialogprops,
+              },
+              popper: {
+                disablePortal: true,
               },
             }}
             minDate={minDate}
