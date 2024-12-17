@@ -3,12 +3,9 @@ import { useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAppData } from "../context/AppData";
 import { useSnack } from "../context/SnackContext";
-import { deleteSeatGroup } from "../services/api/seatGroup";
-import {
-  createStage,
-  deleteStage as deleteStageAPI,
-} from "../services/api/stage";
-import { deleteTicketType } from "../services/api/ticketType";
+import { createSeatGroup, deleteSeatGroup } from "../services/api/seatGroup";
+import { createStage, deleteStage } from "../services/api/stage";
+import { createTicketType, deleteTicketType } from "../services/api/ticketType";
 import {
   EventResponse,
   SeatGroupResponse,
@@ -17,6 +14,7 @@ import {
   TicketTypeResponse,
 } from "../services/interfaces";
 import { addTime, toJST } from "../services/utils";
+import SeatGroupSelector from "./SeatGroupSelector";
 import ValidatedDatePicker from "./ValidatedDatePicker";
 import ValidatedTimePicker from "./ValidatedTimePicker";
 
@@ -30,7 +28,10 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     },
   });
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const { setSnack } = useSnack();
+
+  const [open, setOpen] = useState(false);
 
   const filteredStages = useMemo(
     () => stages.filter((stage) => stage.event_id === event.id),
@@ -94,14 +95,27 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     return dict;
   }, [seatGroups, ticketTypes]);
 
-  const addStage = async (time: Date) => {
-    if (!selectedDate || !time) return;
+  // ステージのパターンが複数ある場合は選択画面を表示
+  const checkDict = async () => {
+    if (!selectedDate || !selectedTime) {
+      return;
+    }
+    const keys = Object.keys(seatDict);
+    if (keys.length > 1) {
+      setOpen(true);
+    } else {
+      addStage(keys[0]);
+    }
+  };
+
+  // ステージ作成
+  const addStage = async (key: string) => {
     const startDateTime = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      selectedDate.getDate(),
-      time.getHours(),
-      time.getMinutes()
+      selectedDate!.getFullYear(),
+      selectedDate!.getMonth(),
+      selectedDate!.getDate(),
+      selectedTime!.getHours(),
+      selectedTime!.getMinutes()
     );
     // 重複チェック
     const exists = stages.some(
@@ -117,23 +131,37 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     }
 
     // ステージ作成API呼び出し
-    await createStage(event.id, {
+    const newStage = await createStage(event.id, {
       start_time: toJST(startDateTime, "ISO8601"),
       end_time: toJST(addTime(startDateTime, { hours: 2 }), "ISO8601"),
     } as StageCreate);
 
+    const selectedSeatGroup = seatDict[key];
+    for (const group of selectedSeatGroup) {
+      const newSeatGroup = await createSeatGroup(newStage.id, {
+        capacity: group.seatGroup.capacity,
+      });
+      for (const ticketType of group.ticketTypes) {
+        await createTicketType(newSeatGroup.id, {
+          type_name: ticketType.type_name,
+          price: ticketType.price,
+        });
+      }
+    }
+
     reloadData();
-    setSelectedDate(null);
+    setSnack({ message: "ステージを追加しました", severity: "success" });
   };
 
-  const deleteStage = async (id: number) => {
+  // ステージ削除
+  const removeStage = async (id: number) => {
     const seatGroupsForStage = seatGroups.filter((sg) => sg.stage_id === id);
     const ticketTypesForStage = ticketTypes.filter((tt) =>
       seatGroupsForStage.some((sg) => sg.id === tt.seat_group_id)
     );
     await Promise.all(ticketTypesForStage.map((tt) => deleteTicketType(tt.id)));
     await Promise.all(seatGroupsForStage.map((sg) => deleteSeatGroup(sg.id)));
-    await deleteStageAPI(id);
+    await deleteStage(id);
     reloadData();
     setSnack({ message: "ステージを削除しました", severity: "success" });
   };
@@ -166,19 +194,25 @@ const StageManager = ({ event }: { event: EventResponse }) => {
                 {toJST(date, "monthDate")}
               </Typography>
               <Box>
-                {stagesByDate[date].map((stage) => (
-                  <Chip
-                    key={stage.id}
-                    label={toJST(stage.start_time, "time")}
-                    onDelete={
-                      hasReservations[stage.id]
-                        ? undefined
-                        : () => deleteStage(stage.id)
-                    }
-                    disabled={hasReservations[stage.id]}
-                    sx={{ mr: 1, mb: 1 }}
-                  />
-                ))}
+                {stagesByDate[date]
+                  .sort(
+                    (a, b) =>
+                      new Date(a.start_time).getTime() -
+                      new Date(b.start_time).getTime()
+                  )
+                  .map((stage) => (
+                    <Chip
+                      key={stage.id}
+                      label={toJST(stage.start_time, "time")}
+                      onDelete={
+                        hasReservations[stage.id]
+                          ? undefined
+                          : () => removeStage(stage.id)
+                      }
+                      disabled={hasReservations[stage.id]}
+                      sx={{ mr: 1, mb: 1 }}
+                    />
+                  ))}
               </Box>
             </Box>
           ))}
@@ -197,10 +231,23 @@ const StageManager = ({ event }: { event: EventResponse }) => {
           <ValidatedTimePicker
             date={selectedDate ? selectedDate.toISOString() : ""}
             label="ステージ時間"
-            addSchedule={(_, time) => addStage(time)}
+            addSchedule={(_, time) => {
+              setSelectedTime(time);
+              checkDict();
+            }}
           />
         </Box>
       </Box>
+
+      <SeatGroupSelector
+        open={open}
+        onClose={() => setOpen(false)}
+        seatDict={seatDict}
+        onSelect={(key) => {
+          setOpen(false);
+          addStage(key);
+        }}
+      />
     </FormProvider>
   );
 };
