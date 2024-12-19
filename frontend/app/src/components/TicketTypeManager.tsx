@@ -104,10 +104,11 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
     // 指定したフィールドをバリデーション
     const isValid = await trigger("ticketTypes");
     const existing = ticketTypes
-      .filter((tt) => tt.seat_group_id === data.seat_group_id)
+      .filter((tt) => tt.seat_group_id === data.seat_group_id && tt.id !== id)
       .find((tt) => tt.type_name === data.type_name);
 
     if (!isValid || existing) {
+      console.log(isValid, existing);
       setSnack({ message: "入力内容に誤りがあります", severity: "error" });
       return; // バリデーションエラーなら中断
     }

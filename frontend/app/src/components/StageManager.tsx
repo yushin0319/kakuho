@@ -1,5 +1,5 @@
 import { Box, Chip, Divider, Typography } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAppData } from "../context/AppData";
 import { useSnack } from "../context/SnackContext";
@@ -19,25 +19,27 @@ import ValidatedDatePicker from "./ValidatedDatePicker";
 import ValidatedTimePicker from "./ValidatedTimePicker";
 
 const StageManager = ({ event }: { event: EventResponse }) => {
+  const [open, setOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
+  const [creatingStage, setCreatingStage] = useState<Date | null>(null);
+  const { setSnack } = useSnack();
   const { stages, seatGroups, ticketTypes, reservations, reloadData } =
     useAppData();
   const methods = useForm({
     defaultValues: {
-      stageDate: null,
+      stageDate: new Date(),
       stageTime: null,
     },
   });
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
-  const { setSnack } = useSnack();
 
-  const [open, setOpen] = useState(false);
-
+  // イベントに紐づくステージのみ抽出
   const filteredStages = useMemo(
     () => stages.filter((stage) => stage.event_id === event.id),
     [stages, event.id]
   );
 
+  // ステージごとの予約の有無を辞書化
   const hasReservations = useMemo(() => {
     const dict: Record<number, boolean> = {};
     filteredStages.forEach((stage) => {
@@ -46,6 +48,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     return dict;
   }, [filteredStages, reservations]);
 
+  // 日付ごとにステージをグループ化
   const stagesByDate = useMemo(() => {
     const dict: Record<string, StageResponse[]> = {};
     filteredStages.forEach((stage) => {
@@ -95,45 +98,80 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     return dict;
   }, [seatGroups, ticketTypes]);
 
-  // ステージのパターンが複数ある場合は選択画面を表示
-  const checkDict = async () => {
-    if (!selectedDate || !selectedTime) {
-      return;
+  useEffect(() => {
+    if (selectedTime) {
+      handleAddStage();
     }
+  }, [selectedTime]);
+
+  useEffect(() => {
+    if (creatingStage) {
+      if (onlyOnePattern()) {
+        addStage(Object.keys(seatDict)[0]);
+      } else {
+        setOpen(true);
+      }
+    }
+  }, [creatingStage]);
+
+  const handleAddStage = () => {
+    if (isValid()) {
+      const newDateTime = new Date(
+        selectedDate!.getFullYear(),
+        selectedDate!.getMonth(),
+        selectedDate!.getDate(),
+        selectedTime!.getHours(),
+        selectedTime!.getMinutes()
+      );
+      setCreatingStage(newDateTime);
+    }
+  };
+
+  // ステージ開始時間のバリデーション
+  const isValid = (): boolean => {
+    if (!selectedDate || !selectedTime) {
+      setSnack({ message: "日付と時間を選択してください", severity: "error" });
+      return false;
+    }
+    const newDateTime = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      selectedTime.getHours(),
+      selectedTime.getMinutes()
+    );
+    if (
+      stages.some(
+        (stage) =>
+          new Date(stage.start_time).getTime() === newDateTime.getTime()
+      )
+    ) {
+      setSnack({
+        message: "同じ時間帯のステージが既に存在します",
+        severity: "error",
+      });
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  // ステージのパターンが複数ある場合は選択画面を表示
+  const onlyOnePattern = (): boolean => {
     const keys = Object.keys(seatDict);
     if (keys.length > 1) {
-      setOpen(true);
+      return false;
     } else {
-      addStage(keys[0]);
+      return true;
     }
   };
 
   // ステージ作成
   const addStage = async (key: string) => {
-    const startDateTime = new Date(
-      selectedDate!.getFullYear(),
-      selectedDate!.getMonth(),
-      selectedDate!.getDate(),
-      selectedTime!.getHours(),
-      selectedTime!.getMinutes()
-    );
-    // 重複チェック
-    const exists = stages.some(
-      (stage) =>
-        new Date(stage.start_time).getTime() === startDateTime.getTime()
-    );
-    if (exists) {
-      setSnack({
-        message: "同じ時間帯のステージが既に存在します",
-        severity: "error",
-      });
-      return;
-    }
-
-    // ステージ作成API呼び出し
+    if (!creatingStage) return;
     const newStage = await createStage(event.id, {
-      start_time: toJST(startDateTime, "ISO8601"),
-      end_time: toJST(addTime(startDateTime, { hours: 2 }), "ISO8601"),
+      start_time: toJST(creatingStage, "ISO8601"),
+      end_time: toJST(addTime(creatingStage, { hours: 2 }), "ISO8601"),
     } as StageCreate);
 
     const selectedSeatGroup = seatDict[key];
@@ -226,14 +264,15 @@ const StageManager = ({ event }: { event: EventResponse }) => {
             name="stageDate"
             label="ステージ日付"
             minDate={new Date()}
+            maxDate={addTime(new Date(), { years: 1 })}
             onDateChange={(value) => setSelectedDate(value)}
           />
           <ValidatedTimePicker
+            name="stageTime"
             date={selectedDate ? selectedDate.toISOString() : ""}
             label="ステージ時間"
             addSchedule={(_, time) => {
               setSelectedTime(time);
-              checkDict();
             }}
           />
         </Box>

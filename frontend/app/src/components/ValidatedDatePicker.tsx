@@ -75,6 +75,7 @@ const ValidatedDatePicker = ({
                 label,
                 error: !!errors[name],
                 helperText: errors[name]?.message as string,
+                inputProps: { readOnly: true },
               },
               calendarHeader: { format: "yyyy年MM月" },
               toolbar: { toolbarFormat: "yyyy年MM月dd日" },

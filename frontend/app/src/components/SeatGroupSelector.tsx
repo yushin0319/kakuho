@@ -25,15 +25,19 @@ const SeatGroupSelector = ({
 }) => {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>シートグループパターン選択</DialogTitle>
+      <DialogTitle>チケット情報選択</DialogTitle>
       <DialogContent>
         {Object.keys(seatDict).map((key) => (
-          <Box key={key} sx={{ mb: 2 }}>
+          <Box display="flex" flexDirection="column" key={key} sx={{ mb: 2 }}>
             <Typography variant="subtitle2">
               パターン {Object.keys(seatDict).indexOf(key) + 1}
             </Typography>
             {seatDict[key].map((group) => (
-              <Typography key={group.seatGroup.id}>
+              <Typography
+                key={group.seatGroup.id}
+                variant="caption"
+                sx={{ ml: 2 }}
+              >
                 {group.ticketTypes
                   .map((tt) => `${tt.type_name} (${tt.price}円)`)
                   .join(", ")}

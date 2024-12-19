@@ -198,6 +198,7 @@ const CreateEvent = () => {
                       />
                     ))}
                 <ValidatedTimePicker
+                  name="time"
                   label="時間を追加"
                   date={toJST(date, "fullDate")}
                   addSchedule={addSchedule}

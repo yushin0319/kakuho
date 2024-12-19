@@ -5,10 +5,12 @@ import { ja } from "date-fns/locale/ja";
 import { useState } from "react";
 
 const ValidatedTimePicker = ({
+  name,
   date,
   label,
   addSchedule,
 }: {
+  name: string;
   date: string;
   label: string;
   addSchedule: (date: string, time: Date) => void;
@@ -39,16 +41,17 @@ const ValidatedTimePicker = ({
         }}
       >
         <TimePicker
+          name={name}
           label={label}
           value={selectedTime}
           onChange={(time) => setSelectedTime(time)}
           slotProps={{
             textField: {
               variant: "standard",
+              inputProps: {
+                readOnly: true,
+              },
               error: false, // バリデーションエラーを適用する場合はここで調整
-            },
-            popper: {
-              disablePortal: true,
             },
           }}
         />
