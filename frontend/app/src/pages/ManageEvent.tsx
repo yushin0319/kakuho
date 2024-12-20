@@ -15,6 +15,8 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import CapacityAdjuster from "../components/CapacityAdjuster";
+import EventDeleter from "../components/EventDeleter";
+import EventDuplicater from "../components/EventDuplicater";
 import EventInfoManager from "../components/EventInfoManager";
 import LoadingScreen from "../components/LoadingScreen";
 import StageManager from "../components/StageManager";
@@ -139,9 +141,9 @@ const ManageEvent = () => {
                   ) : activeAction === "manage-ticket" ? (
                     <TicketTypeManager event={event} />
                   ) : activeAction === "duplicate" ? (
-                    <Typography>イベント複製</Typography>
+                    <EventDuplicater event={event} />
                   ) : activeAction === "delete" ? (
-                    <Typography>イベント全削除</Typography>
+                    <EventDeleter event={event} />
                   ) : (
                     <Typography>エラーが発生しました</Typography>
                   )}
@@ -226,9 +228,9 @@ const ManageEvent = () => {
                   ) : activeAction === "manage-ticket" ? (
                     <TicketTypeManager event={event} />
                   ) : activeAction === "duplicate" ? (
-                    <Typography>イベント複製</Typography>
+                    <EventDuplicater event={event} />
                   ) : activeAction === "delete" ? (
-                    <Typography>イベント全削除</Typography>
+                    <EventDeleter event={event} />
                   ) : (
                     <Typography>エラーが発生しました</Typography>
                   )}
