@@ -100,8 +100,6 @@ export const AppDataProvider = ({
 
       setEvents(eventsData);
       setStages(stagesData);
-      setSeatGroups(seatGroupsData);
-      setTicketTypes(ticketTypesData);
       setUsers(usersData);
 
       // EventStartDatesの生成
@@ -133,10 +131,18 @@ export const AppDataProvider = ({
           sg.id,
           ticketTypesData
             .filter((tt) => tt.seat_group_id === sg.id)
-            .map((tt) => tt.type_name),
+            .map((tt) => tt.type_name)
+            .sort(),
         ])
       );
       setSeatGroupNames(nameMap);
+
+      seatGroupsData.sort((a, b) =>
+        seatGroupNames[b.id][0].localeCompare(seatGroupNames[a.id][0])
+      );
+      setSeatGroups(seatGroupsData);
+      ticketTypesData.sort((a, b) => a.type_name.localeCompare(b.type_name));
+      setTicketTypes(ticketTypesData);
 
       // ReservationsDetailの構築
       const ticketTypeMap = new Map(ticketTypesData.map((t) => [t.id, t]));

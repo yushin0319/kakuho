@@ -53,6 +53,7 @@ const ReservationCreater = ({
   const { setSnack } = useSnack();
   const { user } = useAuth();
   const { seatGroups, ticketTypes, reloadData, loading } = useAppData();
+  const [isSoldOut, setIsSoldOut] = useState<Record<number, boolean>>({});
 
   const { control, handleSubmit, watch, setValue } =
     useForm<ReservationCreaterForm>({
@@ -69,10 +70,21 @@ const ReservationCreater = ({
   useEffect(() => {
     if (!loading) {
       const groups = seatGroups.filter((group) => group.stage_id === stage.id);
-      const types = ticketTypes.filter((type) =>
-        groups.find((group) => group.id === type.seat_group_id)
-      );
+      const types: TicketTypeResponse[] = [];
+      groups.forEach((group) => {
+        types.push(
+          ...ticketTypes.filter((type) => type.seat_group_id === group.id)
+        );
+      });
       setSelectableTicketTypes(types);
+      types.map((type) => {
+        if (
+          groups.find((group) => group.id === type.seat_group_id)?.capacity ===
+          0
+        ) {
+          setIsSoldOut((prev) => ({ ...prev, [type.id]: true }));
+        }
+      });
       setValue("ticketType", types[0]?.id || "");
       setMaxAvailable(
         groups.find((group) => group.id === types[0]?.seat_group_id)
@@ -192,9 +204,13 @@ const ReservationCreater = ({
                       fullWidth
                     >
                       {selectableTicketTypes.map((ticketType) => (
-                        <MenuItem key={ticketType.id} value={ticketType.id}>
+                        <MenuItem
+                          key={ticketType.id}
+                          value={ticketType.id}
+                          disabled={isSoldOut[ticketType.id]}
+                        >
                           {ticketType.type_name} - {NumComma(ticketType.price)}
-                          円
+                          円{isSoldOut[ticketType.id] && "（完売）"}
                         </MenuItem>
                       ))}
                     </TextField>
