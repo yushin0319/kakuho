@@ -20,7 +20,7 @@ import ValidatedTimePicker from "./ValidatedTimePicker";
 
 const StageManager = ({ event }: { event: EventResponse }) => {
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const [creatingStage, setCreatingStage] = useState<Date | null>(null);
   const { setSnack } = useSnack();
@@ -28,7 +28,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     useAppData();
   const methods = useForm({
     defaultValues: {
-      stageDate: new Date(),
+      stageDate: null,
       stageTime: null,
     },
   });
@@ -156,7 +156,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     }
   };
 
-  // ステージのパターンが複数ある場合は選択画面を表示
+  // ステージのパターンが複数あるか確認
   const onlyOnePattern = (): boolean => {
     const keys = Object.keys(seatDict);
     if (keys.length > 1) {

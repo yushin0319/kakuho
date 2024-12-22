@@ -34,7 +34,7 @@ interface CalendarProps {
 }
 
 const Calendar = ({ event, onBack }: CalendarProps) => {
-  const { stages } = useAppData();
+  const { stages, seatGroups } = useAppData();
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
   const [selectedStage, setSelectedStage] = useState<StageResponse>(stages[0]);
@@ -74,6 +74,11 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
       }
     }
     return maxofWeek;
+  };
+
+  const isSoldOut = (stage: StageResponse): boolean => {
+    const groupsForStages = seatGroups.filter((sg) => sg.stage_id === stage.id);
+    return groupsForStages.every((sg) => sg.capacity === 0);
   };
 
   const calendarDays = getCalendarDays(currentDate);
@@ -201,6 +206,7 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                               setSelectedStage(stage);
                               setReservationCreaterOpen(true);
                             }}
+                            disabled={isSoldOut(stage)}
                           >
                             <Typography
                               variant="body2"
@@ -210,6 +216,7 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                               }}
                             >
                               {toJST(stage.start_time, "time")}
+                              {isSoldOut(stage) && "完売"}
                             </Typography>
                           </Button>
                         );

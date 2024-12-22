@@ -100,7 +100,11 @@ export const AppDataProvider = ({
 
       setEvents(eventsData);
       setStages(stagesData);
+      setSeatGroups(seatGroupsData);
       setUsers(usersData);
+
+      ticketTypesData.sort((a, b) => a.type_name.localeCompare(b.type_name));
+      setTicketTypes(ticketTypesData);
 
       // EventStartDatesの生成
       const newStartDates: Record<number, Date> = {};
@@ -136,14 +140,6 @@ export const AppDataProvider = ({
         ])
       );
       setSeatGroupNames(nameMap);
-
-      seatGroupsData.sort((a, b) =>
-        seatGroupNames[b.id][0].localeCompare(seatGroupNames[a.id][0])
-      );
-      setSeatGroups(seatGroupsData);
-      ticketTypesData.sort((a, b) => a.type_name.localeCompare(b.type_name));
-      setTicketTypes(ticketTypesData);
-
       // ReservationsDetailの構築
       const ticketTypeMap = new Map(ticketTypesData.map((t) => [t.id, t]));
       const seatGroupMap = new Map(seatGroupsData.map((sg) => [sg.id, sg]));
@@ -192,6 +188,14 @@ export const AppDataProvider = ({
   useEffect(() => {
     loadData();
   }, [user]);
+
+  useEffect(() => {
+    if (Object.keys(seatGroupNames).length === 0) return;
+    const seats = [...seatGroups].sort((a, b) =>
+      seatGroupNames[b.id][0].localeCompare(seatGroupNames[a.id][0])
+    );
+    setSeatGroups(seats);
+  }, [seatGroupNames]);
 
   const futureEvents = useMemo(
     () =>

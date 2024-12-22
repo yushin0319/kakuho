@@ -51,6 +51,7 @@ const ReservationChanger = ({
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const { addNewItem } = useNewItemContext();
   const { setSnack } = useSnack();
+  const [isSoldOut, setIsSoldOut] = useState<Record<number, boolean>>({});
 
   // イベントデータを取得
   const {
@@ -83,14 +84,43 @@ const ReservationChanger = ({
       );
       setSelectableStages(filteredStages);
       const groups = seatGroups.filter((group) => group.stage_id === stage.id);
-      const types = ticketTypes.filter((type) =>
-        groups.find((group) => group.id === type.seat_group_id)
-      );
+      const types: TicketTypeResponse[] = [];
+      groups.map((group) => {
+        const groupTypes = ticketTypes.filter(
+          (type) => type.seat_group_id === group.id
+        );
+        types.push(...groupTypes);
+      });
       setSelectableTicketTypes(types);
       setValue("stage", stage.id);
       setValue("ticketType", ticketType.id);
+
+      ticketTypes.forEach((type) => {
+        if (type.seat_group_id === seatGroup.id) {
+          setIsSoldOut((prev) => ({
+            ...prev,
+            [type.id]: false,
+          }));
+        } else {
+          if (
+            seatGroups.find(
+              (group) => group.id === type.seat_group_id && group.capacity === 0
+            )
+          ) {
+            setIsSoldOut((prev) => ({
+              ...prev,
+              [type.id]: true,
+            }));
+          } else {
+            setIsSoldOut((prev) => ({
+              ...prev,
+              [type.id]: false,
+            }));
+          }
+        }
+      });
     }
-  }, [eventLoading]);
+  }, [eventLoading, stages, seatGroups, ticketTypes]);
 
   // ticketTypeを変更時、availableを再計算する処理
   useEffect(() => {
@@ -105,7 +135,7 @@ const ReservationChanger = ({
       return;
     }
     const maxAvailable =
-      newSeatGroup === seatGroup
+      newSeatGroup.id === seatGroup.id
         ? newSeatGroup.capacity + reservation.num_attendees
         : newSeatGroup.capacity;
 
@@ -127,9 +157,13 @@ const ReservationChanger = ({
     const newSeatGroups = seatGroups.filter(
       (group) => group.stage_id === newStage.id
     );
-    const newTicketTypes = ticketTypes.filter((type) =>
-      newSeatGroups.some((group) => group.id === type.seat_group_id)
-    );
+    const newTicketTypes: TicketTypeResponse[] = [];
+    newSeatGroups.map((group) => {
+      const groupTypes = ticketTypes.filter(
+        (type) => type.seat_group_id === group.id
+      );
+      newTicketTypes.push(...groupTypes);
+    });
     if (newSeatGroups.length === 0 || newTicketTypes.length === 0) {
       return;
     }
@@ -139,6 +173,17 @@ const ReservationChanger = ({
     setSelectableTicketTypes(newTicketTypes);
     setValue("ticketType", newTicketType.id);
   }, [watchStage]);
+
+  // stageごとに完売しているか判定
+  const isSoldOutStage = (stage: StageResponse): boolean => {
+    const seatGroupsForStage = seatGroups.filter(
+      (group) => group.stage_id === stage.id
+    );
+    const ticketTypesForStage = ticketTypes.filter((type) =>
+      seatGroupsForStage.some((group) => group.id === type.seat_group_id)
+    );
+    return ticketTypesForStage.every((type) => isSoldOut[type.id]);
+  };
 
   // 予約の確認と確定処理
   const onSubmit = async (data: ReservationChangerForm) => {
@@ -222,8 +267,13 @@ const ReservationChanger = ({
                     fullWidth
                   >
                     {selectableStages.map((stage) => (
-                      <MenuItem key={stage.id} value={stage.id}>
+                      <MenuItem
+                        key={stage.id}
+                        value={stage.id}
+                        disabled={isSoldOutStage(stage)}
+                      >
                         {toJST(stage.start_time, "dateTime")}
+                        {isSoldOutStage(stage) ? "（完売）" : ""}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -248,8 +298,13 @@ const ReservationChanger = ({
                     fullWidth
                   >
                     {selectableTicketTypes.map((ticketType) => (
-                      <MenuItem key={ticketType.id} value={ticketType.id}>
+                      <MenuItem
+                        key={ticketType.id}
+                        value={ticketType.id}
+                        disabled={isSoldOut[ticketType.id]}
+                      >
                         {ticketType.type_name} - {NumComma(ticketType.price)}円
+                        {isSoldOut[ticketType.id] ? "（完売）" : ""}
                       </MenuItem>
                     ))}
                   </TextField>
