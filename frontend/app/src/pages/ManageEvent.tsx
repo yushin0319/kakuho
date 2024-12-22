@@ -49,7 +49,17 @@ const ManageEvent = () => {
 
   // アコーディオンを開く
   const handleExpand = (id: number, action: string) => {
-    if (action === activeAction && expandedAccordion === id) {
+    if (openMenu.id === id) {
+      setExpandedAccordion(null);
+      setActiveAction("");
+      setTimeout(() => {
+        setExpandedAccordion(id);
+        setActiveAction(action);
+      }, 0);
+    } else if (
+      action === activeAction ||
+      (action === "" && expandedAccordion === id)
+    ) {
       setExpandedAccordion(null);
       setActiveAction("");
     } else {
@@ -72,7 +82,7 @@ const ManageEvent = () => {
       {futureEvents.map((event) => (
         <Card sx={{ mb: 2 }} key={event.id}>
           <Accordion key={event.id} expanded={expandedAccordion === event.id}>
-            <AccordionSummary onClick={(e) => e.stopPropagation()}>
+            <AccordionSummary onClick={() => handleExpand(event.id, "")}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -82,7 +92,7 @@ const ManageEvent = () => {
                 <Typography variant="h5" sx={{ my: 4 }}>
                   {event.name}
                 </Typography>
-                <ButtonGroup fullWidth>
+                <ButtonGroup fullWidth onClick={(e) => e.stopPropagation()}>
                   <Button
                     variant="outlined"
                     color="primary"
@@ -112,19 +122,35 @@ const ManageEvent = () => {
                 onClose={handleMenuClose}
               >
                 <MenuItem
-                  onClick={() => handleExpand(event.id, "manage-stage")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExpand(event.id, "manage-stage");
+                  }}
                 >
                   ステージ編集
                 </MenuItem>
                 <MenuItem
-                  onClick={() => handleExpand(event.id, "manage-ticket")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExpand(event.id, "manage-ticket");
+                  }}
                 >
                   チケット編集
                 </MenuItem>
-                <MenuItem onClick={() => handleExpand(event.id, "duplicate")}>
+                <MenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExpand(event.id, "duplicate");
+                  }}
+                >
                   イベント複製
                 </MenuItem>
-                <MenuItem onClick={() => handleExpand(event.id, "delete")}>
+                <MenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExpand(event.id, "delete");
+                  }}
+                >
                   イベント全削除
                 </MenuItem>
               </Menu>
@@ -159,7 +185,7 @@ const ManageEvent = () => {
       {pastEvents.map((event) => (
         <Card sx={{ mb: 2 }} key={event.id}>
           <Accordion key={event.id} expanded={expandedAccordion === event.id}>
-            <AccordionSummary onClick={(e) => e.stopPropagation()}>
+            <AccordionSummary onClick={() => handleExpand(event.id, "")}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -169,7 +195,7 @@ const ManageEvent = () => {
                 <Typography variant="h5" sx={{ my: 4 }}>
                   {event.name}
                 </Typography>
-                <ButtonGroup fullWidth>
+                <ButtonGroup fullWidth onClick={(e) => e.stopPropagation()}>
                   <Button
                     variant="outlined"
                     color="primary"
@@ -199,19 +225,35 @@ const ManageEvent = () => {
                 onClose={handleMenuClose}
               >
                 <MenuItem
-                  onClick={() => handleExpand(event.id, "manage-stage")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExpand(event.id, "manage-stage");
+                  }}
                 >
                   ステージ編集
                 </MenuItem>
                 <MenuItem
-                  onClick={() => handleExpand(event.id, "manage-ticket")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExpand(event.id, "manage-ticket");
+                  }}
                 >
                   チケット編集
                 </MenuItem>
-                <MenuItem onClick={() => handleExpand(event.id, "duplicate")}>
+                <MenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExpand(event.id, "duplicate");
+                  }}
+                >
                   イベント複製
                 </MenuItem>
-                <MenuItem onClick={() => handleExpand(event.id, "delete")}>
+                <MenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExpand(event.id, "delete");
+                  }}
+                >
                   イベント全削除
                 </MenuItem>
               </Menu>
