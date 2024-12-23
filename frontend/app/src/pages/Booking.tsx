@@ -50,7 +50,11 @@ const Booking = () => {
                         )} - ${toJST(eventEndDates[event.id], "fullDate")}`
                       : ""}
                   </Typography>
-                  <Typography variant="body1" sx={{ mt: 2 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ mt: 2 }}
+                    whiteSpace="pre-line"
+                  >
                     {event.description}
                   </Typography>
                 </CardContent>

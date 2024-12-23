@@ -29,6 +29,17 @@ const EventInfoManager = ({ event }: EventInfoManagerProps) => {
   return (
     <Box display="flex" flexDirection="column" gap={2}>
       {error && <Typography color="error">{error}</Typography>}
+      <Box display="flex" flexDirection="column">
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          イベント情報の編集
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          情報の変更は即時反映されません。
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          変更後、保存ボタンを押してください。
+        </Typography>
+      </Box>
       <TextField
         label="イベント名"
         value={name}

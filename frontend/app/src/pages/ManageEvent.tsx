@@ -76,7 +76,7 @@ const ManageEvent = () => {
   return (
     <Container>
       {loading && <LoadingScreen />}
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         開催中のイベント
       </Typography>
       {futureEvents.map((event) => (
@@ -179,7 +179,7 @@ const ManageEvent = () => {
           </Accordion>
         </Card>
       ))}
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         過去のイベント
       </Typography>
       {pastEvents.map((event) => (

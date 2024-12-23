@@ -62,9 +62,17 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
 
   return (
     <Box display="flex" flexDirection="column" gap={2}>
-      <Typography variant="caption" color="textSecondary">
-        席数の変更は即時反映されません。保存ボタンを押すまで確定しません
-      </Typography>
+      <Box display="flex" flexDirection="column">
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          未予約席数の調整
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          席数の変更は即時反映されません。
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          変更後、保存ボタンを押してください。
+        </Typography>
+      </Box>
 
       {error && <Typography color="error">{error}</Typography>}
       {stages

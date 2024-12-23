@@ -8,7 +8,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -17,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useAppData } from "../context/AppData";
 import { useSnack } from "../context/SnackContext";
 import { seatDict } from "../pages/CreateEvent";
 import { createEvent } from "../services/api/event";
@@ -46,6 +46,7 @@ const ConfirmEvent = ({
 }: ConfirmEventProps) => {
   const errors: string[] = [];
   const warnings: string[] = [];
+  const { reloadData } = useAppData();
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const { setSnack } = useSnack();
 
@@ -118,12 +119,13 @@ const ConfirmEvent = ({
       });
     } finally {
       setIsCreating(false);
+      reloadData();
       onConfirm();
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle>
         <Typography variant="h6" fontWeight="bold" component="div">
           この内容でイベントを作成してもよろしいですか？
@@ -144,22 +146,22 @@ const ConfirmEvent = ({
         ))}
       </DialogTitle>
       <DialogContent dividers>
-        <Box mb={3}>
-          <Typography variant="h6" component="div">
+        <Box mb={1}>
+          <Typography variant="body2" color="text.secondary">
             イベント名
           </Typography>
-          <Paper elevation={1} sx={{ padding: 2 }}>
-            <Typography variant="body1">{title || "未設定"}</Typography>
-          </Paper>
+          <Typography variant="h6" component="div" fontWeight="bold">
+            {title || "未設定"}
+          </Typography>
         </Box>
 
-        <Box mb={3}>
-          <Typography variant="h6" component="div">
+        <Box mb={2}>
+          <Typography variant="body2" color="text.secondary">
             詳細説明
           </Typography>
-          <Paper elevation={1} sx={{ padding: 2 }}>
-            <Typography variant="body1">{description || "未設定"}</Typography>
-          </Paper>
+          <Typography variant="body1" whiteSpace="pre-line">
+            {description || "未設定"}
+          </Typography>
         </Box>
 
         {/* 日程情報 */}

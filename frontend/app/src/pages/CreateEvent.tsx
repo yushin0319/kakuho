@@ -128,16 +128,13 @@ const CreateEvent = () => {
     setValue("seatDict", newSeatDict);
   };
 
-  // 確認画面へ遷移
-  const onSubmit = (data: Record<string, any>) => {
-    console.log(data);
-  };
+  const onSubmit = () => {};
 
   return (
     <Container>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Typography variant="body1" sx={{ mb: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             新規イベント作成
           </Typography>
           <Card sx={{ p: 2 }}>
@@ -148,11 +145,12 @@ const CreateEvent = () => {
               fieldType="description"
               sx={{
                 mt: 2,
+                whiteSpace: "pre-wrap",
               }}
             />
           </Card>
-          <Typography variant="body1" margin={2}>
-            ステージ時間選択
+          <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
+            イベント日程入力
           </Typography>
           <Card sx={{ px: 2, pb: 1 }}>
             <Grid container spacing={2}>
@@ -207,60 +205,41 @@ const CreateEvent = () => {
               </Box>
             ))}
           </Card>
-          <Typography variant="body1" margin={2}>
+          <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
             チケット情報入力
           </Typography>
-          {Object.entries(watchSeatDict).map(([id, seatDict]) => (
-            <CreateSeatGroup
-              key={id}
-              id={parseInt(id)}
-              seatGroup={seatDict.seatGroup}
-              ticketTypes={seatDict.ticketTypes}
-              onUpdate={(newSeatGroup, newTicketTypes) => {
-                const newSeatDict = { ...watchSeatDict };
-                newSeatDict[parseInt(id)] = {
-                  seatGroup: newSeatGroup,
-                  ticketTypes: newTicketTypes,
-                };
-                setValue("seatDict", newSeatDict);
-              }}
-              onDelete={() => deleteSeatGroup(parseInt(id))}
-            />
-          ))}
-          <Button
-            onClick={addSeatGroup}
-            startIcon={<Add />}
-            variant="contained"
-            sx={{ mt: 2 }}
-          >
-            特別席追加（座席数独立）
-          </Button>
+          <Card sx={{ p: 1 }}>
+            {Object.entries(watchSeatDict).map(([id, seatDict]) => (
+              <CreateSeatGroup
+                key={id}
+                id={parseInt(id)}
+                seatGroup={seatDict.seatGroup}
+                ticketTypes={seatDict.ticketTypes}
+                onUpdate={(newSeatGroup, newTicketTypes) => {
+                  const newSeatDict = { ...watchSeatDict };
+                  newSeatDict[parseInt(id)] = {
+                    seatGroup: newSeatGroup,
+                    ticketTypes: newTicketTypes,
+                  };
+                  setValue("seatDict", newSeatDict);
+                }}
+                onDelete={() => deleteSeatGroup(parseInt(id))}
+              />
+            ))}
+            <Button onClick={addSeatGroup} startIcon={<Add />} variant="text">
+              特別席追加（座席数独立）
+            </Button>
+          </Card>
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            sx={{ mt: 2, ml: 2 }}
+            fullWidth
+            sx={{ my: 3 }}
             onClick={() => setIsConfirmOpen(true)}
           >
             確認
           </Button>
-          <Card
-            sx={{
-              px: 2,
-              py: 1,
-              backgroundColor: "#f4f4f4",
-              textAlign: "left",
-            }}
-          >
-            <Typography variant="body2">startDate:</Typography>
-            <pre>{JSON.stringify(watchStartDate, null, 2)}</pre>
-            <Typography variant="body2">endDate:</Typography>
-            <pre>{JSON.stringify(watchEndDate, null, 2)}</pre>
-            <Typography variant="body2">schedule:</Typography>
-            <pre>{JSON.stringify(watchSchedule, null, 2)}</pre>
-            <Typography variant="body2">seatDict:</Typography>
-            <pre>{JSON.stringify(watchSeatDict, null, 2)}</pre>
-          </Card>
         </form>
         <ConfirmEvent
           title={getValues("title")}
