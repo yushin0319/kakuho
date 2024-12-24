@@ -93,7 +93,15 @@ def initialize_sample_data(db: Session):
         is_admin=True,
     )
 
+    sample_user = User(
+        email="sample@example.com",
+        nickname="能登 ながと",
+        password_hash=hashed_password_user,
+        is_admin=False,
+    )
+
     db.add(admin)
+    db.add(sample_user)
     db.add_all(users)
     db.commit()
 
