@@ -36,7 +36,7 @@ const ReservationSummary = ({
             </Typography>
           </Grid>
           <Grid size={12}>
-            <Typography variant="subtitle2" color="secondary">
+            <Typography variant="subtitle2" color="text.secondary">
               ご予約名
             </Typography>
             <Typography
@@ -57,7 +57,7 @@ const ReservationSummary = ({
               md: 6,
             }}
           >
-            <Typography variant="subtitle2" color="secondary">
+            <Typography variant="subtitle2" color="text.secondary">
               日時
             </Typography>
             <Typography variant="h6">
@@ -71,7 +71,7 @@ const ReservationSummary = ({
               md: 2,
             }}
           >
-            <Typography variant="subtitle2" color="secondary">
+            <Typography variant="subtitle2" color="text.secondary">
               チケット
             </Typography>
             <Typography variant="h6">{ticketType.type_name}</Typography>
@@ -82,7 +82,7 @@ const ReservationSummary = ({
               md: 2,
             }}
           >
-            <Typography variant="subtitle2" color="secondary">
+            <Typography variant="subtitle2" color="text.secondary">
               ご人数
             </Typography>
             <Typography variant="h6">{attendees}名</Typography>
@@ -94,7 +94,7 @@ const ReservationSummary = ({
             }}
             textAlign="center"
           >
-            <Typography variant="subtitle2" color="secondary">
+            <Typography variant="subtitle2" color="text.secondary">
               合計金額
             </Typography>
             <Typography variant="h6">

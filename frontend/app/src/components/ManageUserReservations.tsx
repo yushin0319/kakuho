@@ -44,7 +44,7 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
             sx={{
               mb: 2,
               borderLeft: reservation.is_paid
-                ? "4px solid #4caf50"
+                ? "4px solid #80cbc4"
                 : "4px solid #f44336",
             }}
           >
@@ -54,7 +54,7 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
                   <Typography variant="h6">{event.name}</Typography>
                 </Grid>
                 <Grid size={8}>
-                  <Typography variant="body2" color="secondary">
+                  <Typography variant="body2" color="text.secondary">
                     日時：{toJST(stage.start_time, "dateTime")}
                   </Typography>
                 </Grid>
@@ -67,14 +67,14 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
                   <Divider />
                 </Grid>
                 <Grid size={8}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="secondary">
                     予約：{toJST(reservation.created_at, "dateTime")}
                   </Typography>
                 </Grid>
                 <Grid size={4}>
                   <Typography
                     variant="body2"
-                    color={reservation.is_paid ? "success.main" : "error.main"}
+                    color={reservation.is_paid ? "secondary" : "error.main"}
                   >
                     {reservation.is_paid ? "受付済" : "受付前"}
                   </Typography>

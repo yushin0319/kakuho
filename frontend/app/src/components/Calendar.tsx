@@ -198,7 +198,7 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                               py: 1,
                               minWidth: "90%",
                               width: "90%",
-                              backgroundColor: "primary",
+                              backgroundColor: "secondary.main",
                               color: "white",
                               borderRadius: 1,
                             }}

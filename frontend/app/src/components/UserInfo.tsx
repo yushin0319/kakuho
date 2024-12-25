@@ -26,6 +26,7 @@ interface FormValues {
 const UserInfo = ({ onClose }: UserInfoProps) => {
   const { user, setUser, logout } = useAuth();
   const [phase, setPhase] = useState<"form" | "summary">("summary");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const methods = useForm<FormValues>({
     defaultValues: {
@@ -55,18 +56,16 @@ const UserInfo = ({ onClose }: UserInfoProps) => {
   };
 
   const handleLogout = () => {
-    if (window.confirm("本当にログアウトしますか？")) {
-      logout();
-      setSnack({
-        message: "ログアウトしました",
-        severity: "info",
-      });
-      onClose();
-    }
+    logout();
+    setSnack({
+      message: "ログアウトしました",
+      severity: "info",
+    });
+    onClose();
   };
 
   return (
-    <Dialog open onClose={onClose} fullWidth>
+    <Dialog open onClose={onClose} fullWidth disableAutoFocus>
       <DialogTitle
         sx={{
           backgroundColor: "primary.main",
@@ -151,7 +150,7 @@ const UserInfo = ({ onClose }: UserInfoProps) => {
             編集
           </Button>
           <Button
-            onClick={handleLogout}
+            onClick={() => setDialogOpen(true)}
             variant="outlined"
             color="error"
             sx={{ ml: 1 }}
@@ -163,6 +162,32 @@ const UserInfo = ({ onClose }: UserInfoProps) => {
           </Button>
         </DialogActions>
       )}
+      <Dialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        aria-hidden={!dialogOpen}
+      >
+        <DialogContent>
+          <Typography>ログアウトしてよろしいですか？</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleLogout}
+            variant="contained"
+            color="primary"
+            fullWidth
+          >
+            OK
+          </Button>
+          <Button
+            onClick={() => setDialogOpen(false)}
+            variant="outlined"
+            fullWidth
+          >
+            キャンセル
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Dialog>
   );
 };

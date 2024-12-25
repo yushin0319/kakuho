@@ -171,7 +171,7 @@ const ManageEvent = () => {
                   ) : activeAction === "delete" ? (
                     <EventDeleter event={event} />
                   ) : (
-                    <Typography>エラーが発生しました</Typography>
+                    <></>
                   )}
                 </Box>
               )}
@@ -274,7 +274,7 @@ const ManageEvent = () => {
                   ) : activeAction === "delete" ? (
                     <EventDeleter event={event} />
                   ) : (
-                    <Typography>エラーが発生しました</Typography>
+                    <></>
                   )}
                 </Box>
               )}

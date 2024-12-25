@@ -4,12 +4,10 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#795548", // 落ち着いたブラウン
-      light: "#a1887f", // 明るいブラウン
-      dark: "#5d4037", // 濃いブラウン
+      main: "#607d8b", // グレイッシュな青緑
     },
     secondary: {
-      main: "#607d8b", // グレイッシュな青
+      main: "#80cbc4",
     },
     background: {
       default: "#e8eaf6", // 淡いブルーグレー
@@ -20,7 +18,7 @@ const theme = createTheme({
       secondary: "#757575", // 中間グレー
     },
     error: {
-      main: "#f44336", // 赤
+      main: "#f44336",
     },
     warning: {
       main: "#ff9800", // オレンジ

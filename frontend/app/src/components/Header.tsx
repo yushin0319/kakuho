@@ -63,7 +63,7 @@ const Header = () => {
 
         {/* ユーザー情報ボタン */}
         <Button color="inherit" onClick={handleUserClick}>
-          <Typography variant="caption">
+          <Typography variant="caption" color="secondary">
             {user?.nickname || user?.email || "ゲスト"}
           </Typography>
         </Button>

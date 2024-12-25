@@ -1,17 +1,27 @@
 import { Box, Button, Container, Typography } from "@mui/material";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppData } from "../context/AppData";
 import { useAuth } from "../context/AuthContext";
 
 const DemoLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const { reservations } = useAppData();
+  const { login, user } = useAuth();
+  const { reservations, loading } = useAppData();
 
   const handleQuickLogin = async (email: string, password: string) => {
     try {
-      const currentUser = await login(email, password);
-      if (currentUser.is_admin) {
+      await login(email, password);
+    } catch (error) {
+      console.error("Quick login failed:", error);
+      alert("ログインに失敗しました。");
+    }
+  };
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) {
+      if (user.is_admin) {
         navigate("/check-in-list");
       } else {
         if (reservations.length > 0) {
@@ -20,11 +30,8 @@ const DemoLogin = () => {
           navigate("/booking");
         }
       }
-    } catch (error) {
-      console.error("Quick login failed:", error);
-      alert("ログインに失敗しました。");
     }
-  };
+  }, [loading, reservations]);
 
   return (
     <Container sx={{ mt: 5, textAlign: "center" }}>
@@ -51,8 +58,8 @@ const DemoLogin = () => {
         {/* 管理者ログインボタン */}
         <Box display="flex" gap={2} sx={{ width: "100%" }}>
           <Button
-            variant="contained"
-            color="primary"
+            variant="outlined"
+            color="error"
             fullWidth
             onClick={() =>
               handleQuickLogin("admin@example.com", "adminpassword")
@@ -66,8 +73,8 @@ const DemoLogin = () => {
 
           {/* ユーザーログインボタン */}
           <Button
-            variant="contained"
-            color="secondary"
+            variant="outlined"
+            color="primary"
             fullWidth
             onClick={() =>
               handleQuickLogin("sample@example.com", "userpassword")
