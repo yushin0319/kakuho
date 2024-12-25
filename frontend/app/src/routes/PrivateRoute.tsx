@@ -1,6 +1,5 @@
 // app/src/routes/PrivateRoute.tsx
 // Login していない場合はログインページにリダイレクトする
-
 import React from "react";
 import { Navigate } from "react-router-dom";
 import LoadingScreen from "../components/LoadingScreen";
@@ -18,7 +17,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   }
 
   if (!isAuthenticated || user === null) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   return <>{children}</>;

@@ -30,8 +30,12 @@ const Register = () => {
 
     try {
       // 新規登録処理を実行
-      await signup({ email, password, nickname });
-      navigate("/"); // 登録後にホームページへリダイレクト
+      const currentUser = await signup({ email, password, nickname });
+      if (currentUser.is_admin) {
+        navigate("/check-in-list");
+      } else {
+        navigate("/booking");
+      }
     } catch (error) {
       setError(
         "登録に失敗しました。入力内容をご確認の上、再度お試しください。"

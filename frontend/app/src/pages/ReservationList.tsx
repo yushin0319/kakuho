@@ -30,9 +30,15 @@ const ReservationList = () => {
   return (
     <Container>
       {loading && <LoadingScreen />}
-      <Typography variant="caption" color="textSecondary" sx={{ mb: 1 }}>
-        クリックするとQRコードが表示されます
-      </Typography>
+      {reservations.length === 0 ? (
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+          予約がありません
+        </Typography>
+      ) : (
+        <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
+          クリックするとQRコードが表示されます
+        </Typography>
+      )}
       {reservations
         .sort(
           (a, b) =>
@@ -52,9 +58,15 @@ const ReservationList = () => {
             onCardClick={() => handleCardClick(item.reservation.id)}
           />
         ))}
-      <Typography variant="caption" color="textSecondary" sx={{ mb: 1 }}>
-        過去のイベント
-      </Typography>
+      {reservations.filter(
+        (item) =>
+          new Date(item.stage.start_time).getTime() < new Date().getTime()
+      ).length > 0 && (
+        <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
+          過去のイベント
+        </Typography>
+      )}
+
       {reservations
         .sort(
           (a, b) =>

@@ -4,6 +4,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Booking from "../pages/Booking";
 import CheckInList from "../pages/CheckInList";
 import CreateEvent from "../pages/CreateEvent";
+import DemoLogin from "../pages/DemoLogin";
 import Login from "../pages/Login";
 import ManageEvent from "../pages/ManageEvent";
 import ManageUser from "../pages/ManageUser";
@@ -29,7 +30,7 @@ const AppRouter = () => {
       <Routes>
         {/* 「予約する」 */}
         <Route
-          path="/"
+          path="/booking"
           element={
             <PrivateRoute>
               <Booking />
@@ -92,6 +93,9 @@ const AppRouter = () => {
 
         {/* 登録ページ */}
         <Route path="/register" element={<Register />} />
+
+        {/* デモログイン */}
+        <Route path="/" element={<DemoLogin />} />
       </Routes>
     </>
   );

@@ -186,7 +186,20 @@ export const AppDataProvider = ({
   };
 
   useEffect(() => {
-    loadData();
+    if (!user) {
+      setEvents([]);
+      setStages([]);
+      setSeatGroups([]);
+      setTicketTypes([]);
+      setUsers([]);
+      setReservations([]);
+      setEventStartDates({});
+      setEventEndDates({});
+      setSeatGroupNames({});
+      return;
+    } else {
+      loadData();
+    }
   }, [user]);
 
   useEffect(() => {

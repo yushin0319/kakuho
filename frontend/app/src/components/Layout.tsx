@@ -13,7 +13,9 @@ const Layout = ({ children }: LayoutProps) => {
 
   // ログインページや新規登録ページかどうかを判定
   const isLoginOrRegisterPage =
-    location.pathname === "/login" || location.pathname === "/register";
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/";
 
   return (
     <Container sx={{ p: 0, m: 0 }}>

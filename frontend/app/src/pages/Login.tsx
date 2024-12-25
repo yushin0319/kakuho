@@ -25,8 +25,12 @@ const Login = () => {
 
     try {
       // ログイン処理を実行
-      await login(email, password);
-      navigate("/"); // ログイン成功時にホームへリダイレクト
+      const currentUser = await login(email, password);
+      if (currentUser.is_admin) {
+        navigate("/check-in-list");
+      } else {
+        navigate("/booking");
+      }
     } catch (error) {
       setError(
         "ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。"

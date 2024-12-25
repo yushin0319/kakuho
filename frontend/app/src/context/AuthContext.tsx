@@ -20,8 +20,8 @@ type AuthContextType = {
   isAuthenticated: boolean;
   user: UserResponse | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (data: UserCreate) => Promise<void>;
+  login: (email: string, password: string) => Promise<UserResponse>;
+  signup: (data: UserCreate) => Promise<UserResponse>;
   logout: () => void;
   setUser: React.Dispatch<React.SetStateAction<UserResponse | null>>; // 追加
 };
@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const currentUser = await getCurrentUser();
       setUser(currentUser);
       setIsAuthenticated(true);
+      return currentUser;
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
@@ -57,7 +58,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signup = async (data: UserCreate) => {
     try {
       const newUser = await signupUser(data);
-      await login(newUser.email, data.password);
+      const currentUser = await login(newUser.email, data.password);
+      return currentUser;
     } catch (error) {
       console.error("Signup failed:", error);
       throw error;

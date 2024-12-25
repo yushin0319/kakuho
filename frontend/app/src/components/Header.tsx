@@ -1,4 +1,11 @@
-import { AppBar, Box, Button, Toolbar } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  Divider,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -25,26 +32,40 @@ const Header = () => {
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         {/* ナビゲーションボタン */}
         <Box sx={{ display: "flex", gap: 1 }}>
-          <Button component={NavLink} to="/" color="inherit">
-            予約する
-          </Button>
-          <Button component={NavLink} to="/my-reservations" color="inherit">
-            マイチケット
-          </Button>
-          <Button component={NavLink} to="/check-in-list" color="inherit">
-            予約管理
-          </Button>
-          <Button component={NavLink} to="/manage-user" color="inherit">
-            ユーザー管理
-          </Button>
-          <Button component={NavLink} to="/manage-event" color="inherit">
-            イベント管理
-          </Button>
+          {user?.is_admin ? (
+            <>
+              <Button component={NavLink} to="/check-in-list" color="inherit">
+                <Typography variant="caption">予約一覧</Typography>
+              </Button>
+              <Divider orientation="vertical" flexItem />
+              <Button component={NavLink} to="/manage-user" color="inherit">
+                <Typography variant="caption">ユーザ一覧</Typography>
+              </Button>
+              <Divider orientation="vertical" flexItem />
+              <Button component={NavLink} to="/manage-event" color="inherit">
+                <Typography variant="caption">イベント管理</Typography>
+              </Button>
+              <Divider orientation="vertical" flexItem />
+            </>
+          ) : (
+            <>
+              <Button component={NavLink} to="/booking" color="inherit">
+                <Typography variant="caption">予約する</Typography>
+              </Button>
+              <Divider orientation="vertical" flexItem />
+              <Button component={NavLink} to="/my-reservations" color="inherit">
+                <Typography variant="caption">マイチケット</Typography>
+              </Button>
+              <Divider orientation="vertical" flexItem />
+            </>
+          )}
         </Box>
 
         {/* ユーザー情報ボタン */}
         <Button color="inherit" onClick={handleUserClick}>
-          {user?.nickname || user?.email || "ゲスト"}
+          <Typography variant="caption">
+            {user?.nickname || user?.email || "ゲスト"}
+          </Typography>
         </Button>
       </Toolbar>
 
