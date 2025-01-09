@@ -41,7 +41,7 @@ const DemoLogin = () => {
         sx={{ alignItems: "center", mb: 2, px: "auto" }}
       >
         <img
-          src="public/logo.png"
+          src="logo.png"
           alt="Logo"
           style={{ width: "60px", height: "auto" }}
         />

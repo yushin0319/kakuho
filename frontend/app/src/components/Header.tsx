@@ -63,7 +63,7 @@ const Header = () => {
               <Button onClick={goToTopPage} color="inherit" sx={{ p: 0 }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <img
-                    src="public/logo.png"
+                    src="logo.png"
                     alt="Logo"
                     style={{ width: "35px", height: "auto" }}
                   />
