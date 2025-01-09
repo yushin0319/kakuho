@@ -34,8 +34,20 @@ const DemoLogin = () => {
   }, [loading, reservations]);
 
   return (
-    <Container sx={{ mt: 5, textAlign: "center" }}>
-      <Typography variant="h4">Kakuho</Typography>
+    <Container sx={{ mt: 5, textAlign: "center", justifyItems: "center" }}>
+      <Box
+        display="flex"
+        gap={2}
+        sx={{ alignItems: "center", mb: 2, px: "auto" }}
+      >
+        <img
+          src="public/logo.png"
+          alt="Logo"
+          style={{ width: "60px", height: "auto" }}
+        />
+        <Typography variant="h4">Kakuho</Typography>
+      </Box>
+
       <Typography variant="caption" color="text.secondary">
         Your Event Management System
       </Typography>
@@ -81,6 +93,8 @@ const DemoLogin = () => {
             }
             sx={{
               py: 3,
+              px: 4,
+              whiteSpace: "nowrap",
             }}
           >
             <Typography variant="h6">一般ユーザー</Typography>

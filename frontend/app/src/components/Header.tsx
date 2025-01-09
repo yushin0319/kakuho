@@ -7,13 +7,24 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAppData } from "../context/AppData";
 import { useAuth } from "../context/AuthContext";
 import UserInfo from "./UserInfo";
 
 const Header = () => {
   const { user } = useAuth(); // 認証情報を取得するフック
+  const { reservations } = useAppData(); // 予約情報を取得するフック
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false); // ユーザー情報モーダル
+
+  const goToTopPage = () => {
+    if (reservations.length > 0) {
+      navigate("/my-reservations");
+    } else {
+      navigate("/booking");
+    }
+  };
 
   const handleUserClick = () => {
     setIsModalOpen(true);
@@ -49,6 +60,15 @@ const Header = () => {
             </>
           ) : (
             <>
+              <Button onClick={goToTopPage} color="inherit" sx={{ p: 0 }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <img
+                    src="public/logo.png"
+                    alt="Logo"
+                    style={{ width: "35px", height: "auto" }}
+                  />
+                </Box>
+              </Button>
               <Button component={NavLink} to="/booking" color="inherit">
                 <Typography variant="caption">予約する</Typography>
               </Button>
