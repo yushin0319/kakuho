@@ -1,3 +1,4 @@
+# backend/sample_data.py
 from sqlalchemy.orm import Session
 from models import Event, Stage, SeatGroup, TicketType, Reservation, User
 from passlib.context import CryptContext
