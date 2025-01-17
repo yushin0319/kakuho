@@ -12,7 +12,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def initialize_sample_data(db: Session):
     # サンプルユーザー作成
     hashed_password_user = pwd_context.hash("userpassword")
-    hashed_password_admin = pwd_context.hash("adminpassword")
 
     names_with_emails = [
         {"name": "星野俊介", "email": "shadow_sunset@gmail.com"},
@@ -87,13 +86,6 @@ def initialize_sample_data(db: Session):
         for data in names_with_emails
     ]
 
-    admin = User(
-        email="admin@example.com",
-        nickname="管理者",
-        password_hash=hashed_password_admin,
-        is_admin=True,
-    )
-
     sample_user = User(
         email="sample@example.com",
         nickname="能登 ながと",
@@ -101,7 +93,6 @@ def initialize_sample_data(db: Session):
         is_admin=False,
     )
 
-    db.add(admin)
     db.add(sample_user)
     db.add_all(users)
     db.commit()
@@ -173,58 +164,58 @@ def initialize_sample_data(db: Session):
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 1, 17, 19),
-                    end_time=datetime(2025, 1, 17, 21),
+                    start_time=datetime(2025, 2, 17, 19),
+                    end_time=datetime(2025, 2, 17, 21),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 1, 18, 13),
-                    end_time=datetime(2025, 1, 18, 15),
+                    start_time=datetime(2025, 2, 18, 13),
+                    end_time=datetime(2025, 2, 18, 15),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 1, 18, 17),
-                    end_time=datetime(2025, 1, 18, 19),
+                    start_time=datetime(2025, 2, 18, 17),
+                    end_time=datetime(2025, 2, 18, 19),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 1, 19, 12),
-                    end_time=datetime(2025, 1, 19, 14),
+                    start_time=datetime(2025, 2, 19, 12),
+                    end_time=datetime(2025, 2, 19, 14),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 1, 19, 16),
-                    end_time=datetime(2025, 1, 19, 18),
+                    start_time=datetime(2025, 2, 19, 16),
+                    end_time=datetime(2025, 2, 19, 18),
                 )
             )
         elif event.name == "明け方の道":
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 23, 10),
-                    end_time=datetime(2025, 2, 23, 12),
+                    start_time=datetime(2025, 4, 23, 10),
+                    end_time=datetime(2025, 4, 23, 12),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 23, 14),
-                    end_time=datetime(2025, 2, 23, 16),
+                    start_time=datetime(2025, 4, 23, 14),
+                    end_time=datetime(2025, 4, 23, 16),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 23, 18),
-                    end_time=datetime(2025, 2, 23, 20),
+                    start_time=datetime(2025, 4, 23, 18),
+                    end_time=datetime(2025, 4, 23, 20),
                 )
             )
 
@@ -241,13 +232,13 @@ def initialize_sample_data(db: Session):
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=120))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
         elif (
-            stage.start_time.date() == datetime(2025, 1, 17).date()
-            or stage.start_time.date() == datetime(2025, 1, 18).date()
-            or stage.start_time.date() == datetime(2025, 1, 19).date()
+            stage.start_time.date() == datetime(2025, 2, 17).date()
+            or stage.start_time.date() == datetime(2025, 2, 18).date()
+            or stage.start_time.date() == datetime(2025, 2, 19).date()
         ):
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=100))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
-        elif stage.start_time.date() == datetime(2025, 2, 23).date():
+        elif stage.start_time.date() == datetime(2025, 4, 23).date():
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=200))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=10))  # S席
 

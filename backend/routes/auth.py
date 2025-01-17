@@ -7,13 +7,8 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 
 from crud.user import CrudUser
-from config import get_db
+from config import get_db, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from schemas import UserResponse
-
-# JWT設定
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -29,11 +24,11 @@ class TokenData(BaseModel):
 
 
 # アクセストークンを作成する関数
-def create_access_token(
-    data: dict, expires_delta: timedelta | None = timedelta(minutes=300)
-) -> str:
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
