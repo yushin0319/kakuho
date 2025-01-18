@@ -2,7 +2,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from config import SessionLocal, ADMIN_EMAIL, ADMIN_PASSWORD, INSERT_SAMPLE_DATA
+from config import (
+    SessionLocal,
+    ADMIN_EMAIL,
+    ADMIN_PASSWORD,
+    INSERT_SAMPLE_DATA,
+    CORS_ORIGINS,
+)
 from models import Event, User
 from routes.auth import auth_router
 from routes.event import event_router
@@ -66,13 +72,10 @@ app = FastAPI(lifespan=lifespan)
 # Base.metadata.create_all(bind=engine)
 
 # CORS設定
-origins = [
-    "http://127.0.0.1:5173",
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
