@@ -1,6 +1,7 @@
 import { Box, Button, Container, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import LoadingScreen from "../components/LoadingScreen";
 import { useAppData } from "../context/AppData";
 import { useAuth } from "../context/AuthContext";
 
@@ -32,6 +33,8 @@ const DemoLogin = () => {
       }
     }
   }, [loading, reservations]);
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <Container sx={{ mt: 5, textAlign: "center", justifyItems: "center" }}>
