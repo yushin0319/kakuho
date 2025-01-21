@@ -89,3 +89,8 @@ app.include_router(seat_group_router)
 app.include_router(ticket_type_router)
 app.include_router(reservation_router)
 app.include_router(user_router)
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
