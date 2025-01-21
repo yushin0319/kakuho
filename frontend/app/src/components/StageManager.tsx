@@ -208,7 +208,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     <FormProvider {...methods}>
       <Box display="flex" flexDirection="column">
         <Typography variant="body2" sx={{ mb: 2 }}>
-          ステージ編集
+          ステージ削除・追加
         </Typography>
         <Typography variant="caption" color="text.secondary">
           予約の存在するステージは削除できません。
