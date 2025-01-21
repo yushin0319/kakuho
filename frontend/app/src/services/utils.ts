@@ -15,7 +15,7 @@ export const toJST = (
   formatType: FormatType
 ): string => {
   if (!date) return "";
-  if (typeof date === "string") date = new Date(date);
+  if (typeof date === "string") date = new Date(`${date}Z`);
   const jstDate = toZonedTime(new Date(date), "Asia/Tokyo");
   const formats = {
     fullDate: "yyyy/M/d (E)",
@@ -47,6 +47,7 @@ export const toJST = (
  */
 
 export const toJSTDate = (date: Date | string): Date => {
+  if (typeof date === "string") date = new Date(`${date}Z`);
   return toZonedTime(new Date(date), "Asia/Tokyo");
 };
 
