@@ -230,7 +230,7 @@ const ManageEvent = () => {
                     handleExpand(event.id, "manage-stage");
                   }}
                 >
-                  ステージ削除・追加
+                  ステージ編集
                 </MenuItem>
                 <MenuItem
                   onClick={(e) => {

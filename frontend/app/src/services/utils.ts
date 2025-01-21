@@ -1,5 +1,5 @@
 // app/src/services/utils.ts
-import { format, toZonedTime } from "date-fns-tz";
+import { format } from "date-fns-tz";
 
 /**
  * JSTの日時を取得し、フォーマットする
@@ -15,7 +15,8 @@ export const toJST = (
   formatType: FormatType
 ): string => {
   if (!date) return "";
-  const jstDate = toZonedTime(new Date(date), "Asia/Tokyo");
+  //const jstDate = toZonedTime(new Date(date), "Asia/Tokyo");
+  const jstDate = new Date(date);
   const formats = {
     fullDate: "yyyy/M/d (E)",
     monthDate: "M/d (E)",
@@ -46,7 +47,8 @@ export const toJST = (
  */
 
 export const toJSTDate = (date: Date | string): Date => {
-  return toZonedTime(new Date(date), "Asia/Tokyo");
+  //return toZonedTime(new Date(date), "Asia/Tokyo");
+  return new Date(date);
 };
 
 /**
