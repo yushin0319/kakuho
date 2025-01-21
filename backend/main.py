@@ -91,6 +91,6 @@ app.include_router(reservation_router)
 app.include_router(user_router)
 
 
-@app.get("/health")
+@app.head("/health")
 async def health():
-    return {"status": "ok"}
+    return
