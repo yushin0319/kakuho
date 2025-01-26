@@ -29,7 +29,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # データベース初期化
 def reset_db(db: Session):
     try:
-        db.query(Reservation).all()
+        db.query(Reservation).delete()
         db.query(TicketType).delete()
         db.query(SeatGroup).delete()
         db.query(Stage).delete()
