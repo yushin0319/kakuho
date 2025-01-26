@@ -26,21 +26,6 @@ from contextlib import asynccontextmanager
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-# データベース初期化
-def reset_db(db: Session):
-    try:
-        db.query(Reservation).delete()
-        db.query(TicketType).delete()
-        db.query(SeatGroup).delete()
-        db.query(Stage).delete()
-        db.query(Event).delete()
-        db.query(User).delete()
-        db.commit()
-    except Exception as e:
-        db.rollback()
-        raise e
-
-
 # ライフスパン
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -48,7 +33,13 @@ async def lifespan(app: FastAPI):
     db: Session = SessionLocal()
     try:
         if RESET_DB.lower() == "true":
-            reset_db(db)
+            db.query(Reservation).delete()
+            db.query(TicketType).delete()
+            db.query(SeatGroup).delete()
+            db.query(Stage).delete()
+            db.query(Event).delete()
+            db.query(User).delete()
+            db.commit()
             print("データベースを初期化しました。")
 
         # 管理者ユーザーの確認と作成
