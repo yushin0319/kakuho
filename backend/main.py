@@ -39,6 +39,12 @@ async def lifespan(app: FastAPI):
             db.query(Stage).delete()
             db.query(Event).delete()
             db.query(User).delete()
+            print(db.query(Reservation).count())
+            print(db.query(TicketType).count())
+            print(db.query(SeatGroup).count())
+            print(db.query(Stage).count())
+            print(db.query(Event).count())
+            print(db.query(User).count())
             db.commit()
             print("データベースを初期化しました。")
 
@@ -57,6 +63,7 @@ async def lifespan(app: FastAPI):
             )
             db.add(admin)
             db.commit()
+            db.refresh(admin)
             print("管理者ユーザーを作成しました。")
         else:
             print("管理者ユーザーは既に存在しています。")
