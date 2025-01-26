@@ -30,13 +30,11 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def reset_db(db: Session):
     try:
         db.query(Reservation).all()
-        db.query(User).delete()
         db.query(TicketType).delete()
         db.query(SeatGroup).delete()
         db.query(Stage).delete()
-        print("before", db.query(Event).all())
         db.query(Event).delete()
-        print("after", db.query(Event).all())
+        db.query(User).delete()
         db.commit()
     except Exception as e:
         db.rollback()
