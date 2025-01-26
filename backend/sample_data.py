@@ -4,15 +4,81 @@ from models import Event, Stage, SeatGroup, TicketType, Reservation, User
 from passlib.context import CryptContext
 from datetime import datetime
 import random
+from config import (
+    ADMIN_EMAIL,
+    ADMIN_PASSWORD,
+    RESET_DB,
+)
 
 # パスワードのハッシュ化
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+# データベース初期化メソッド
+def reset_db(db: Session):
+    db.query(Reservation).delete()
+    db.query(TicketType).delete()
+    db.query(SeatGroup).delete()
+    db.query(Stage).delete()
+    db.query(Event).delete()
+    db.query(User).delete()
+    db.commit()
+
+
+# サンプルデータ挿入メソッド
 def initialize_sample_data(db: Session):
+    if db.query(Event).first():
+        print("サンプルデータが既に挿入されています。")
+        return
+
+    # データベースを初期化
+    if RESET_DB.lower() == "true":
+        try:
+            reset_db(db)
+            print("データベースを初期化しました。")
+        except Exception as e:
+            print(f"データベースの初期化中にエラーが発生しました: {e}")
+            db.rollback()
+            return
+
+    # 管理者ユーザーの確認と作成
+    admin_email = ADMIN_EMAIL
+    admin_password = ADMIN_PASSWORD
+    hashed_password_admin = pwd_context.hash(admin_password)
+
+    admin = User(
+        email=admin_email,
+        nickname="管理者",
+        password_hash=hashed_password_admin,
+        is_admin=True,
+    )
+    try:
+        db.add(admin)
+        db.commit()
+        print("管理者ユーザーを作成しました。")
+    except Exception as e:
+        print(f"管理者ユーザーの作成中にエラーが発生しました: {e}")
+        db.rollback()
+        return
+
     # サンプルユーザー作成
     hashed_password_user = pwd_context.hash("userpassword")
+    sample_user = User(
+        email="sample@example.com",
+        nickname="能登 ながと",
+        password_hash=hashed_password_user,
+        is_admin=False,
+    )
+    try:
+        db.add(sample_user)
+        db.commit()
+        print("サンプルユーザーを作成しました。")
+    except Exception as e:
+        print(f"サンプルユーザーの作成中にエラーが発生しました: {e}")
+        db.rollback()
+        return
 
+    # その他のサンプルユーザー作成
     names_with_emails = [
         {"name": "星野俊介", "email": "shadow_sunset@gmail.com"},
         {"name": "吉田祥", "email": "violet_whale@gmail.com"},
@@ -76,26 +142,23 @@ def initialize_sample_data(db: Session):
         {"name": "", "email": "parrot_zeal@gmail.com"},
     ]
 
-    sample_user = db.query(User).filter(User.email == "sample.example.com").first()
-    if not sample_user:
-        sample_user = User(
-            email="sample@example.com",
-            nickname="能登 ながと",
-            password_hash=hashed_password_user,
+    users = []
+    for data in names_with_emails:
+        user = User(
+            email=data["email"],
+            nickname=data["name"],
+            password_hash=pwd_context.hash("password"),
             is_admin=False,
         )
-        db.add(sample_user)
-
-    for data in names_with_emails:
-        if not db.query(User).filter(User.email == data["email"]).first():
-            user = User(
-                email=data["email"],
-                nickname=data["name"],
-                password_hash=hashed_password_user,
-                is_admin=False,
-            )
-            db.add(user)
-    db.commit()
+        users.append(user)
+    try:
+        db.add_all(users)
+        db.commit()
+        print("その他のサンプルユーザーを作成しました。")
+    except Exception as e:
+        print(f"その他のサンプルユーザーの作成中にエラーが発生しました: {e}")
+        db.rollback()
+        return
 
     # サンプルイベント作成
     event_data = [
@@ -124,179 +187,187 @@ def initialize_sample_data(db: Session):
         ),
     ]
 
+    events = []
     for data in event_data:
-        if not db.query(Event).filter(Event.name == data.name).first():
-            event = Event(name=data.name, description=data.description)
-            db.add(event)
-
-    db.commit()
+        event = Event(name=data.name, description=data.description)
+        events.append(event)
+    try:
+        db.add_all(events)
+        db.commit()
+        print("サンプルイベントを作成しました。")
+    except Exception as e:
+        print(f"サンプルイベントの作成中にエラーが発生しました: {e}")
+        db.rollback()
+        return
 
     # サンプルステージ作成
     events = db.query(Event).all()
     stages = []
     for event in events:
         if event.name == "君に触れなくてよかった":
-            if not db.query(Stage).filter(Stage.event_id == event.id).first():
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2024, 11, 9, 1),
-                        end_time=datetime(2024, 11, 9, 3),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2024, 11, 9, 5),
-                        end_time=datetime(2024, 11, 9, 7),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2024, 11, 10, 4),
-                        end_time=datetime(2024, 11, 10, 6),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2024, 11, 10, 8),
-                        end_time=datetime(2024, 11, 10, 10),
-                    )
-                )
-        elif event.name == "永遠みたいな舞台":
-            if not db.query(Stage).filter(Stage.event_id == event.id).first():
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2025, 2, 17, 10),
-                        end_time=datetime(2025, 2, 17, 12),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2025, 2, 18, 4),
-                        end_time=datetime(2025, 2, 18, 6),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2025, 2, 18, 8),
-                        end_time=datetime(2025, 2, 18, 10),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2025, 2, 19, 3),
-                        end_time=datetime(2025, 2, 19, 5),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2025, 2, 19, 7),
-                        end_time=datetime(2025, 2, 19, 9),
-                    )
-                )
-        elif event.name == "明け方の道":
-            if not db.query(Stage).filter(Stage.event_id == event.id).first():
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2025, 4, 23, 1),
-                        end_time=datetime(2025, 4, 23, 3),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2025, 4, 23, 5),
-                        end_time=datetime(2025, 4, 23, 7),
-                    )
-                )
-                stages.append(
-                    Stage(
-                        event_id=event.id,
-                        start_time=datetime(2025, 4, 23, 9),
-                        end_time=datetime(2025, 4, 23, 11),
-                    )
-                )
 
-    db.add_all(stages)
-    db.commit()
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2024, 11, 9, 1),
+                    end_time=datetime(2024, 11, 9, 3),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2024, 11, 9, 5),
+                    end_time=datetime(2024, 11, 9, 7),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2024, 11, 10, 4),
+                    end_time=datetime(2024, 11, 10, 6),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2024, 11, 10, 8),
+                    end_time=datetime(2024, 11, 10, 10),
+                )
+            )
+        elif event.name == "永遠みたいな舞台":
+
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2025, 2, 17, 10),
+                    end_time=datetime(2025, 2, 17, 12),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2025, 2, 18, 4),
+                    end_time=datetime(2025, 2, 18, 6),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2025, 2, 18, 8),
+                    end_time=datetime(2025, 2, 18, 10),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2025, 2, 19, 3),
+                    end_time=datetime(2025, 2, 19, 5),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2025, 2, 19, 7),
+                    end_time=datetime(2025, 2, 19, 9),
+                )
+            )
+        elif event.name == "明け方の道":
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2025, 4, 23, 1),
+                    end_time=datetime(2025, 4, 23, 3),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2025, 4, 23, 5),
+                    end_time=datetime(2025, 4, 23, 7),
+                )
+            )
+            stages.append(
+                Stage(
+                    event_id=event.id,
+                    start_time=datetime(2025, 4, 23, 9),
+                    end_time=datetime(2025, 4, 23, 11),
+                )
+            )
+
+    try:
+        db.add_all(stages)
+        db.commit()
+        print("サンプルステージを作成しました。")
+    except Exception as e:
+        print(f"サンプルステージの作成中にエラーが発生しました: {e}")
+        db.rollback()
+        return
 
     # サンプルシートグループ作成
     stages = db.query(Stage).all()
     seat_groups = []
     for stage in stages:
-        if not db.query(SeatGroup).filter(SeatGroup.stage_id == stage.id).first():
-            if (
-                stage.start_time.date() == datetime(2024, 11, 9).date()
-                or stage.start_time.date() == datetime(2024, 11, 10).date()
-            ):
-                seat_groups.append(SeatGroup(stage_id=stage.id, capacity=120))  # 一般席
-                seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
-            elif (
-                stage.start_time.date() == datetime(2025, 2, 17).date()
-                or stage.start_time.date() == datetime(2025, 2, 18).date()
-                or stage.start_time.date() == datetime(2025, 2, 19).date()
-            ):
-                seat_groups.append(SeatGroup(stage_id=stage.id, capacity=100))  # 一般席
-                seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
-            elif stage.start_time.date() == datetime(2025, 4, 23).date():
-                seat_groups.append(SeatGroup(stage_id=stage.id, capacity=200))  # 一般席
-                seat_groups.append(SeatGroup(stage_id=stage.id, capacity=10))  # S席
+        if (
+            stage.start_time.date() == datetime(2024, 11, 9).date()
+            or stage.start_time.date() == datetime(2024, 11, 10).date()
+        ):
+            seat_groups.append(SeatGroup(stage_id=stage.id, capacity=120))  # 一般席
+            seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
+        elif (
+            stage.start_time.date() == datetime(2025, 2, 17).date()
+            or stage.start_time.date() == datetime(2025, 2, 18).date()
+            or stage.start_time.date() == datetime(2025, 2, 19).date()
+        ):
+            seat_groups.append(SeatGroup(stage_id=stage.id, capacity=100))  # 一般席
+            seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
+        elif stage.start_time.date() == datetime(2025, 4, 23).date():
+            seat_groups.append(SeatGroup(stage_id=stage.id, capacity=200))  # 一般席
+            seat_groups.append(SeatGroup(stage_id=stage.id, capacity=10))  # S席
 
-    db.add_all(seat_groups)
-    db.commit()
+    try:
+        db.add_all(seat_groups)
+        db.commit()
+        print("サンプルシートグループを作成しました。")
+    except Exception as e:
+        print(f"サンプルシートグループの作成中にエラーが発生しました: {e}")
+        db.rollback()
+        return
 
     # サンプルチケットタイプ作成
     seat_groups = db.query(SeatGroup).all()
     ticket_types = []
     for seat_group in seat_groups:
-        if (
-            not db.query(TicketType)
-            .filter(TicketType.seat_group_id == seat_group.id)
-            .first()
-        ):
-            if seat_group.capacity == 120 or seat_group.capacity == 100:
-                ticket_types.append(
-                    TicketType(
-                        seat_group_id=seat_group.id, type_name="一般", price=3000
-                    )
-                )
-                ticket_types.append(
-                    TicketType(
-                        seat_group_id=seat_group.id, type_name="学生", price=2200
-                    )
-                )
-            elif seat_group.capacity == 200:
-                ticket_types.append(
-                    TicketType(
-                        seat_group_id=seat_group.id, type_name="一般", price=2800
-                    )
-                )
-                ticket_types.append(
-                    TicketType(
-                        seat_group_id=seat_group.id, type_name="学生", price=2000
-                    )
-                )
-                ticket_types.append(
-                    TicketType(
-                        seat_group_id=seat_group.id, type_name="当日", price=3000
-                    )
-                )
-            elif seat_group.capacity <= 10:
-                ticket_types.append(
-                    TicketType(seat_group_id=seat_group.id, type_name="S席", price=4000)
-                )
 
-    db.add_all(ticket_types)
-    db.commit()
+        if seat_group.capacity == 120 or seat_group.capacity == 100:
+            ticket_types.append(
+                TicketType(seat_group_id=seat_group.id, type_name="一般", price=3000)
+            )
+            ticket_types.append(
+                TicketType(seat_group_id=seat_group.id, type_name="学生", price=2200)
+            )
+        elif seat_group.capacity == 200:
+            ticket_types.append(
+                TicketType(seat_group_id=seat_group.id, type_name="一般", price=2800)
+            )
+            ticket_types.append(
+                TicketType(seat_group_id=seat_group.id, type_name="学生", price=2000)
+            )
+            ticket_types.append(
+                TicketType(seat_group_id=seat_group.id, type_name="当日", price=3000)
+            )
+        elif seat_group.capacity <= 10:
+            ticket_types.append(
+                TicketType(seat_group_id=seat_group.id, type_name="S席", price=4000)
+            )
+
+    try:
+        db.add_all(ticket_types)
+        db.commit()
+        print("サンプルチケットタイプを作成しました。")
+    except Exception as e:
+        print(f"サンプルチケットタイプの作成中にエラーが発生しました: {e}")
+        db.rollback()
+        return
 
     # サンプル予約作成
     # シートグループの残席を管理
@@ -304,56 +375,59 @@ def initialize_sample_data(db: Session):
 
     # 予約データを作成
     reservations = []
-    if not db.query(Reservation).first():
-        users = db.query(User).all()
-        for _ in range(100):
-            try:
-                # 使用可能なチケットタイプを検索
-                ticket_type = None
-                for tt in random.sample(
-                    ticket_types, len(ticket_types)
-                ):  # ランダムな順番でチケットタイプを探索
-                    if seat_group_capacity[tt.seat_group_id] > 0:
-                        ticket_type = tt
-                        break
+    users = db.query(User).all()
+    for _ in range(100):
+        try:
+            # 使用可能なチケットタイプを検索
+            ticket_type = None
+            for tt in random.sample(
+                ticket_types, len(ticket_types)
+            ):  # ランダムな順番でチケットタイプを探索
+                if seat_group_capacity[tt.seat_group_id] > 0:
+                    ticket_type = tt
+                    break
 
-                # 使用可能なチケットタイプがない場合はスキップ
-                if not ticket_type:
-                    print("残席があるチケットタイプが見つかりませんでした。")
-                    continue
+            # 使用可能なチケットタイプがない場合はスキップ
+            if not ticket_type:
+                print("残席があるチケットタイプが見つかりませんでした。")
+                continue
 
-                # シートグループの残席を取得
-                seat_group_id = ticket_type.seat_group_id
-                available_seats = seat_group_capacity[seat_group_id]
+            # シートグループの残席を取得
+            seat_group_id = ticket_type.seat_group_id
+            available_seats = seat_group_capacity[seat_group_id]
 
-                # 残席以内で予約人数を決定
-                num_attendees = random.randint(1, min(5, available_seats))
-                user = random.choice(users)
+            # 残席以内で予約人数を決定
+            num_attendees = random.randint(1, min(5, available_seats))
+            user = random.choice(users)
 
-                # 予約を作成
-                reservations.append(
-                    Reservation(
-                        ticket_type_id=ticket_type.id,
-                        user_id=user.id,
-                        num_attendees=num_attendees,
-                    )
+            # 予約を作成
+            reservations.append(
+                Reservation(
+                    ticket_type_id=ticket_type.id,
+                    user_id=user.id,
+                    num_attendees=num_attendees,
                 )
+            )
 
-                # 残席を減らす
-                seat_group_capacity[seat_group_id] -= num_attendees
+            # 残席を減らす
+            seat_group_capacity[seat_group_id] -= num_attendees
 
-                # SeatGroupモデルを更新
-                seat_group = (
-                    db.query(SeatGroup).filter(SeatGroup.id == seat_group_id).first()
-                )
-                if seat_group:
-                    seat_group.capacity -= num_attendees
-                    db.commit()  # データベースに保存
-            except Exception as e:
-                print(f"予約の作成中にエラーが発生しました: {e}")
+            # SeatGroupモデルを更新
+            seat_group = (
+                db.query(SeatGroup).filter(SeatGroup.id == seat_group_id).first()
+            )
+            if seat_group:
+                seat_group.capacity -= num_attendees
+                db.commit()  # データベースに保存
+        except Exception as e:
+            print(f"予約の作成中にエラーが発生しました: {e}")
 
         # データベースに予約を保存
-        db.add_all(reservations)
-        db.commit()
-
-    print("サンプルデータが正常に挿入されました。")
+        try:
+            db.add_all(reservations)
+            db.commit()
+            print("サンプル予約を作成しました。")
+        except Exception as e:
+            print(f"サンプル予約の作成中にエラーが発生しました: {e}")
+            db.rollback()
+            return

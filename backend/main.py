@@ -4,13 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from config import (
     SessionLocal,
-    ADMIN_EMAIL,
-    ADMIN_PASSWORD,
     INSERT_SAMPLE_DATA,
     CORS_ORIGINS,
-    RESET_DB,
 )
-from models import Event, User, TicketType, SeatGroup, Stage, Reservation
 from routes.auth import auth_router
 from routes.event import event_router
 from routes.stage import stage_router
@@ -32,51 +28,12 @@ async def lifespan(app: FastAPI):
     print("アプリケーションを起動します。")
     db: Session = SessionLocal()
     try:
-        if RESET_DB.lower() == "true":
-            db.query(Reservation).delete()
-            db.query(TicketType).delete()
-            db.query(SeatGroup).delete()
-            db.query(Stage).delete()
-            db.query(Event).delete()
-            db.query(User).delete()
-            db.commit()
-            print("データベースを初期化しました。")
-
-        # 管理者ユーザーの確認と作成
-        admin_email = ADMIN_EMAIL
-        admin_password = ADMIN_PASSWORD
-        hashed_password_admin = pwd_context.hash(admin_password)
-
-        admin = db.query(User).filter(User.email == admin_email).first()
-        if not admin:
-            admin = User(
-                email=admin_email,
-                nickname="管理者",
-                password_hash=hashed_password_admin,
-                is_admin=True,
-            )
-            db.add(admin)
-            db.commit()
-            db.refresh(admin)
-            print("管理者ユーザーを作成しました。")
-        else:
-            print("管理者ユーザーは既に存在しています。")
-
-        # サンプルデータの挿入
-        if INSERT_SAMPLE_DATA.lower() == "true" and db.query(Event).count() == 0:
+        if INSERT_SAMPLE_DATA.lower() == "true":
             initialize_sample_data(db)
-            print("サンプルデータを挿入しました。")
-        else:
-            print(
-                "既にデータが存在しているため、サンプルデータの挿入をスキップしました。"
-            )
     except Exception as e:
-        print(f"エラーが発生しました: {e}")
-        db.rollback()
-        raise
+        print(e)
     finally:
         db.close()
-        print("セッションを閉じました。")
 
     yield
     print("アプリケーションを終了します。")
