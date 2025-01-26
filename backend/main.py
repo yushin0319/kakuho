@@ -46,13 +46,14 @@ def reset_db(db: Session):
 # ライフスパン
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 起動時の処理
     print("アプリケーションを起動します。")
     db: Session = SessionLocal()
     try:
         if RESET_DB.lower() == "true":
             reset_db(db)
             print("データベースを初期化しました。")
+
+        # 管理者ユーザーの確認と作成
         admin_email = ADMIN_EMAIL
         admin_password = ADMIN_PASSWORD
         hashed_password_admin = pwd_context.hash(admin_password)
@@ -67,25 +68,23 @@ async def lifespan(app: FastAPI):
             )
             db.add(admin)
             db.commit()
-            db.refresh(admin)
             print("管理者ユーザーを作成しました。")
         else:
-            print(admin)
             print("管理者ユーザーは既に存在しています。")
-        if INSERT_SAMPLE_DATA.lower() == "true":
-            if db.query(Event).count() == 0:
-                initialize_sample_data(db)
-                print("サンプルデータを挿入しました。")
-            else:
-                print(
-                    "既にデータが存在しています。サンプルデータの挿入はスキップします。"
-                )
+
+        # サンプルデータの挿入
+        if INSERT_SAMPLE_DATA.lower() == "true" and db.query(Event).count() == 0:
+            initialize_sample_data(db)
+            print("サンプルデータを挿入しました。")
+        else:
+            print(
+                "既にデータが存在しているため、サンプルデータの挿入をスキップしました。"
+            )
     finally:
         db.close()
+        print("セッションを閉じました。")
 
     yield
-
-    # 終了時の処理
     print("アプリケーションを終了します。")
 
 
