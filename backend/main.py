@@ -35,6 +35,7 @@ def reset_db(db: Session):
     db.query(Stage).delete()
     db.query(Event).delete()
     db.commit()
+    db.close()
 
 
 # ライフスパン
@@ -47,6 +48,7 @@ async def lifespan(app: FastAPI):
         if RESET_DB.lower() == "true":
             reset_db(db)
             print("データベースを初期化しました。")
+            db: Session = SessionLocal()
         admin_email = ADMIN_EMAIL
         admin_password = ADMIN_PASSWORD
         hashed_password_admin = pwd_context.hash(admin_password)
