@@ -39,12 +39,6 @@ async def lifespan(app: FastAPI):
             db.query(Stage).delete()
             db.query(Event).delete()
             db.query(User).delete()
-            print(db.query(Reservation).count())
-            print(db.query(TicketType).count())
-            print(db.query(SeatGroup).count())
-            print(db.query(Stage).count())
-            print(db.query(Event).count())
-            print(db.query(User).count())
             db.commit()
             print("データベースを初期化しました。")
 
@@ -76,6 +70,10 @@ async def lifespan(app: FastAPI):
             print(
                 "既にデータが存在しているため、サンプルデータの挿入をスキップしました。"
             )
+    except Exception as e:
+        print(f"エラーが発生しました: {e}")
+        db.rollback()
+        raise
     finally:
         db.close()
         print("セッションを閉じました。")
