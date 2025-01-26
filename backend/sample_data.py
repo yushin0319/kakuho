@@ -124,8 +124,8 @@ def initialize_sample_data(db: Session):
     ]
 
     for data in event_data:
-        if not db.query(Event).filter(Event.name == data["name"]).first():
-            event = Event(name=data["name"], description=data["description"])
+        if not db.query(Event).filter(Event.name == data.name).first():
+            event = Event(name=data.name, description=data.description)
             db.add(event)
 
     db.commit()
