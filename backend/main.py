@@ -28,14 +28,19 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # データベース初期化
 def reset_db(db: Session):
-    db.query(Reservation).delete()
-    db.query(User).delete()
-    db.query(TicketType).delete()
-    db.query(SeatGroup).delete()
-    db.query(Stage).delete()
-    db.query(Event).delete()
-    db.commit()
-    db.close()
+    try:
+        db.query(Reservation).delete()
+        db.query(User).delete()
+        db.query(TicketType).delete()
+        db.query(SeatGroup).delete()
+        db.query(Stage).delete()
+        db.query(Event).delete()
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise e
+    finally:
+        db.close()
 
 
 # ライフスパン
@@ -66,6 +71,7 @@ async def lifespan(app: FastAPI):
             db.refresh(admin)
             print("管理者ユーザーを作成しました。")
         else:
+            print(admin)
             print("管理者ユーザーは既に存在しています。")
         if INSERT_SAMPLE_DATA.lower() == "true":
             if db.query(Event).count() == 0:
