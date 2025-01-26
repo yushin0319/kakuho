@@ -76,7 +76,8 @@ def initialize_sample_data(db: Session):
         {"name": "", "email": "parrot_zeal@gmail.com"},
     ]
 
-    if not db.query(User).filter(User.email == "sample@example.com").first():
+    sample_user = db.query(User).filter(User.email == "sample.example.com").first()
+    if not sample_user:
         sample_user = User(
             email="sample@example.com",
             nickname="能登 ながと",
