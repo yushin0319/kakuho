@@ -14,6 +14,7 @@ INSERT_SAMPLE_DATA = os.getenv("INSERT_SAMPLE_DATA")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 CORS_ORIGINS = os.getenv("CORS_ORIGINS").split(",")
+RESET_DB = os.getenv("RESET_DB")
 
 # エンジン作成
 engine = create_engine(DATABASE_URL)

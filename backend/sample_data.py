@@ -135,87 +135,87 @@ def initialize_sample_data(db: Session):
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2024, 11, 9, 10),
-                    end_time=datetime(2024, 11, 9, 12),
+                    start_time=datetime(2024, 11, 9, 1),
+                    end_time=datetime(2024, 11, 9, 3),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2024, 11, 9, 14),
-                    end_time=datetime(2024, 11, 9, 16),
+                    start_time=datetime(2024, 11, 9, 5),
+                    end_time=datetime(2024, 11, 9, 7),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2024, 11, 10, 13),
-                    end_time=datetime(2024, 11, 10, 15),
+                    start_time=datetime(2024, 11, 10, 4),
+                    end_time=datetime(2024, 11, 10, 6),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2024, 11, 10, 17),
-                    end_time=datetime(2024, 11, 10, 19),
+                    start_time=datetime(2024, 11, 10, 8),
+                    end_time=datetime(2024, 11, 10, 10),
                 )
             )
         elif event.name == "永遠みたいな舞台":
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 17, 19),
-                    end_time=datetime(2025, 2, 17, 21),
+                    start_time=datetime(2025, 2, 17, 10),
+                    end_time=datetime(2025, 2, 17, 12),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 18, 13),
-                    end_time=datetime(2025, 2, 18, 15),
+                    start_time=datetime(2025, 2, 18, 4),
+                    end_time=datetime(2025, 2, 18, 6),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 18, 17),
-                    end_time=datetime(2025, 2, 18, 19),
+                    start_time=datetime(2025, 2, 18, 8),
+                    end_time=datetime(2025, 2, 18, 10),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 19, 12),
-                    end_time=datetime(2025, 2, 19, 14),
+                    start_time=datetime(2025, 2, 19, 3),
+                    end_time=datetime(2025, 2, 19, 5),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 19, 16),
-                    end_time=datetime(2025, 2, 19, 18),
+                    start_time=datetime(2025, 2, 19, 7),
+                    end_time=datetime(2025, 2, 19, 9),
                 )
             )
         elif event.name == "明け方の道":
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 4, 23, 10),
-                    end_time=datetime(2025, 4, 23, 12),
+                    start_time=datetime(2025, 4, 23, 1),
+                    end_time=datetime(2025, 4, 23, 3),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 4, 23, 14),
-                    end_time=datetime(2025, 4, 23, 16),
+                    start_time=datetime(2025, 4, 23, 5),
+                    end_time=datetime(2025, 4, 23, 7),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 4, 23, 18),
-                    end_time=datetime(2025, 4, 23, 20),
+                    start_time=datetime(2025, 4, 23, 9),
+                    end_time=datetime(2025, 4, 23, 11),
                 )
             )
 

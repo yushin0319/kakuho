@@ -8,8 +8,9 @@ from config import (
     ADMIN_PASSWORD,
     INSERT_SAMPLE_DATA,
     CORS_ORIGINS,
+    RESET_DB,
 )
-from models import Event, User
+from models import Event, User, TicketType, SeatGroup, Stage, Reservation
 from routes.auth import auth_router
 from routes.event import event_router
 from routes.stage import stage_router
@@ -25,12 +26,27 @@ from contextlib import asynccontextmanager
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+# データベース初期化
+def reset_db(db: Session):
+    db.query(Reservation).delete()
+    db.query(User).delete()
+    db.query(TicketType).delete()
+    db.query(SeatGroup).delete()
+    db.query(Stage).delete()
+    db.query(Event).delete()
+    db.commit()
+
+
+# ライフスパン
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 起動時の処理
     print("アプリケーションを起動します。")
     db: Session = SessionLocal()
     try:
+        if RESET_DB.lower() == "true":
+            reset_db(db)
+            print("データベースを初期化しました。")
         admin_email = ADMIN_EMAIL
         admin_password = ADMIN_PASSWORD
         hashed_password_admin = pwd_context.hash(admin_password)
