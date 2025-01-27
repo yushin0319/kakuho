@@ -84,7 +84,7 @@ const ValidatedDatePicker = ({
                 sx: styles.mobiledialogprops,
               },
               popper: {
-                disablePortal: true,
+                disablePortal: false,
               },
             }}
             minDate={minDate}
