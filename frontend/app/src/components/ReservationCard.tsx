@@ -152,6 +152,10 @@ const ReservationCard = ({
               e.stopPropagation();
               handleChangeClick();
             }}
+            disabled={
+              new Date(stage.start_time).getTime() < Date.now() ||
+              reservation.is_paid
+            }
           >
             変更
           </Button>
@@ -162,6 +166,10 @@ const ReservationCard = ({
               e.stopPropagation();
               handleDeleteClick();
             }}
+            disabled={
+              new Date(stage.start_time).getTime() < Date.now() ||
+              reservation.is_paid
+            }
           >
             削除
           </Button>
