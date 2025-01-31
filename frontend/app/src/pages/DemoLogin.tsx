@@ -57,9 +57,14 @@ const DemoLogin = () => {
       <Typography variant="body1" sx={{ mt: 5, color: "text.secondary" }}>
         体験モード
       </Typography>
-      <Typography variant="caption" color="text.secondary">
-        以下のボタンで、サンプルアカウントでログインします。
-      </Typography>
+      <Box display="flex" justifyContent="center" flexDirection="column">
+        <Typography variant="caption" color="text.secondary">
+          以下のボタンで、サンプルアカウントでログインします。
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          ログインまで数秒かかる場合があります。
+        </Typography>
+      </Box>
 
       <Box
         sx={{

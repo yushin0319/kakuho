@@ -36,7 +36,7 @@ const ReservationList = () => {
         </Typography>
       ) : (
         <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
-          クリックするとQRコードが表示されます
+          タップするとQRコードが表示されます
         </Typography>
       )}
       {reservations
