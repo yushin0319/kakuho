@@ -48,7 +48,7 @@ Kakuho は、イベントの予約・管理を行うシステムです。イベ�
 #### **バックエンドの `.env` 設定**
 
 ```env
-#DATABASE_URL=データベースのURL
+DATABASE_URL=データベースのURL
 SECRET_KEY=シークレットキー
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
@@ -62,11 +62,7 @@ RESET_DB=true # データベースをリセットする場合はtrueにする
 #### **フロントエンドの `.env` 設定**
 
 ```env
-# ローカル環境
-#VITE_APP_API_URL=http://127.0.0.1:8000/
-
-# 本番環境
-VITE_APP_API_URL=https://kakuho-backend.onrender.com
+VITE_APP_API_URL=ローカル・本番環境のバックエンドURLURL
 ```
 
 ### **2. バックエンドのセットアップ**
@@ -122,8 +118,7 @@ kakuho/
 │   │   │   ├── context/     # グローバルステート
 │   │   │   ├── pages/       # 画面コンポーネント
 │   │   │   ├── routes/      # ルーティング
-│   │   │   ├── services/    # API 呼び出し
-│   │   │   └── hooks/       # カスタムフック
+│   │   │   └── services/    # API 呼び出し
 │   │   ├── public/          # 静的ファイル
 │   │   ├── package.json     # 依存関係
 │   │   ├── tsconfig.json    # TypeScript 設定
