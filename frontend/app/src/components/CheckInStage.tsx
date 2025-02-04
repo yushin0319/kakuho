@@ -87,7 +87,7 @@ const CheckInStage = ({ stage, isOpen, toggle }: CheckInStageProps) => {
             color="secondary"
             startIcon={<QrCodeIcon />}
             onClick={handleOpenModal}
-            sx={{ mb: 2, width: "80%" }}
+            sx={{ mb: 2 }}
           >
             QR受付
           </Button>

@@ -214,7 +214,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
           予約の存在するステージは削除できません。
         </Typography>
         <Typography variant="caption" color="text.secondary" sx={{ mb: 2 }}>
-          予約管理画面からキャンセルしてください。
+          予約一覧画面からキャンセルしてください。
         </Typography>
 
         {/* ステージ表示 */}

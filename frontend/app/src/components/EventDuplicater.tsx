@@ -53,11 +53,6 @@ const EventDuplicater = ({ event }: { event: EventResponse }) => {
         description: event.description,
       });
       // ステージの複製
-      console.log("raw-date", data.startDate);
-      console.log("normalizeDate", normalizeDate(data.startDate));
-      console.log("eventStartDates", toJSTDate(eventStartDates[event.id]));
-      console.log("toJSTDate", toJSTDate(data.startDate));
-      console.log("diff", diff);
       const stagePromises = stages
         .filter((stage) => stage.event_id === event.id)
         .map(async (stage) => {

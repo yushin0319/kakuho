@@ -25,6 +25,7 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
   );
   const { stages, seatGroups, seatGroupNames, error, reloadData } =
     useAppData();
+  const [changingStage, setChangingStage] = useState<number | null>(null);
   const { setSnack } = useSnack();
 
   // 席数の初期化
@@ -79,20 +80,46 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
         .filter((stage) => stage.event_id === event.id)
         .sort((a, b) => a.start_time.localeCompare(b.start_time))
         .map((stage) => (
-          <Box key={stage.id}>
+          <Box
+            key={stage.id}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
             <Divider
               sx={{
                 mb: 1,
                 backgroundColor: "primary.main",
+                width: "100%",
               }}
             />
-            <Typography variant="h6">
-              {toJST(stage.start_time, "dateTime")}
-            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              width="80%"
+              justifyContent="space-between"
+            >
+              <Typography variant="h6">
+                {toJST(stage.start_time, "dateTime")}
+              </Typography>
+              <Button
+                variant={changingStage === stage.id ? "contained" : "outlined"}
+                color="primary"
+                onClick={() => {
+                  setChangingStage((prev) =>
+                    prev === stage.id ? null : stage.id
+                  );
+                  if (changingStage === stage.id) handleSave();
+                }}
+              >
+                {changingStage === stage.id ? "保存" : "変更"}
+              </Button>
+            </Box>
             {seatGroups
               .filter((sg) => sg.stage_id === stage.id)
               .map((sg) => (
-                <Box key={sg.id}>
+                <Box key={sg.id} width="100%">
                   <Divider sx={{ my: 1 }} />
                   <Grid key={sg.id} container>
                     <Grid
@@ -115,10 +142,11 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
                         }
                         min={0}
                         max={
-                          sg.capacity < 70
-                            ? 100
+                          sg.capacity < 35
+                            ? 50
                             : Math.min(Math.floor(sg.capacity * 1.5), 1000)
                         }
+                        disabled={changingStage !== stage.id}
                       />
                     </Grid>
                     <Grid
@@ -138,10 +166,6 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
               ))}
           </Box>
         ))}
-
-      <Button variant="contained" color="primary" onClick={handleSave}>
-        保存
-      </Button>
     </Box>
   );
 };
