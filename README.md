@@ -62,7 +62,7 @@ RESET_DB=true # データベースをリセットする場合はtrueにする
 #### **フロントエンドの `.env` 設定**
 
 ```env
-VITE_APP_API_URL=ローカル・本番環境のバックエンドURLURL
+VITE_APP_API_URL=ローカル・本番環境のバックエンドURL
 ```
 
 ### **2. バックエンドのセットアップ**
