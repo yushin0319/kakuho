@@ -27,9 +27,6 @@ def reset_db(db: Session):
 
 # サンプルデータ挿入メソッド
 def initialize_sample_data(db: Session):
-    if db.query(Event).first():
-        print("サンプルデータが既に挿入されています。")
-        return
 
     # データベースを初期化
     if RESET_DB.lower() == "true":
@@ -40,6 +37,10 @@ def initialize_sample_data(db: Session):
             print(f"データベースの初期化中にエラーが発生しました: {e}")
             db.rollback()
             return
+
+    if db.query(Event).first():
+        print("サンプルデータが既に挿入されています。")
+        return
 
     # 管理者ユーザーの確認と作成
     admin_email = ADMIN_EMAIL
