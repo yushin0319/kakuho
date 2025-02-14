@@ -239,36 +239,36 @@ def initialize_sample_data(db: Session):
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 17, 10),
-                    end_time=datetime(2025, 2, 17, 12),
+                    start_time=datetime(2025, 3, 17, 10),
+                    end_time=datetime(2025, 3, 17, 12),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 18, 4),
-                    end_time=datetime(2025, 2, 18, 6),
+                    start_time=datetime(2025, 3, 18, 4),
+                    end_time=datetime(2025, 3, 18, 6),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 18, 8),
-                    end_time=datetime(2025, 2, 18, 10),
+                    start_time=datetime(2025, 3, 18, 8),
+                    end_time=datetime(2025, 3, 18, 10),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 19, 3),
-                    end_time=datetime(2025, 2, 19, 5),
+                    start_time=datetime(2025, 3, 19, 3),
+                    end_time=datetime(2025, 3, 19, 5),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 2, 19, 7),
-                    end_time=datetime(2025, 2, 19, 9),
+                    start_time=datetime(2025, 3, 19, 7),
+                    end_time=datetime(2025, 3, 19, 9),
                 )
             )
         elif event.name == "明け方の道":
@@ -314,9 +314,9 @@ def initialize_sample_data(db: Session):
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=120))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
         elif (
-            stage.start_time.date() == datetime(2025, 2, 17).date()
-            or stage.start_time.date() == datetime(2025, 2, 18).date()
-            or stage.start_time.date() == datetime(2025, 2, 19).date()
+            stage.start_time.date() == datetime(2025, 3, 17).date()
+            or stage.start_time.date() == datetime(2025, 3, 18).date()
+            or stage.start_time.date() == datetime(2025, 3, 19).date()
         ):
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=100))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
