@@ -90,7 +90,7 @@ npm run dev  # 開発サーバー起動
    - `DATABASE_URL` を `.env` に設定
    - FastAPI アプリを Render にデプロイ
    - build command に pip install poetry && poetry install --only=main --no-root を指定
-   - start command に poetry run gunicorn -w 2 -k uvicorn.workers.UvicornWorker main:app を指定
+   - start command に poetry run alembic upgrade head && poetry run gunicorn -w 1 -k uvicorn.workers.UvicornWorker --timeout 120 main:app を指定
 
 2. **フロントエンド**
    - Render の static site で作成

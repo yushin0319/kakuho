@@ -240,58 +240,58 @@ def initialize_sample_data(db: Session):
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 3, 17, 10),
-                    end_time=datetime(2025, 3, 17, 12),
+                    start_time=datetime(2025, 4, 1, 10),
+                    end_time=datetime(2025, 4, 1, 12),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 3, 18, 4),
-                    end_time=datetime(2025, 3, 18, 6),
+                    start_time=datetime(2025, 4, 2, 4),
+                    end_time=datetime(2025, 4, 2, 6),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 3, 18, 8),
-                    end_time=datetime(2025, 3, 18, 10),
+                    start_time=datetime(2025, 4, 2, 8),
+                    end_time=datetime(2025, 4, 2, 10),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 3, 19, 3),
-                    end_time=datetime(2025, 3, 19, 5),
+                    start_time=datetime(2025, 4, 3, 3),
+                    end_time=datetime(2025, 4, 3, 5),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 3, 19, 7),
-                    end_time=datetime(2025, 3, 19, 9),
+                    start_time=datetime(2025, 4, 3, 7),
+                    end_time=datetime(2025, 4, 3, 9),
                 )
             )
         elif event.name == "明け方の道":
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 4, 23, 1),
-                    end_time=datetime(2025, 4, 23, 3),
+                    start_time=datetime(2025, 5, 3, 1),
+                    end_time=datetime(2025, 5, 3, 3),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 4, 23, 5),
-                    end_time=datetime(2025, 4, 23, 7),
+                    start_time=datetime(2025, 5, 3, 5),
+                    end_time=datetime(2025, 5, 3, 7),
                 )
             )
             stages.append(
                 Stage(
                     event_id=event.id,
-                    start_time=datetime(2025, 4, 23, 9),
-                    end_time=datetime(2025, 4, 23, 11),
+                    start_time=datetime(2025, 5, 3, 9),
+                    end_time=datetime(2025, 5, 3, 11),
                 )
             )
 
@@ -315,13 +315,13 @@ def initialize_sample_data(db: Session):
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=120))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
         elif (
-            stage.start_time.date() == datetime(2025, 3, 17).date()
-            or stage.start_time.date() == datetime(2025, 3, 18).date()
-            or stage.start_time.date() == datetime(2025, 3, 19).date()
+            stage.start_time.date() == datetime(2025, 4, 1).date()
+            or stage.start_time.date() == datetime(2025, 4, 2).date()
+            or stage.start_time.date() == datetime(2025, 4, 3).date()
         ):
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=100))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
-        elif stage.start_time.date() == datetime(2025, 4, 23).date():
+        elif stage.start_time.date() == datetime(2025, 5, 3).date():
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=200))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=10))  # S席
 
