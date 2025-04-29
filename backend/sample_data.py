@@ -315,13 +315,13 @@ def initialize_sample_data(db: Session):
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=120))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
         elif (
-            stage.start_time.date() == datetime(2025, 5, 1).date()
-            or stage.start_time.date() == datetime(2025, 5, 2).date()
-            or stage.start_time.date() == datetime(2025, 5, 3).date()
+            stage.start_time.date() == datetime(2025, 6, 1).date()
+            or stage.start_time.date() == datetime(2025, 6, 2).date()
+            or stage.start_time.date() == datetime(2025, 6, 3).date()
         ):
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=100))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=5))  # S席
-        elif stage.start_time.date() == datetime(2025, 6, 3).date():
+        elif stage.start_time.date() == datetime(2025, 7, 3).date():
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=200))  # 一般席
             seat_groups.append(SeatGroup(stage_id=stage.id, capacity=10))  # S席
 
