@@ -1,10 +1,11 @@
 // src/test/mocks.tsx
-/// <reference types="vitest/globals" />
 // テスト用のモックデータとプロバイダー
+import { vi } from "vitest";
 import { ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { UserResponse, ReservationDetail, EventResponse } from "../services/interfaces";
+import { UserResponse, EventResponse } from "../services/interfaces";
+import { ReservationDetail } from "../context/AppData";
 
 // モックユーザーデータ
 export const mockUser: UserResponse = {
