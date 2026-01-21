@@ -4,3 +4,4 @@ venv/
 __pycache__/
 frontend/dist/
 backend/__pycache__/
+.serena/
