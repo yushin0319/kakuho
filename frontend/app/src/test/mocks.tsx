@@ -1,4 +1,5 @@
 // src/test/mocks.tsx
+/// <reference types="vitest/globals" />
 // テスト用のモックデータとプロバイダー
 import { ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
