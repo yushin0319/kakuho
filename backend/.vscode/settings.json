@@ -1,0 +1,6 @@
+{
+  "python.defaultInterpreterPath": "C:\\Users\\yushi\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\backend-O0uwivTo-py3.11\\Scripts\\python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}"
+  ]
+}
