@@ -23,7 +23,7 @@ class Event(Base):
     name = Column(String, nullable=False)
     description = Column(String)
     # リレーション: イベントには複数のステージが紐付く
-    stages = relationship("Stage", back_populates="event")
+    stages = relationship("Stage", back_populates="event", cascade="all, delete-orphan")
 
 
 class Stage(Base):
@@ -40,7 +40,7 @@ class Stage(Base):
     # リレーション: ステージはイベントに紐付いている
     event = relationship("Event", back_populates="stages")
     # リレーション: ステージには複数のシートグループがある
-    seat_groups = relationship("SeatGroup", back_populates="stage")
+    seat_groups = relationship("SeatGroup", back_populates="stage", cascade="all, delete-orphan")
 
 
 class SeatGroup(Base):
@@ -49,11 +49,12 @@ class SeatGroup(Base):
     id = Column(Integer, primary_key=True)
     stage_id = Column(Integer, ForeignKey("stages.id"), nullable=False)
     capacity = Column(Integer, nullable=False)
+    total_capacity = Column(Integer, nullable=True)  # 総定員（不変）。capacity は残席数として使用
 
     # リレーション: シートグループはステージに紐付いている
     stage = relationship("Stage", back_populates="seat_groups")
     # リレーション: シートグループには複数のチケットタイプがある
-    ticket_types = relationship("TicketType", back_populates="seat_group")
+    ticket_types = relationship("TicketType", back_populates="seat_group", cascade="all, delete-orphan")
 
 
 class TicketType(Base):
@@ -70,7 +71,7 @@ class TicketType(Base):
     # リレーション: チケットタイプはステージに紐付いている
     seat_group = relationship("SeatGroup", back_populates="ticket_types")
     # リレーション: チケットタイプには複数の予約がある
-    reservations = relationship("Reservation", back_populates="ticket_type")
+    reservations = relationship("Reservation", back_populates="ticket_type", cascade="all, delete-orphan")
 
 
 class Reservation(Base):
@@ -81,7 +82,7 @@ class Reservation(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     num_attendees = Column(Integer, nullable=False)
     is_paid = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # リレーション: 予約はチケットタイプに紐付いている
     ticket_type = relationship("TicketType", back_populates="reservations")
@@ -99,4 +100,4 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
 
     # リレーション: ユーザーは複数の予約を持つ
-    reservations = relationship("Reservation", back_populates="user")
+    reservations = relationship("Reservation", back_populates="user", cascade="all, delete-orphan")

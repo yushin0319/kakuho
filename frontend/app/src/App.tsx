@@ -2,6 +2,7 @@
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./assets/styles/theme";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
 import { AppDataProvider } from "./context/AppData";
 import { AuthProvider } from "./context/AuthContext";
@@ -11,6 +12,7 @@ import AppRouter from "./routes/AppRouter";
 
 const App = () => {
   return (
+    <ErrorBoundary>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <SnackProvider>
@@ -25,6 +27,7 @@ const App = () => {
         </AuthProvider>
       </SnackProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 

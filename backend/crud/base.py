@@ -28,6 +28,8 @@ class BaseCRUD(Generic[ModelType, ResponseSchemaType]):
     # データの削除
     def delete(self, id: int) -> None:
         obj = self.db.query(self.model).filter(self.model.id == id).first()
+        if obj is None:
+            raise ValueError(f"Object with id {id} not found")
         self.db.delete(obj)
         self.db.commit()
         return None

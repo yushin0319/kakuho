@@ -1,4 +1,5 @@
 # backend/routes/ticket_type.py
+import logging
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
@@ -6,6 +7,8 @@ from schemas import TicketTypeCreate, TicketTypeUpdate, TicketTypeResponse, User
 from crud.ticket_type import CrudTicketType
 from crud.seat_group import CrudSeatGroup
 from routes.auth import check_admin, get_current_user
+
+logger = logging.getLogger(__name__)
 
 ticket_type_router = APIRouter()
 
@@ -67,8 +70,16 @@ def create_ticket_type(
     for t in existing_ticket_type:
         if t.type_name == ticket_type.type_name:
             raise HTTPException(status_code=400, detail="Type name already exists")
-    created_ticket_type = ticket_type_crud.create(seat_group_id, ticket_type)
-    return created_ticket_type
+    try:
+        created_ticket_type = ticket_type_crud.create(seat_group_id, ticket_type)
+        return created_ticket_type
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            f"Unexpected error creating ticket_type for seat_group {seat_group_id}: {e}"
+        )
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 # TicketType更新（管理者のみ）
@@ -85,8 +96,14 @@ def update_ticket_type(
     ticket_type_crud = CrudTicketType(db)
     if ticket_type_crud.read_by_id(ticket_type_id) is None:
         raise HTTPException(status_code=404, detail="TicketType not found")
-    updated_ticket_type = ticket_type_crud.update(ticket_type_id, ticket_type)
-    return updated_ticket_type
+    try:
+        updated_ticket_type = ticket_type_crud.update(ticket_type_id, ticket_type)
+        return updated_ticket_type
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error updating ticket_type {ticket_type_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 # TicketType削除（管理者のみ）
@@ -100,4 +117,12 @@ def delete_ticket_type(
     ticket_type_crud = CrudTicketType(db)
     if ticket_type_crud.read_by_id(ticket_type_id) is None:
         raise HTTPException(status_code=404, detail="TicketType not found")
-    ticket_type_crud.delete(ticket_type_id)
+    try:
+        ticket_type_crud.delete(ticket_type_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="TicketType not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error deleting ticket_type {ticket_type_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")

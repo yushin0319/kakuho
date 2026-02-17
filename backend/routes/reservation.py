@@ -1,6 +1,9 @@
 # backend/routes/reservation.py
+import logging
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
+
+logger = logging.getLogger(__name__)
 from config import get_db
 from models import SeatGroup
 from schemas import (
@@ -150,7 +153,8 @@ def create_reservation(
         raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error("create_reservation error: %s", e)
+        raise HTTPException(status_code=500, detail="予約作成中にエラーが発生しました")
 
 
 # Reservation更新（管理者・ユーザー共通）
@@ -171,18 +175,26 @@ def update_reservation(
         raise HTTPException(status_code=404, detail="Reservation not found")
     if not user.is_admin and reservation.user_id != user.id:
         raise HTTPException(status_code=403, detail="Permission denied")
+    # is_paid の更新は管理者のみ許可（C-KK-03）
+    if not user.is_admin and "is_paid" in data.model_fields_set:
+        raise HTTPException(status_code=403, detail="is_paid の変更は管理者のみ可能です")
     try:
         ticket_type = ticket_type_crud.read_by_id(reservation.ticket_type_id)
         seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
-        if data.num_attendees is None:
-            data.num_attendees = reservation.num_attendees
-        delta = reservation.num_attendees - data.num_attendees
-        check_capacity(seat_group, delta)
-        update_capacity(seat_group, delta, db)
+        # num_attendees が指定された場合のみ残席数を調整（M-KK-01）
+        if data.num_attendees is not None:
+            delta = reservation.num_attendees - data.num_attendees
+            check_capacity(seat_group, delta)
+            update_capacity(seat_group, delta, db)
         updated_reservation = reservation_crud.update(reservation_id, data)
         return updated_reservation
+    except HTTPException:
+        db.rollback()
+        raise
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        db.rollback()
+        logger.error("update_reservation error: %s", e)
+        raise HTTPException(status_code=500, detail="予約更新中にエラーが発生しました")
 
 
 # Reservation削除（管理者・ユーザー共通）
@@ -206,5 +218,10 @@ def delete_reservation(
         seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
         update_capacity(seat_group, reservation.num_attendees, db)
         reservation_crud.delete(reservation_id)
+    except HTTPException:
+        db.rollback()
+        raise
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        db.rollback()
+        logger.error("delete_reservation error: %s", e)
+        raise HTTPException(status_code=500, detail="予約削除中にエラーが発生しました")

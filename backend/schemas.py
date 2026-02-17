@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 from datetime import datetime
 
 
@@ -53,10 +53,15 @@ class StageResponse(StageBase):
 # シートグループのスキーマ
 class SeatGroupBase(BaseModel):
     capacity: int
+    total_capacity: int | None = None
 
 
 class SeatGroupCreate(SeatGroupBase):
-    pass
+    @model_validator(mode="after")
+    def set_total_capacity(self) -> "SeatGroupCreate":
+        if self.total_capacity is None:
+            self.total_capacity = self.capacity
+        return self
 
 
 class SeatGroupUpdate(SeatGroupBase):

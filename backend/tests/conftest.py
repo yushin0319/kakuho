@@ -3,6 +3,7 @@ import os
 import pytest
 
 # テスト用環境変数を設定（インポート前に必要）
+os.environ.setdefault("TESTING", "true")
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing")
 os.environ.setdefault("ALGORITHM", "HS256")

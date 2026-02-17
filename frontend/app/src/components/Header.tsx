@@ -7,24 +7,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useAppData } from "../context/AppData";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import UserInfo from "./UserInfo";
 
 const Header = () => {
   const { user } = useAuth(); // 認証情報を取得するフック
-  const { reservations } = useAppData(); // 予約情報を取得するフック
-  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false); // ユーザー情報モーダル
-
-  const goToTopPage = () => {
-    if (reservations.length > 0) {
-      navigate("/my-reservations");
-    } else {
-      navigate("/booking");
-    }
-  };
 
   const handleUserClick = () => {
     setIsModalOpen(true);
@@ -45,22 +34,37 @@ const Header = () => {
         <Box sx={{ display: "flex", gap: 1 }}>
           {user?.is_admin ? (
             <>
-              <Button component={NavLink} to="/check-in-list" color="inherit">
+              <Button
+                component={NavLink}
+                to="/check-in-list"
+                color="inherit"
+                sx={{ "&.active": { borderBottom: "2px solid white" } }}
+              >
                 <Typography variant="caption">予約一覧</Typography>
               </Button>
               <Divider orientation="vertical" flexItem />
-              <Button component={NavLink} to="/manage-user" color="inherit">
+              <Button
+                component={NavLink}
+                to="/manage-user"
+                color="inherit"
+                sx={{ "&.active": { borderBottom: "2px solid white" } }}
+              >
                 <Typography variant="caption">ユーザ一覧</Typography>
               </Button>
               <Divider orientation="vertical" flexItem />
-              <Button component={NavLink} to="/manage-event" color="inherit">
+              <Button
+                component={NavLink}
+                to="/manage-event"
+                color="inherit"
+                sx={{ "&.active": { borderBottom: "2px solid white" } }}
+              >
                 <Typography variant="caption">イベント管理</Typography>
               </Button>
               <Divider orientation="vertical" flexItem />
             </>
           ) : (
             <>
-              <Button onClick={goToTopPage} color="inherit" sx={{ p: 0 }}>
+              <Button component={NavLink} to="/" color="inherit" sx={{ p: 0 }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <img
                     src="logo.png"

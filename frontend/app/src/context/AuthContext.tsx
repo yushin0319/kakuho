@@ -66,9 +66,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // ログアウト関数
+  // ログアウト関数（Cookie削除APIを呼び出し、即座にローカル状態をクリア）
   const logout = () => {
-    apiLogout();
+    apiLogout().catch(console.error);
     setUser(null);
     setIsAuthenticated(false);
   };

@@ -1,4 +1,5 @@
 # backend/routes/user.py
+import logging
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
@@ -14,6 +15,8 @@ from crud.reservation import CrudReservation
 from crud.ticket_type import CrudTicketType
 from crud.seat_group import CrudSeatGroup
 from routes.auth import check_admin, get_current_user
+
+logger = logging.getLogger(__name__)
 
 user_router = APIRouter()
 
@@ -33,8 +36,14 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)) -> UserResponse
     user_crud = CrudUser(db)
     if user_crud.read_by_email(user.email) is not None:
         raise HTTPException(status_code=400, detail="Email already registered")
-    created_user = user_crud.create(user)
-    return created_user
+    try:
+        created_user = user_crud.create(user)
+        return created_user
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error creating user: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 # User取得（管理者・ユーザー共通）
@@ -81,8 +90,14 @@ def update_user(
         update_user = user_crud.read_by_id(user_id)
         if update_user is None:
             raise HTTPException(status_code=404, detail="User not found")
-        updated_user = user_crud.update(user_id, user)
-        return updated_user
+        try:
+            updated_user = user_crud.update(user_id, user)
+            return updated_user
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error updating user {user_id}: {e}")
+            raise HTTPException(status_code=500, detail="Internal Server Error")
     else:
         raise HTTPException(status_code=403, detail="Permission denied")
 
@@ -122,5 +137,10 @@ def delete_user(
             update_capacity(seat_group, reservation.num_attendees, db)
             reservation_crud.delete(reservation.id)
         user_crud.delete(user_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Resource not found")
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Unexpected error deleting user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")

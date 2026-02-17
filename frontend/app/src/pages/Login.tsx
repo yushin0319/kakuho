@@ -64,11 +64,13 @@ const Login = () => {
               name="email"
               label="メールアドレス"
               fieldType="email"
+              autoComplete="email"
             />
             <ValidatedForm
               name="password"
               label="パスワード"
               fieldType="password"
+              autoComplete="current-password"
             />
             <Button
               type="submit"

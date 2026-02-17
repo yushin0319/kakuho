@@ -67,6 +67,7 @@ interface CustomFieldProps {
   variant?: "filled" | "outlined" | "standard";
   size?: "small" | "medium";
   defaultValue?: string;
+  autoComplete?: string;
   sx?: any;
 }
 
@@ -78,6 +79,7 @@ const ValidatedForm = ({
   variant = "outlined",
   size = "medium",
   defaultValue = "",
+  autoComplete,
   sx = {},
 }: CustomFieldProps) => {
   const {
@@ -115,7 +117,17 @@ const ValidatedForm = ({
           {...field}
           label={label}
           fullWidth
-          autoComplete="off"
+          autoComplete={
+            autoComplete !== undefined
+              ? autoComplete
+              : fieldType === "email"
+              ? "email"
+              : fieldType === "password"
+              ? "current-password"
+              : fieldType === "nickname"
+              ? "nickname"
+              : undefined
+          }
           variant={variant}
           size={size}
           disabled={disabled}

@@ -9,20 +9,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true, // HttpOnly Cookie を自動送受信
 });
-
-// リクエスト前にトークンをヘッダーに付与するインターセプター設定
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token"); // 保存されたトークンを取得
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`; // トークンをヘッダーに付与
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 export default api;
