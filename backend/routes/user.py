@@ -108,8 +108,11 @@ def update_user(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    _: None = Depends(check_admin),
+    current_user: UserResponse = Depends(get_current_user),
 ) -> None:
+    if not current_user.is_admin and user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
     user_crud = CrudUser(db)
     reservation_crud = CrudReservation(db)
     ticket_type_crud = CrudTicketType(db)
