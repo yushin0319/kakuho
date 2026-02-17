@@ -31,11 +31,13 @@ jobs:
         run: |
           cd backend
           pip install poetry
-          poetry install
+          poetry install --no-root
       - name: Run backend tests
         env:
+          # CI専用テスト値（本番とは無関係）
+          TESTING: "true"
           DATABASE_URL: postgresql://test:test@localhost:5432/kakuho_test
-          SECRET_KEY: test-secret-key
+          SECRET_KEY: ci-test-only-not-a-real-secret
           ALGORITHM: HS256
           ACCESS_TOKEN_EXPIRE_MINUTES: "30"
           ADMIN_EMAIL: admin@test.com
@@ -59,4 +61,4 @@ jobs:
       - name: Run frontend tests
         run: |
           cd frontend/app
-          npm run test:run
+          npx vitest run
