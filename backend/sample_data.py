@@ -29,7 +29,7 @@ def reset_db(db: Session):
 def initialize_sample_data(db: Session):
 
     # データベースを初期化
-    if RESET_DB.lower() == "true":
+    if RESET_DB:
         try:
             reset_db(db)
             print("データベースを初期化しました。")

@@ -95,7 +95,6 @@ class TicketTypeResponse(TicketTypeBase):
 # 予約のスキーマ
 class ReservationBase(BaseModel):
     num_attendees: int
-    user_id: int
 
 
 class ReservationCreate(ReservationBase):

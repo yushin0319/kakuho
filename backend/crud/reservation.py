@@ -48,10 +48,11 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
         ]
 
     def create(
-        self, ticket_type_id: int, data: ReservationCreate
+        self, ticket_type_id: int, user_id: int, data: ReservationCreate
     ) -> ReservationResponse:
         reservation = Reservation(**data.model_dump())
         reservation.ticket_type_id = ticket_type_id
+        reservation.user_id = user_id
         reservation.created_at = datetime.now()
         self.db.add(reservation)
         self.db.commit()
