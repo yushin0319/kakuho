@@ -77,6 +77,19 @@ alembic upgrade head  # データベースのマイグレーション適用
 uvicorn main:app --reload  # 開発サーバー起動
 ```
 
+### **3. マイグレーション（スキーマ変更時）**
+
+```sh
+cd backend
+# 新しいマイグレーションを作成（モデル変更後に実行）
+alembic revision --autogenerate -m "変更内容の説明"
+# マイグレーションを適用
+alembic upgrade head
+```
+
+- 既存マイグレーション（`0f4670d615b9_fix_migration.py`）は初期スキーマ作成用
+- モデルを変更した場合は必ず新しいマイグレーションを作成すること
+
 ### **3. フロントエンドのセットアップ**
 
 ```sh

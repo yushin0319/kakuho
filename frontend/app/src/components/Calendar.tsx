@@ -1,4 +1,4 @@
-import { Box, Button, Card, Grid2 as Grid, Typography } from "@mui/material";
+import { Box, Button, Card, Chip, Grid2 as Grid, Typography } from "@mui/material";
 import {
   addDays,
   addMonths,
@@ -11,7 +11,7 @@ import {
   subMonths,
 } from "date-fns";
 import { ja } from "date-fns/locale";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppData } from "../context/AppData";
 import { EventResponse, StageResponse } from "../services/interfaces";
 import { toJST, toJSTDate } from "../services/utils";
@@ -56,6 +56,28 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
     setSelectableStages(updatedStages);
   }, [stages, event]);
 
+  // Min-KK-09: 月移動制限のためのステージ最小・最大日を計算
+  const { minStageMonth, maxStageMonth } = useMemo(() => {
+    if (selectableStages.length === 0) {
+      return { minStageMonth: null, maxStageMonth: null };
+    }
+    const dates = selectableStages.map((s) => toJSTDate(s.start_time));
+    const minDate = dates.reduce((min, d) => (d < min ? d : min), dates[0]);
+    const maxDate = dates.reduce((max, d) => (d > max ? d : max), dates[0]);
+    return {
+      minStageMonth: startOfMonth(minDate),
+      maxStageMonth: startOfMonth(maxDate),
+    };
+  }, [selectableStages]);
+
+  const isPrevDisabled =
+    minStageMonth !== null &&
+    startOfMonth(currentDate) <= minStageMonth;
+
+  const isNextDisabled =
+    maxStageMonth !== null &&
+    startOfMonth(currentDate) >= maxStageMonth;
+
   // 週のうち最大ステージ数のある日のステージ数を取得する
   const weeksMax = (day: Date) => {
     const firstDayOfWeek = startOfWeek(day, { weekStartsOn: 1 });
@@ -97,7 +119,11 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
         alignItems="center"
         mb={2}
       >
-        <Button onClick={handlePrevMonth} variant="outlined">
+        <Button
+          onClick={handlePrevMonth}
+          variant="outlined"
+          disabled={isPrevDisabled}
+        >
           前月
         </Button>
         <Typography
@@ -108,7 +134,11 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
         >
           {format(currentDate, "yyyy年M月", { locale: ja })}
         </Typography>
-        <Button onClick={handleNextMonth} variant="outlined">
+        <Button
+          onClick={handleNextMonth}
+          variant="outlined"
+          disabled={isNextDisabled}
+        >
           翌月
         </Button>
       </Box>
@@ -189,24 +219,26 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                       )
                       .sort((a, b) => a.start_time.localeCompare(b.start_time))
                       .map((stage) => {
+                        const soldOut = isSoldOut(stage);
                         return (
                           <Button
                             key={stage.id}
                             variant="contained"
                             sx={{
                               mb: 1,
-                              py: 1,
+                              py: 0.5,
                               minWidth: "90%",
                               width: "90%",
                               backgroundColor: "secondary.main",
                               color: "white",
                               borderRadius: 1,
+                              flexDirection: "column",
                             }}
                             onClick={() => {
                               setSelectedStage(stage);
                               setReservationCreaterOpen(true);
                             }}
-                            disabled={isSoldOut(stage)}
+                            disabled={soldOut}
                           >
                             <Typography
                               variant="body2"
@@ -216,8 +248,20 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                               }}
                             >
                               {toJST(stage.start_time, "time")}
-                              {isSoldOut(stage) && "完売"}
                             </Typography>
+                            {/* Min-KK-10: 完売バッジ */}
+                            {soldOut && (
+                              <Chip
+                                label="完売"
+                                size="small"
+                                color="error"
+                                sx={{
+                                  height: 16,
+                                  fontSize: "0.65rem",
+                                  pointerEvents: "none",
+                                }}
+                              />
+                            )}
                           </Button>
                         );
                       })}

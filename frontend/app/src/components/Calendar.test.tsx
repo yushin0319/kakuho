@@ -119,23 +119,21 @@ describe("Calendar", () => {
     expect(screen.getByText("翌月")).toBeInTheDocument();
   });
 
-  it("前月ボタンクリックで月が切り替わる", async () => {
-    const user = userEvent.setup();
+  it("ステージが同一月のみの場合、前月ボタンが無効化される", () => {
     render(<Calendar {...defaultProps} />, { wrapper: TestWrapper });
 
     // 初期表示は2026年3月（ステージの最も早い日付）
     expect(screen.getByText("2026年3月")).toBeInTheDocument();
 
-    await user.click(screen.getByText("前月"));
-    expect(screen.getByText("2026年2月")).toBeInTheDocument();
+    // 全ステージが3月のため、前月ボタンは無効
+    expect(screen.getByText("前月").closest("button")).toBeDisabled();
   });
 
-  it("翌月ボタンクリックで月が切り替わる", async () => {
-    const user = userEvent.setup();
+  it("ステージが同一月のみの場合、翌月ボタンが無効化される", () => {
     render(<Calendar {...defaultProps} />, { wrapper: TestWrapper });
 
-    await user.click(screen.getByText("翌月"));
-    expect(screen.getByText("2026年4月")).toBeInTheDocument();
+    // 全ステージが3月のため、翌月ボタンは無効
+    expect(screen.getByText("翌月").closest("button")).toBeDisabled();
   });
 
   it("完売ステージは完売と表示される", () => {

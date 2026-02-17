@@ -8,10 +8,9 @@ from schemas import (
     EventUpdate,
     EventResponse,
     EventTimeResponse,
-    UserResponse,
 )
 from crud.event import CrudEvent
-from routes.auth import check_admin, get_current_user
+from routes.auth import check_admin
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +53,8 @@ def read_events(db: Session = Depends(get_db)) -> list[EventResponse]:
 def create_event(
     event: EventCreate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> EventResponse:
-    check_admin(user)
     crud_event = CrudEvent(db)
     try:
         created_event = crud_event.create(event)
@@ -74,9 +72,8 @@ def update_event(
     event_id: int,
     event: EventUpdate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> EventResponse:
-    check_admin(user)
     crud_event = CrudEvent(db)
     if crud_event.read_by_id(event_id) is None:
         raise HTTPException(status_code=404, detail="Event not found")
@@ -95,9 +92,8 @@ def update_event(
 def delete_event(
     event_id: int,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> None:
-    check_admin(user)
     crud_event = CrudEvent(db)
     if crud_event.read_by_id(event_id) is None:
         raise HTTPException(status_code=404, detail="Event not found")

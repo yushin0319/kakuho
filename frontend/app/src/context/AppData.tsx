@@ -82,6 +82,9 @@ export const AppDataProvider = ({
 
     try {
       setTasks((prev) => prev + 1);
+      // TODO: 初期ロードで全エンティティを一括フェッチしている。
+      // パフォーマンス改善として、ページ単位の遅延ロード or
+      // React Query / SWR によるキャッシュ戦略の導入を検討する。
       const [
         eventsData,
         stagesData,

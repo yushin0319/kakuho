@@ -1,7 +1,7 @@
 # backend/crud/base.py
 from typing import TypeVar, Generic
 from sqlalchemy.orm import Session
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from pydantic import BaseModel
 
 ModelType = TypeVar("ModelType", bound=declarative_base)

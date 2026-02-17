@@ -9,7 +9,7 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from datetime import datetime, timezone
 
 
@@ -48,6 +48,7 @@ class SeatGroup(Base):
 
     id = Column(Integer, primary_key=True)
     stage_id = Column(Integer, ForeignKey("stages.id"), nullable=False)
+    name = Column(String, nullable=True)
     capacity = Column(Integer, nullable=False)
     total_capacity = Column(Integer, nullable=True)  # 総定員（不変）。capacity は残席数として使用
 

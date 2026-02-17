@@ -1,13 +1,33 @@
-import { Backdrop, CircularProgress, Typography } from "@mui/material";
+import { Backdrop, Box, CircularProgress, Typography } from "@mui/material";
 
-const LoadingScreen = () => {
+interface LoadingScreenProps {
+  /** fullscreen: 全画面Backdrop（初期ロード用）, inline: コンテンツ内スピナー（データ更新用） */
+  variant?: "fullscreen" | "inline";
+}
+
+const LoadingScreen = ({ variant = "fullscreen" }: LoadingScreenProps) => {
+  if (variant === "inline") {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          py: 4,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Backdrop
-      open={true} // 表示/非表示を制御
+      open={true}
       sx={{
-        color: "#fff", // プログレスとテキストの色
-        zIndex: (theme) => theme.zIndex.modal + 1, // モーダルより上に表示
-        backgroundColor: "rgba(0, 0, 0, 0.5)", // 半透明の背景
+        color: "#fff",
+        zIndex: (theme) => theme.zIndex.modal + 1,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
       }}
     >
       <div style={{ textAlign: "center" }}>

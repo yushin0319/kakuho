@@ -3,10 +3,10 @@ import logging
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
-from schemas import SeatGroupCreate, SeatGroupUpdate, SeatGroupResponse, UserResponse
+from schemas import SeatGroupCreate, SeatGroupUpdate, SeatGroupResponse
 from crud.seat_group import CrudSeatGroup
 from crud.stage import CrudStage
-from routes.auth import check_admin, get_current_user
+from routes.auth import check_admin
 
 logger = logging.getLogger(__name__)
 
@@ -57,9 +57,8 @@ def create_seat_group(
     stage_id: int,
     seat_group: SeatGroupCreate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> SeatGroupResponse:
-    check_admin(user)
     stage_crud = CrudStage(db)
     seat_group_crud = CrudSeatGroup(db)
     if stage_crud.read_by_id(stage_id) is None:
@@ -80,9 +79,8 @@ def update_seat_group(
     seat_group_id: int,
     seat_group: SeatGroupUpdate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> SeatGroupResponse:
-    check_admin(user)
     seat_group_crud = CrudSeatGroup(db)
     if seat_group_crud.read_by_id(seat_group_id) is None:
         raise HTTPException(status_code=404, detail="SeatGroup not found")
@@ -101,9 +99,8 @@ def update_seat_group(
 def delete_seat_group(
     seat_group_id: int,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> None:
-    check_admin(user)
     seat_group_crud = CrudSeatGroup(db)
     if seat_group_crud.read_by_id(seat_group_id) is None:
         raise HTTPException(status_code=404, detail="SeatGroup not found")

@@ -1,5 +1,6 @@
 // app/src/pages/ReservationList.tsx
-import { Container, Typography } from "@mui/material";
+import QrCode2Icon from "@mui/icons-material/QrCode2";
+import { Alert, Box, Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import LoadingScreen from "../components/LoadingScreen";
 import ReservationCard from "../components/ReservationCard";
@@ -27,17 +28,37 @@ const ReservationList = () => {
 
   if (error) return <div>Error: {error}</div>;
 
+  // Min-KK-11: 過去かつ未払いの予約
+  const unpaidPastReservations = reservations.filter(
+    (item) =>
+      new Date(item.stage.start_time) < new Date() &&
+      !item.reservation.is_paid
+  );
+
   return (
     <Container>
-      {loading && <LoadingScreen />}
+      {/* Min-KK-12: データ更新時はインラインスピナー */}
+      {loading && <LoadingScreen variant="inline" />}
+
+      {/* Min-KK-11: 過去未払い予約の案内 */}
+      {unpaidPastReservations.length > 0 && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          お支払いが完了していない予約があります。詳細については主催者にお問い合わせください。
+        </Alert>
+      )}
+
       {reservations.length === 0 ? (
         <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
           予約がありません
         </Typography>
       ) : (
-        <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
-          タップするとQRコードが表示されます
-        </Typography>
+        /* Min-KK-13: QR案内を視覚的に強調 */
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 1 }}>
+          <QrCode2Icon color="primary" fontSize="small" />
+          <Typography variant="body2" color="primary" fontWeight="bold">
+            タップするとQRコードが表示されます
+          </Typography>
+        </Box>
       )}
       {reservations
         .sort(

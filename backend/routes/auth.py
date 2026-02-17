@@ -84,7 +84,14 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
     crud_user = CrudUser(db)
-    user = crud_user.read_by_id(token_data.user_id)
+    # TODO: JWTのサーバー側無効化（ブラックリスト/Redis等）は未実装。
+    # 現在はトークン有効期限（ACCESS_TOKEN_EXPIRE_MINUTES）のみで管理。
+    # セキュリティ要件が高まった場合に実装を検討する。
+    try:
+        user_id_int = int(token_data.user_id)
+    except (ValueError, TypeError):
+        raise credentials_exception
+    user = crud_user.read_by_id(user_id_int)
     if user is None:
         raise credentials_exception
     return UserResponse.model_validate(user)

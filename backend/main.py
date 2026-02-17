@@ -18,11 +18,14 @@ from routes.user import user_router
 from sample_data import initialize_sample_data
 from passlib.context import CryptContext
 from contextlib import asynccontextmanager
+import logging
 import os
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.errors import RateLimitExceeded
+
+logger = logging.getLogger(__name__)
 
 # パスワードのハッシュ化
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -39,18 +42,18 @@ limiter = Limiter(
 # ライフスパン
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("アプリケーションを起動します。")
+    logger.info("アプリケーションを起動します。")
     db: Session = SessionLocal()
     try:
         if INSERT_SAMPLE_DATA:
             initialize_sample_data(db)
     except Exception as e:
-        print(e)
+        logger.error(f"起動時エラー: {e}")
     finally:
         db.close()
 
     yield
-    print("アプリケーションを終了します。")
+    logger.info("アプリケーションを終了します。")
 
 
 app = FastAPI(lifespan=lifespan)
@@ -72,8 +75,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 # ルーターの追加
