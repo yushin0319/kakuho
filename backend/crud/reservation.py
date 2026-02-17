@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from crud.base import BaseCRUD
 from models import Reservation
 from schemas import ReservationCreate, ReservationUpdate, ReservationResponse
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
@@ -53,7 +53,7 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
         reservation = Reservation(**data.model_dump())
         reservation.ticket_type_id = ticket_type_id
         reservation.user_id = user_id
-        reservation.created_at = datetime.now()
+        reservation.created_at = datetime.now(timezone.utc)
         self.db.add(reservation)
         self.db.commit()
         self.db.refresh(reservation)

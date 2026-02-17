@@ -27,8 +27,8 @@ const validationRules = {
   password: {
     required: "パスワードを入力してください",
     minLength: {
-      value: 6,
-      message: "パスワードは6文字以上で入力してください",
+      value: 8,
+      message: "パスワードは8文字以上で入力してください",
     },
     maxLength: {
       value: 20,

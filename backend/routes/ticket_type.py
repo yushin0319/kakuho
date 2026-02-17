@@ -3,10 +3,10 @@ import logging
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
-from schemas import TicketTypeCreate, TicketTypeUpdate, TicketTypeResponse, UserResponse
+from schemas import TicketTypeCreate, TicketTypeUpdate, TicketTypeResponse
 from crud.ticket_type import CrudTicketType
 from crud.seat_group import CrudSeatGroup
-from routes.auth import check_admin, get_current_user
+from routes.auth import check_admin
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +59,8 @@ def create_ticket_type(
     seat_group_id: int,
     ticket_type: TicketTypeCreate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> TicketTypeResponse:
-    check_admin(user)
     seat_group_crud = CrudSeatGroup(db)
     ticket_type_crud = CrudTicketType(db)
     if seat_group_crud.read_by_id(seat_group_id) is None:
@@ -90,9 +89,8 @@ def update_ticket_type(
     ticket_type_id: int,
     ticket_type: TicketTypeUpdate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> TicketTypeResponse:
-    check_admin(user)
     ticket_type_crud = CrudTicketType(db)
     if ticket_type_crud.read_by_id(ticket_type_id) is None:
         raise HTTPException(status_code=404, detail="TicketType not found")
@@ -111,9 +109,8 @@ def update_ticket_type(
 def delete_ticket_type(
     ticket_type_id: int,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> None:
-    check_admin(user)
     ticket_type_crud = CrudTicketType(db)
     if ticket_type_crud.read_by_id(ticket_type_id) is None:
         raise HTTPException(status_code=404, detail="TicketType not found")

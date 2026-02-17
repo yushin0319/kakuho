@@ -67,9 +67,8 @@ def read_user(
 @user_router.get("/users", response_model=list[UserResponse])
 def read_users(
     db: Session = Depends(get_db),
-    current_user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> list[UserResponse]:
-    check_admin(current_user)
     user_crud = CrudUser(db)
     users = user_crud.read_all()
     return users
@@ -109,7 +108,7 @@ def update_user(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> None:
     user_crud = CrudUser(db)
     reservation_crud = CrudReservation(db)
@@ -121,13 +120,9 @@ def delete_user(
     if delete_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # 管理者が一般ユーザーを削除する場合のみ許可
+    # 管理者ユーザーは削除不可
     if delete_user.is_admin:
         raise HTTPException(status_code=400, detail="Cannot delete an admin user")
-
-    # 削除を実行
-    if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="Permission denied")
 
     try:
         reservations = reservation_crud.read_by_user_id(user_id)

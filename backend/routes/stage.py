@@ -3,10 +3,10 @@ import logging
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
-from schemas import StageCreate, StageUpdate, StageResponse, UserResponse
+from schemas import StageCreate, StageUpdate, StageResponse
 from crud.stage import CrudStage
 from crud.event import CrudEvent
-from routes.auth import check_admin, get_current_user
+from routes.auth import check_admin
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +51,8 @@ def create_stage(
     event_id: int,
     stage: StageCreate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> StageResponse:
-    check_admin(user)
     event_crud = CrudEvent(db)
     stage_crud = CrudStage(db)
     if event_crud.read_by_id(event_id) is None:
@@ -78,9 +77,8 @@ def update_stage(
     stage_id: int,
     stage: StageUpdate,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> StageResponse:
-    check_admin(user)
     stage_crud = CrudStage(db)
     if stage_crud.read_by_id(stage_id) is None:
         raise HTTPException(status_code=404, detail="Stage not found")
@@ -99,9 +97,8 @@ def update_stage(
 def delete_stage(
     stage_id: int,
     db: Session = Depends(get_db),
-    user: UserResponse = Depends(get_current_user),
+    _: None = Depends(check_admin),
 ) -> None:
-    check_admin(user)
     stage_crud = CrudStage(db)
     stage = stage_crud.read_by_id(stage_id)
     if stage is None:

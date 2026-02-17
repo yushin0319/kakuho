@@ -20,7 +20,7 @@ class EventUpdate(EventBase):
 class EventResponse(EventBase):
     id: int
 
-    model_config = ConfigDict({"from_attributes": True})
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EventTimeResponse(BaseModel):
@@ -47,11 +47,12 @@ class StageResponse(StageBase):
     id: int
     event_id: int
 
-    model_config = ConfigDict({"from_attributes": True})
+    model_config = ConfigDict(from_attributes=True)
 
 
 # シートグループのスキーマ
 class SeatGroupBase(BaseModel):
+    name: str | None = None
     capacity: int
     total_capacity: int | None = None
 
@@ -72,7 +73,7 @@ class SeatGroupResponse(SeatGroupBase):
     id: int
     stage_id: int
 
-    model_config = ConfigDict({"from_attributes": True})
+    model_config = ConfigDict(from_attributes=True)
 
 
 # チケットタイプのスキーマ
@@ -94,7 +95,7 @@ class TicketTypeResponse(TicketTypeBase):
     id: int
     seat_group_id: int
 
-    model_config = ConfigDict({"from_attributes": True})
+    model_config = ConfigDict(from_attributes=True)
 
 
 # 予約のスキーマ
@@ -118,7 +119,7 @@ class ReservationResponse(ReservationBase):
     ticket_type_id: int
     is_paid: bool
 
-    model_config = ConfigDict({"from_attributes": True})
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ユーザーのスキーマ
@@ -128,7 +129,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=6, max_length=50)
+    password: str = Field(..., min_length=8, max_length=50)
 
 
 class UserUpdate(UserBase):
@@ -141,4 +142,4 @@ class UserResponse(UserBase):
     id: int
     is_admin: bool
 
-    model_config = ConfigDict({"from_attributes": True})
+    model_config = ConfigDict(from_attributes=True)
