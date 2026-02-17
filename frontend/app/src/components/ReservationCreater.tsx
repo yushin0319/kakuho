@@ -44,6 +44,7 @@ const ReservationCreater = ({
   onClose,
 }: ReservationCreaterProps) => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [selectableTicketTypes, setSelectableTicketTypes] = useState<
     TicketTypeResponse[]
   >([]);
@@ -123,6 +124,7 @@ const ReservationCreater = ({
       setAlertMessage("チケットタイプを選択してください");
       return;
     }
+    setApiError(null);
     try {
       const newItem = await createReservation(data.ticketType, {
         num_attendees: data.numAttendees,
@@ -133,15 +135,16 @@ const ReservationCreater = ({
         message: "予約を作成しました",
         severity: "success",
       });
-    } catch (err) {
-      console.error("Reservation create failed:", err);
-      setSnack({
-        message: "予約作成に失敗しました",
-        severity: "error",
-      });
-    } finally {
       reloadData();
       onClose();
+    } catch (err: any) {
+      console.error("Reservation create failed:", err);
+      const detail = err?.response?.data?.detail;
+      setApiError(
+        typeof detail === "string"
+          ? detail
+          : "予約作成に失敗しました。しばらく経ってから再度お試しください。"
+      );
     }
   };
 
@@ -172,6 +175,7 @@ const ReservationCreater = ({
         }}
       >
         {alertMessage && <Alert severity="error">{alertMessage}</Alert>}
+        {apiError && <Alert severity="error">{apiError}</Alert>}
         {phase === "form" ? (
           <Box>
             <Box

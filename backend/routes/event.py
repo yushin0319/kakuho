@@ -1,4 +1,5 @@
 # backend/routes/event.py
+import logging
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
@@ -11,6 +12,8 @@ from schemas import (
 )
 from crud.event import CrudEvent
 from routes.auth import check_admin, get_current_user
+
+logger = logging.getLogger(__name__)
 
 event_router = APIRouter()
 
@@ -55,8 +58,14 @@ def create_event(
 ) -> EventResponse:
     check_admin(user)
     crud_event = CrudEvent(db)
-    created_event = crud_event.create(event)
-    return created_event
+    try:
+        created_event = crud_event.create(event)
+        return created_event
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error creating event: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 # Event更新（管理者のみ）
@@ -71,8 +80,14 @@ def update_event(
     crud_event = CrudEvent(db)
     if crud_event.read_by_id(event_id) is None:
         raise HTTPException(status_code=404, detail="Event not found")
-    updated_event = crud_event.update(event_id, event)
-    return updated_event
+    try:
+        updated_event = crud_event.update(event_id, event)
+        return updated_event
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error updating event {event_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 # Event削除（管理者のみ）
@@ -86,4 +101,12 @@ def delete_event(
     crud_event = CrudEvent(db)
     if crud_event.read_by_id(event_id) is None:
         raise HTTPException(status_code=404, detail="Event not found")
-    crud_event.delete(event_id)
+    try:
+        crud_event.delete(event_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Event not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error deleting event {event_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")

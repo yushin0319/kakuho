@@ -21,7 +21,15 @@ export const SnackProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
       <Snackbar
         open={snack !== null}
-        autoHideDuration={1000}
+        autoHideDuration={
+          snack?.severity === "error"
+            ? 6000
+            : snack?.severity === "warning"
+              ? 5000
+              : snack?.severity === "info"
+                ? 4000
+                : 3000
+        }
         onClose={() => setSnack(null)}
       >
         <Alert severity={snack?.severity} sx={{ width: "100%" }}>

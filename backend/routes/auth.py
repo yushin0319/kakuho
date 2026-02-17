@@ -1,6 +1,7 @@
 # backend/routes/auth.py
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, Cookie, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
@@ -9,14 +10,6 @@ from pydantic import BaseModel
 from crud.user import CrudUser
 from config import get_db, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from schemas import UserResponse
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-# Pydanticモデル
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
 
 class TokenData(BaseModel):
@@ -37,30 +30,51 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 auth_router = APIRouter()
 
 
-# トークン発行エンドポイント
-@auth_router.post("/token", response_model=Token)
+# トークン発行エンドポイント（HttpOnly Cookie にセット）
+@auth_router.post("/token")
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-) -> dict:
+) -> JSONResponse:
     crud_user = CrudUser(db)
-    user = crud_user.authenticate_user(form_data.username, form_data.password)
+    try:
+        user = crud_user.authenticate_user(form_data.username, form_data.password)
+    except HTTPException:
+        # M-KK-06: ユーザー列挙防止 — 失敗理由を統一
+        raise HTTPException(status_code=400, detail="Invalid credentials")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user.id)},  # ユーザーIDを使う
+        data={"sub": str(user.id)},
         expires_delta=access_token_expires,
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    response = JSONResponse(content={"message": "Login successful"})
+    response.set_cookie(
+        key="access_token",
+        value=f"Bearer {access_token}",
+        httponly=True,
+        samesite="strict",
+        secure=False,  # 開発環境。本番では True
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+    return response
 
 
-# 現在のユーザーを取得する関数
+# 現在のユーザーを取得する関数（Cookie からトークンを読む）
 def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+    access_token: str | None = Cookie(default=None),
+    db: Session = Depends(get_db),
 ) -> UserResponse:
+    if access_token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    token = access_token.removeprefix("Bearer ")
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
@@ -70,7 +84,7 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
     crud_user = CrudUser(db)
-    user = crud_user.read_by_id(token_data.user_id)  # user_idで検索
+    user = crud_user.read_by_id(token_data.user_id)
     if user is None:
         raise credentials_exception
     return UserResponse.model_validate(user)
@@ -80,6 +94,14 @@ def get_current_user(
 @auth_router.get("/users/me", response_model=UserResponse)
 def read_users_me(current_user: UserResponse = Depends(get_current_user)):
     return current_user
+
+
+# ログアウトエンドポイント（Cookie を削除）
+@auth_router.post("/logout")
+def logout() -> JSONResponse:
+    response = JSONResponse(content={"message": "Logged out"})
+    response.delete_cookie("access_token")
+    return response
 
 
 # 管理者チェックを行う関数

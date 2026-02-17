@@ -1,6 +1,7 @@
 # backend/main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from config import (
     SessionLocal,
@@ -17,9 +18,22 @@ from routes.user import user_router
 from sample_data import initialize_sample_data
 from passlib.context import CryptContext
 from contextlib import asynccontextmanager
+import os
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.errors import RateLimitExceeded
 
 # パスワードのハッシュ化
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# レート制限設定（デフォルト: 60リクエスト/分 / テスト時は無効）
+_rate_limit_enabled = os.getenv("TESTING", "false").lower() != "true"
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["60/minute"],
+    enabled=_rate_limit_enabled,
+)
 
 
 # ライフスパン
@@ -40,12 +54,20 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(
+    RateLimitExceeded,
+    lambda request, exc: JSONResponse(
+        status_code=429,
+        content={"detail": "リクエストが多すぎます。しばらく待ってから再試行してください。"},
+    ),
+)
 
 # データベース初期化(sqliteの場合)
 # Base.metadata.create_all(bind=engine)
 
 # CORS設定
-
+app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,

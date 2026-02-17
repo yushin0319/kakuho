@@ -2,27 +2,17 @@
 import { UserResponse } from "../interfaces";
 import api from "./api";
 
-// ログインしてアクセストークンを取得する関数
-export const login = async (
-  email: string,
-  password: string
-): Promise<string> => {
+// ログイン（トークンは HttpOnly Cookie にセットされる）
+export const login = async (email: string, password: string): Promise<void> => {
   const formData = new URLSearchParams();
   formData.append("username", email);
   formData.append("password", password);
 
-  const response = await api.post("/token", formData, {
+  await api.post("/token", formData, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-
-  const { access_token } = response.data;
-
-  // トークンをlocalStorageに保存
-  localStorage.setItem("token", access_token);
-
-  return access_token;
 };
 
 // 現在のユーザー情報を取得する関数
@@ -36,7 +26,7 @@ export const getCurrentUser = async (): Promise<UserResponse> => {
   }
 };
 
-// ログアウト処理
-export const logout = () => {
-  localStorage.removeItem("token"); // トークンを削除してログアウト
+// ログアウト処理（サーバー側で Cookie を削除）
+export const logout = async (): Promise<void> => {
+  await api.post("/logout");
 };

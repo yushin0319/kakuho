@@ -63,9 +63,8 @@ class CrudReservation(BaseCRUD[Reservation, ReservationResponse]):
         self, reservation_id: int, data: ReservationUpdate
     ) -> ReservationResponse:
         reservation = self.read_by_id(reservation_id)
-        for key, value in data.model_dump().items():
-            if value is not None:
-                setattr(reservation, key, value)
+        for key, value in data.model_dump(exclude_unset=True).items():
+            setattr(reservation, key, value)
         self.db.commit()
         self.db.refresh(reservation)
         return ReservationResponse.model_validate(reservation)

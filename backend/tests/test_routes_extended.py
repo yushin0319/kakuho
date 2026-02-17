@@ -26,9 +26,9 @@ def make_user(db, email="admin@test.com", is_admin=True, password="password123")
 
 
 def auth_headers(client, email="admin@test.com", password="password123"):
-    """認証ヘッダーを取得"""
-    resp = client.post("/token", data={"username": email, "password": password})
-    return {"Authorization": f"Bearer {resp.json()['access_token']}"}
+    """ログインして Cookie をセット（Cookie 認証のため Authorization ヘッダー不要）"""
+    client.post("/token", data={"username": email, "password": password})
+    return {}
 
 
 def make_event(db, name="テストイベント"):
@@ -158,17 +158,16 @@ class TestReservationEndpoints:
         owner = make_user(db, email="owner2@test.com", is_admin=False)
         other = make_user(db, email="other@test.com", is_admin=False)
         _, _, sg, tt = setup_full_chain(db)
-        owner_headers = auth_headers(client, email="owner2@test.com")
-        other_headers = auth_headers(client, email="other@test.com")
-        # ownerが予約
+        # ownerがログインして予約作成
+        auth_headers(client, email="owner2@test.com")
         create_resp = client.post(
             f"/ticket_types/{tt.id}/reservations",
             json={"num_attendees": 1, "user_id": owner.id},
-            headers=owner_headers,
         )
         res_id = create_resp.json()["id"]
-        # otherが取得しようとする
-        resp = client.get(f"/reservations/{res_id}", headers=other_headers)
+        # otherがログインして取得しようとする
+        auth_headers(client, email="other@test.com")
+        resp = client.get(f"/reservations/{res_id}")
         assert resp.status_code == 403
 
     def test_get_reservation_by_admin(self, client, db):

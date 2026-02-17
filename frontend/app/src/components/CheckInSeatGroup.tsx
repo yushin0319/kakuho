@@ -69,11 +69,17 @@ const CheckInSeatGroup = ({
         onClick={toggle}
       >
         <Grid size={3}>
-          <Typography variant="body2" color="primary">
+          <Typography variant="body2" color="primary" fontWeight="bold">
             {seatGroupNames[seatGroup.id]?.join("/")}
           </Typography>
-          <Typography variant="body2" color="primary">
-            {totalReservations}/{totalSeats}席
+          <Typography variant="caption" color="text.secondary">
+            定員 {totalSeats}席
+          </Typography>
+          <Typography
+            variant="caption"
+            color={seatGroup.capacity === 0 ? "error" : "success.main"}
+          >
+            残り {seatGroup.capacity}席
           </Typography>
         </Grid>
         <Grid size={7}>

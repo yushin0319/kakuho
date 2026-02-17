@@ -69,16 +69,19 @@ const Register = () => {
               name="nickname"
               label="ニックネーム（任意）"
               fieldType="nickname"
+              autoComplete="nickname"
             />
             <ValidatedForm
               name="email"
               label="メールアドレス"
               fieldType="email"
+              autoComplete="email"
             />
             <ValidatedForm
               name="password"
               label="パスワード"
               fieldType="password"
+              autoComplete="new-password"
             />
             <Button
               type="submit"

@@ -1,4 +1,5 @@
 # backend/routes/stage.py
+import logging
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
@@ -6,6 +7,8 @@ from schemas import StageCreate, StageUpdate, StageResponse, UserResponse
 from crud.stage import CrudStage
 from crud.event import CrudEvent
 from routes.auth import check_admin, get_current_user
+
+logger = logging.getLogger(__name__)
 
 stage_router = APIRouter()
 
@@ -59,8 +62,14 @@ def create_stage(
     for s in existing_stage:
         if s.start_time == stage.start_time:
             raise HTTPException(status_code=400, detail="Start time already exists")
-    created_stage = stage_crud.create(event_id, stage)
-    return created_stage
+    try:
+        created_stage = stage_crud.create(event_id, stage)
+        return created_stage
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error creating stage for event {event_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 # Stage更新（管理者のみ）
@@ -75,8 +84,14 @@ def update_stage(
     stage_crud = CrudStage(db)
     if stage_crud.read_by_id(stage_id) is None:
         raise HTTPException(status_code=404, detail="Stage not found")
-    updated_stage = stage_crud.update(stage_id, stage)
-    return updated_stage
+    try:
+        updated_stage = stage_crud.update(stage_id, stage)
+        return updated_stage
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error updating stage {stage_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 # Stage削除（管理者のみ）
@@ -91,4 +106,12 @@ def delete_stage(
     stage = stage_crud.read_by_id(stage_id)
     if stage is None:
         raise HTTPException(status_code=404, detail="Stage not found")
-    stage_crud.delete(stage_id)
+    try:
+        stage_crud.delete(stage_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Stage not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error deleting stage {stage_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")

@@ -44,7 +44,8 @@ const CheckInItem = ({ data }: { data: ReservationDetail }) => {
       <Checkbox
         id={reservation.id.toString()}
         checked={reservation.is_paid}
-        onChange={handlePaying}
+        onChange={reservation.is_paid ? undefined : handlePaying}
+        disabled={reservation.is_paid}
         sx={{ mr: 1 }}
       />
       <Box
@@ -53,9 +54,10 @@ const CheckInItem = ({ data }: { data: ReservationDetail }) => {
           flexDirection: "column",
           textAlign: "left",
           width: "100%",
-          cursor: "pointer",
+          cursor: reservation.is_paid ? "default" : "pointer",
+          opacity: reservation.is_paid ? 0.6 : 1,
         }}
-        onClick={handlePaying}
+        onClick={reservation.is_paid ? undefined : handlePaying}
       >
         <Box>
           <Typography

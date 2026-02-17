@@ -22,13 +22,9 @@ def create_test_user(db, email="test@example.com", is_admin=False):
 
 
 def get_auth_headers(client, email="test@example.com", password="password123"):
-    """認証トークンを取得してヘッダーを返す"""
-    response = client.post(
-        "/token",
-        data={"username": email, "password": password}
-    )
-    token = response.json()["access_token"]
-    return {"Authorization": f"Bearer {token}"}
+    """ログインして Cookie をセット（Cookie 認証のため Authorization ヘッダー不要）"""
+    client.post("/token", data={"username": email, "password": password})
+    return {}
 
 
 class TestHealthEndpoint:
@@ -45,8 +41,8 @@ class TestAuthEndpoints:
             data={"username": "test@example.com", "password": "password123"}
         )
         assert response.status_code == 200
-        assert "access_token" in response.json()
-        assert response.json()["token_type"] == "bearer"
+        assert response.json()["message"] == "Login successful"
+        assert "access_token" in client.cookies
 
     def test_login_wrong_password(self, client, db):
         create_test_user(db)
