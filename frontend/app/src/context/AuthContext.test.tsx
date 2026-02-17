@@ -6,7 +6,7 @@ import { mockUser, mockAdminUser } from "../test/mocks";
 
 // API モック
 const mockApiLogin = vi.fn();
-const mockApiLogout = vi.fn();
+const mockApiLogout = vi.fn().mockResolvedValue(undefined);
 const mockGetCurrentUser = vi.fn();
 const mockSignupUser = vi.fn();
 
