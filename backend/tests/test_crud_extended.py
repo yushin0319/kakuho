@@ -329,8 +329,8 @@ class TestCrudTicketType:
 class TestCrudReservation:
     def test_create_reservation(self, db, sample_ticket_type, sample_user):
         crud = CrudReservation(db)
-        data = ReservationCreate(num_attendees=2, user_id=sample_user.id)
-        res = crud.create(sample_ticket_type.id, data)
+        data = ReservationCreate(num_attendees=2)
+        res = crud.create(sample_ticket_type.id, sample_user.id, data)
 
         assert res.id is not None
         assert res.ticket_type_id == sample_ticket_type.id
@@ -343,7 +343,8 @@ class TestCrudReservation:
         crud = CrudReservation(db)
         created = crud.create(
             sample_ticket_type.id,
-            ReservationCreate(num_attendees=1, user_id=sample_user.id),
+            sample_user.id,
+            ReservationCreate(num_attendees=1),
         )
 
         fetched = crud.read_by_id(created.id)
@@ -358,11 +359,13 @@ class TestCrudReservation:
         crud = CrudReservation(db)
         crud.create(
             sample_ticket_type.id,
-            ReservationCreate(num_attendees=1, user_id=sample_user.id),
+            sample_user.id,
+            ReservationCreate(num_attendees=1),
         )
         crud.create(
             sample_ticket_type.id,
-            ReservationCreate(num_attendees=3, user_id=sample_user.id),
+            sample_user.id,
+            ReservationCreate(num_attendees=3),
         )
 
         reservations = crud.read_all()
@@ -380,9 +383,9 @@ class TestCrudReservation:
         )
 
         crud_res = CrudReservation(db)
-        crud_res.create(tt1.id, ReservationCreate(num_attendees=2, user_id=sample_user.id))
-        crud_res.create(tt1.id, ReservationCreate(num_attendees=1, user_id=sample_user.id))
-        crud_res.create(tt2.id, ReservationCreate(num_attendees=4, user_id=sample_user.id))
+        crud_res.create(tt1.id, sample_user.id, ReservationCreate(num_attendees=2))
+        crud_res.create(tt1.id, sample_user.id, ReservationCreate(num_attendees=1))
+        crud_res.create(tt2.id, sample_user.id, ReservationCreate(num_attendees=4))
 
         result = crud_res.read_by_ticket_type_id(tt1.id)
         assert len(result) == 2
@@ -399,11 +402,13 @@ class TestCrudReservation:
         crud_res = CrudReservation(db)
         crud_res.create(
             sample_ticket_type.id,
-            ReservationCreate(num_attendees=2, user_id=sample_user.id),
+            sample_user.id,
+            ReservationCreate(num_attendees=2),
         )
         crud_res.create(
             sample_ticket_type.id,
-            ReservationCreate(num_attendees=1, user_id=other_user.id),
+            other_user.id,
+            ReservationCreate(num_attendees=1),
         )
 
         result = crud_res.read_by_user_id(sample_user.id)
@@ -429,9 +434,9 @@ class TestCrudReservation:
         )
 
         crud_res = CrudReservation(db)
-        crud_res.create(tt1.id, ReservationCreate(num_attendees=2, user_id=sample_user.id))
-        crud_res.create(tt1.id, ReservationCreate(num_attendees=1, user_id=other_user.id))
-        crud_res.create(tt2.id, ReservationCreate(num_attendees=3, user_id=sample_user.id))
+        crud_res.create(tt1.id, sample_user.id, ReservationCreate(num_attendees=2))
+        crud_res.create(tt1.id, other_user.id, ReservationCreate(num_attendees=1))
+        crud_res.create(tt2.id, sample_user.id, ReservationCreate(num_attendees=3))
 
         result = crud_res.read_by_user_and_ticket_type_id(sample_user.id, tt1.id)
         assert len(result) == 1
@@ -442,12 +447,13 @@ class TestCrudReservation:
         crud = CrudReservation(db)
         created = crud.create(
             sample_ticket_type.id,
-            ReservationCreate(num_attendees=2, user_id=sample_user.id),
+            sample_user.id,
+            ReservationCreate(num_attendees=2),
         )
 
         updated = crud.update(
             created.id,
-            ReservationUpdate(num_attendees=5, user_id=sample_user.id),
+            ReservationUpdate(num_attendees=5),
         )
         assert updated.num_attendees == 5
         assert updated.is_paid is False
@@ -456,12 +462,13 @@ class TestCrudReservation:
         crud = CrudReservation(db)
         created = crud.create(
             sample_ticket_type.id,
-            ReservationCreate(num_attendees=1, user_id=sample_user.id),
+            sample_user.id,
+            ReservationCreate(num_attendees=1),
         )
 
         updated = crud.update(
             created.id,
-            ReservationUpdate(is_paid=True, user_id=sample_user.id),
+            ReservationUpdate(is_paid=True),
         )
         assert updated.is_paid is True
         assert updated.num_attendees == 1
@@ -470,7 +477,8 @@ class TestCrudReservation:
         crud = CrudReservation(db)
         created = crud.create(
             sample_ticket_type.id,
-            ReservationCreate(num_attendees=1, user_id=sample_user.id),
+            sample_user.id,
+            ReservationCreate(num_attendees=1),
         )
 
         crud.delete(created.id)

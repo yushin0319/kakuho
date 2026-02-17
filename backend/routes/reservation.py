@@ -2,6 +2,7 @@
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
+from models import SeatGroup
 from schemas import (
     ReservationCreate,
     ReservationUpdate,
@@ -114,7 +115,7 @@ def read_reservations_by_ticket_type_id(
         return reservations
 
 
-# Reservation作成（管理者・ユーザー共通）
+# Reservation作成（認証必須）
 @reservation_router.post(
     "/ticket_types/{ticket_type_id}/reservations", response_model=ReservationResponse
 )
@@ -122,22 +123,33 @@ def create_reservation(
     ticket_type_id: int,
     reservation: ReservationCreate,
     db: Session = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
 ) -> ReservationResponse:
     ticket_type_crud = CrudTicketType(db)
-    seat_group_crud = CrudSeatGroup(db)
     reservation_crud = CrudReservation(db)
     ticket_type = ticket_type_crud.read_by_id(ticket_type_id)
     if ticket_type is None:
         raise HTTPException(status_code=404, detail="TicketType not found")
-    seat_group = seat_group_crud.read_by_id(ticket_type.seat_group_id)
-    if seat_group is None:
-        raise HTTPException(status_code=404, detail="SeatGroup not found")
     try:
+        # SELECT FOR UPDATE: 並行リクエストによるオーバーブッキングを防ぐ
+        seat_group_orm = (
+            db.query(SeatGroup)
+            .filter(SeatGroup.id == ticket_type.seat_group_id)
+            .with_for_update()
+            .first()
+        )
+        if seat_group_orm is None:
+            raise HTTPException(status_code=404, detail="SeatGroup not found")
+        seat_group = SeatGroupResponse.model_validate(seat_group_orm)
         check_capacity(seat_group, -reservation.num_attendees)
         update_capacity(seat_group, -reservation.num_attendees, db)
-        created_reservation = reservation_crud.create(ticket_type_id, reservation)
+        created_reservation = reservation_crud.create(ticket_type_id, current_user.id, reservation)
         return created_reservation
+    except HTTPException:
+        db.rollback()
+        raise
     except Exception as e:
+        db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
 

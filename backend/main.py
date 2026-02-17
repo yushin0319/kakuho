@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
     print("アプリケーションを起動します。")
     db: Session = SessionLocal()
     try:
-        if INSERT_SAMPLE_DATA.lower() == "true":
+        if INSERT_SAMPLE_DATA:
             initialize_sample_data(db)
     except Exception as e:
         print(e)

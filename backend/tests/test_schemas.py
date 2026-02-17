@@ -75,6 +75,5 @@ class TestTicketTypeSchema:
 
 class TestReservationSchema:
     def test_reservation_create_valid(self):
-        reservation = ReservationCreate(num_attendees=2, user_id=1)
+        reservation = ReservationCreate(num_attendees=2)
         assert reservation.num_attendees == 2
-        assert reservation.user_id == 1
