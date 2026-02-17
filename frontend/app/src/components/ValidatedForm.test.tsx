@@ -142,7 +142,7 @@ describe("ValidatedForm", () => {
       });
     });
 
-    it("passwordが6文字未満の場合エラーメッセージを表示する", async () => {
+    it("passwordが8文字未満の場合エラーメッセージを表示する", async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
       render(
@@ -160,7 +160,7 @@ describe("ValidatedForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("パスワードは6文字以上で入力してください")
+          screen.getByText("パスワードは8文字以上で入力してください")
         ).toBeInTheDocument();
       });
     });
