@@ -134,7 +134,7 @@ class UserCreate(UserBase):
 
 class UserUpdate(UserBase):
     email: EmailStr | None = None
-    password: str | None = Field(None, min_length=6, max_length=50)
+    password: str | None = Field(None, min_length=8, max_length=50)
     nickname: str | None = None
 
 
