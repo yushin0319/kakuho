@@ -2,25 +2,16 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Booking from "./Booking";
-import { TestWrapper, mockEvent } from "../test/mocks";
+import { TestWrapper, mockEvent, createMockAppDataContext } from "../test/mocks";
 import { EventResponse } from "../services/interfaces";
 
 // AppData モック
 const mockAppData = {
+  ...createMockAppDataContext(),
   futureEvents: [] as EventResponse[],
   eventStartDates: {} as Record<number, Date>,
   eventEndDates: {} as Record<number, Date>,
-  loading: false,
   error: null as string | null,
-  events: [],
-  pastEvents: [],
-  stages: [],
-  seatGroups: [],
-  seatGroupNames: {},
-  ticketTypes: [],
-  users: [],
-  reservations: [],
-  reloadData: vi.fn(),
 };
 
 vi.mock("../context/AppData", () => ({

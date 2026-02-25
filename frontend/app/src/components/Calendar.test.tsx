@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Calendar from "./Calendar";
 import { TestWrapper } from "../test/mocks";
+import { mockStages, mockSeatGroups } from "../test/fixtures";
 import { EventResponse } from "../services/interfaces";
 
 // ReservationCreater のモック
@@ -23,32 +24,6 @@ vi.mock("./ReservationCreater", () => ({
     </div>
   ),
 }));
-
-const mockStages = [
-  {
-    id: 1,
-    event_id: 1,
-    start_time: "2026-03-15T10:00:00",
-    end_time: "2026-03-15T12:00:00",
-  },
-  {
-    id: 2,
-    event_id: 1,
-    start_time: "2026-03-15T14:00:00",
-    end_time: "2026-03-15T16:00:00",
-  },
-  {
-    id: 3,
-    event_id: 2,
-    start_time: "2026-03-20T10:00:00",
-    end_time: "2026-03-20T12:00:00",
-  },
-];
-
-const mockSeatGroups = [
-  { id: 1, stage_id: 1, capacity: 50 },
-  { id: 2, stage_id: 2, capacity: 0 }, // 完売
-];
 
 vi.mock("../context/AppData", () => ({
   useAppData: () => ({
