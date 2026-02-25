@@ -1,24 +1,7 @@
 # tests/test_auth.py
 """認証フローの詳細テスト"""
 import pytest
-from models import User
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-def create_user(db, email="auth@example.com", password="password123", is_admin=False):
-    """テスト用ユーザーを作成"""
-    user = User(
-        email=email,
-        password_hash=pwd_context.hash(password),
-        nickname="認証テストユーザー",
-        is_admin=is_admin,
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+from tests.helpers import create_user
 
 
 def login(client, email="auth@example.com", password="password123"):

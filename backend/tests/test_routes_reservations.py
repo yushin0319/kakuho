@@ -2,27 +2,11 @@
 """予約エンドポイントのテスト"""
 import pytest
 from datetime import datetime
-from models import User, Event, Stage, SeatGroup, TicketType, Reservation
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from models import Event, Stage, SeatGroup, TicketType, Reservation
+from tests.helpers import create_user
 
 
 # --- ヘルパー関数 ---
-
-
-def make_user(db, email="admin@test.com", is_admin=True, password="password123"):
-    """ユーザーを作成"""
-    user = User(
-        email=email,
-        password_hash=pwd_context.hash(password),
-        nickname="テスト",
-        is_admin=is_admin,
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
 
 
 def auth_headers(client, email="admin@test.com", password="password123"):
@@ -86,7 +70,7 @@ class TestReservationEndpoints:
     """予約エンドポイントのテスト"""
 
     def test_create_reservation(self, client, db):
-        admin = make_user(db)
+        admin = create_user(db, email="admin@test.com", is_admin=True)
         _, _, sg, tt = setup_full_chain(db)
         headers = auth_headers(client)
         resp = client.post(
@@ -101,7 +85,7 @@ class TestReservationEndpoints:
         assert data["ticket_type_id"] == tt.id
 
     def test_create_reservation_reduces_capacity(self, client, db):
-        admin = make_user(db)
+        admin = create_user(db, email="admin@test.com", is_admin=True)
         _, _, sg, tt = setup_full_chain(db)
         headers = auth_headers(client)
         client.post(
@@ -115,7 +99,7 @@ class TestReservationEndpoints:
         assert resp.json()["capacity"] == 6
 
     def test_create_reservation_exceeds_capacity(self, client, db):
-        admin = make_user(db)
+        admin = create_user(db, email="admin@test.com", is_admin=True)
         _, _, sg, tt = setup_full_chain(db)
         headers = auth_headers(client)
         resp = client.post(
@@ -126,7 +110,7 @@ class TestReservationEndpoints:
         assert resp.status_code == 400
 
     def test_create_reservation_ticket_type_not_found(self, client, db):
-        admin = make_user(db)
+        admin = create_user(db, email="admin@test.com", is_admin=True)
         headers = auth_headers(client)
         resp = client.post(
             "/ticket_types/9999/reservations",
@@ -136,7 +120,7 @@ class TestReservationEndpoints:
         assert resp.status_code == 404
 
     def test_get_reservation_by_owner(self, client, db):
-        user = make_user(db, email="owner@test.com", is_admin=False)
+        user = create_user(db, email="owner@test.com", is_admin=False)
         _, _, sg, tt = setup_full_chain(db)
         headers = auth_headers(client, email="owner@test.com")
         # 予約作成
@@ -152,8 +136,8 @@ class TestReservationEndpoints:
         assert resp.json()["id"] == res_id
 
     def test_get_reservation_by_other_user_forbidden(self, client, db):
-        owner = make_user(db, email="owner2@test.com", is_admin=False)
-        other = make_user(db, email="other@test.com", is_admin=False)
+        owner = create_user(db, email="owner2@test.com", is_admin=False)
+        other = create_user(db, email="other@test.com", is_admin=False)
         _, _, sg, tt = setup_full_chain(db)
         # ownerがログインして予約作成
         auth_headers(client, email="owner2@test.com")
@@ -168,8 +152,8 @@ class TestReservationEndpoints:
         assert resp.status_code == 403
 
     def test_get_reservation_by_admin(self, client, db):
-        user = make_user(db, email="resuser@test.com", is_admin=False)
-        admin = make_user(db, email="resadmin@test.com", is_admin=True)
+        user = create_user(db, email="resuser@test.com", is_admin=False)
+        admin = create_user(db, email="resadmin@test.com", is_admin=True)
         _, _, sg, tt = setup_full_chain(db)
         user_headers = auth_headers(client, email="resuser@test.com")
         admin_headers = auth_headers(client, email="resadmin@test.com")
@@ -185,20 +169,20 @@ class TestReservationEndpoints:
         assert resp.status_code == 200
 
     def test_list_reservations_admin_only(self, client, db):
-        admin = make_user(db, is_admin=True)
+        admin = create_user(db, email="admin@test.com", is_admin=True)
         headers = auth_headers(client)
         resp = client.get("/reservations", headers=headers)
         assert resp.status_code == 200
         assert isinstance(resp.json(), list)
 
     def test_list_reservations_non_admin_forbidden(self, client, db):
-        user = make_user(db, email="nonadmin@test.com", is_admin=False)
+        user = create_user(db, email="nonadmin@test.com", is_admin=False)
         headers = auth_headers(client, email="nonadmin@test.com")
         resp = client.get("/reservations", headers=headers)
         assert resp.status_code == 403
 
     def test_update_reservation_changes_capacity(self, client, db):
-        user = make_user(db, email="upd@test.com", is_admin=False)
+        user = create_user(db, email="upd@test.com", is_admin=False)
         _, _, sg, tt = setup_full_chain(db)
         headers = auth_headers(client, email="upd@test.com")
         # 3名で予約 → 残席7
@@ -220,7 +204,7 @@ class TestReservationEndpoints:
         assert sg_resp.json()["capacity"] == 9
 
     def test_delete_reservation_restores_capacity(self, client, db):
-        user = make_user(db, email="del@test.com", is_admin=False)
+        user = create_user(db, email="del@test.com", is_admin=False)
         _, _, sg, tt = setup_full_chain(db)
         headers = auth_headers(client, email="del@test.com")
         # 5名で予約 → 残席5
@@ -237,7 +221,7 @@ class TestReservationEndpoints:
         assert sg_resp.json()["capacity"] == 10
 
     def test_get_reservations_by_user_id(self, client, db):
-        user = make_user(db, email="byuser@test.com", is_admin=False)
+        user = create_user(db, email="byuser@test.com", is_admin=False)
         _, _, sg, tt = setup_full_chain(db)
         headers = auth_headers(client, email="byuser@test.com")
         client.post(
@@ -250,14 +234,14 @@ class TestReservationEndpoints:
         assert len(resp.json()) == 1
 
     def test_get_reservations_by_user_id_other_forbidden(self, client, db):
-        user1 = make_user(db, email="u1@test.com", is_admin=False)
-        user2 = make_user(db, email="u2@test.com", is_admin=False)
+        user1 = create_user(db, email="u1@test.com", is_admin=False)
+        user2 = create_user(db, email="u2@test.com", is_admin=False)
         headers2 = auth_headers(client, email="u2@test.com")
         resp = client.get(f"/users/{user1.id}/reservations", headers=headers2)
         assert resp.status_code == 403
 
     def test_reservation_not_found(self, client, db):
-        user = make_user(db, email="nf@test.com", is_admin=False)
+        user = create_user(db, email="nf@test.com", is_admin=False)
         headers = auth_headers(client, email="nf@test.com")
         resp = client.get("/reservations/9999", headers=headers)
         assert resp.status_code == 404
