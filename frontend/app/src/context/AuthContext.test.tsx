@@ -1,8 +1,8 @@
 // src/context/AuthContext.test.tsx
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AuthProvider, useAuth } from "./AuthContext";
-import { mockUser, mockAdminUser } from "../test/mocks";
+import { mockUser } from "../test/mocks";
 
 // API モック
 const mockApiLogin = vi.fn();
