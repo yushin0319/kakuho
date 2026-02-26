@@ -22,7 +22,7 @@
     "@mui/icons-material": "^6.1.7",
     "@mui/material": "^6.1.7",
     "@mui/x-date-pickers": "^7.22.2",
-    "axios": "^1.7.7",
+    "axios": "^1.13.5",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "globalize": "^1.7.0",
