@@ -27,7 +27,7 @@ const CheckInSeatGroup = ({
   const { seatGroupNames, reservations } = useAppData();
 
   // 予約数とパーセンテージを計算 (useMemoで効率化)
-  const { totalReservations, totalSeats, occupancyRate, paidRate } =
+  const { totalSeats, occupancyRate, paidRate } =
     useMemo(() => {
       const filteredReservations = reservations.filter(
         (data) => data.seatGroup.id === seatGroup.id

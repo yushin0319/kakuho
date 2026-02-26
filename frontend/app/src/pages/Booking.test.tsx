@@ -2,7 +2,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Booking from "./Booking";
-import { TestWrapper, mockEvent, createMockAppDataContext } from "../test/mocks";
+import { TestWrapper, createMockAppDataContext } from "../test/mocks";
 import { EventResponse } from "../services/interfaces";
 
 // AppData モック
