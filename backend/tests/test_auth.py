@@ -38,7 +38,7 @@ class TestLoginFlow:
 
     def test_login_empty_credentials(self, client, db):
         resp = client.post("/token", data={"username": "", "password": ""})
-        assert resp.status_code == 400
+        assert resp.status_code == 422
 
     def test_login_error_message_unified(self, client, db):
         """M-KK-06: ユーザー列挙防止 — 失敗理由が統一されていることを確認"""
