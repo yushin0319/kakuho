@@ -4,5 +4,6 @@ venv/
 .env
 __pycache__/
 frontend/dist/
+*.tsbuildinfo
 backend/__pycache__/
 .serena/
