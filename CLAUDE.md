@@ -7,7 +7,7 @@
 ## 技術スタック
 
 - **Backend**: Python 3.11+ / FastAPI / SQLAlchemy 2.x / Alembic
-- **Frontend**: TypeScript / React 18 / Vite 5 / MUI v6
+- **Frontend**: TypeScript / React 18 / Vite 7 / MUI v6
 - **DB**: PostgreSQL 16（本番）/ SQLite in-memory（テスト）
 - **認証**: JWT（Cookie ベース）
 - **デプロイ**: Render（BE: Web Service, FE: Static Site）
