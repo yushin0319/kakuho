@@ -15,17 +15,7 @@ class CrudStage(BaseCRUD[Stage, StageResponse]):
         return [StageResponse.model_validate(stage) for stage in stages]
 
     def create(self, event_id: int, data: StageCreate) -> StageResponse:
-        stage = Stage(**data.model_dump(), event_id=event_id)
-        self.db.add(stage)
-        self.db.commit()
-        self.db.refresh(stage)
-        return StageResponse.model_validate(stage)
+        return super().create(data, event_id=event_id)
 
     def update(self, stage_id: int, data: StageUpdate) -> StageResponse:
-        stage = self.read_by_id(stage_id)
-        for key, value in data.model_dump().items():
-            if value is not None:
-                setattr(stage, key, value)
-        self.db.commit()
-        self.db.refresh(stage)
-        return StageResponse.model_validate(stage)
+        return super().update(stage_id, data)
