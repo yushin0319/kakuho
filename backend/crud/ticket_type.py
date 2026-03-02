@@ -22,17 +22,7 @@ class CrudTicketType(BaseCRUD[TicketType, TicketTypeResponse]):
         ]
 
     def create(self, seat_group_id: int, data: TicketTypeCreate) -> TicketTypeResponse:
-        ticket_type = TicketType(**data.model_dump(), seat_group_id=seat_group_id)
-        self.db.add(ticket_type)
-        self.db.commit()
-        self.db.refresh(ticket_type)
-        return TicketTypeResponse.model_validate(ticket_type)
+        return super().create(data, seat_group_id=seat_group_id)
 
     def update(self, ticket_type_id: int, data: TicketTypeUpdate) -> TicketTypeResponse:
-        ticket_type = self.read_by_id(ticket_type_id)
-        for key, value in data.model_dump().items():
-            if value is not None:
-                setattr(ticket_type, key, value)
-        self.db.commit()
-        self.db.refresh(ticket_type)
-        return TicketTypeResponse.model_validate(ticket_type)
+        return super().update(ticket_type_id, data)

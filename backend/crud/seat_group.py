@@ -19,17 +19,7 @@ class CrudSeatGroup(BaseCRUD[SeatGroup, SeatGroupResponse]):
         ]
 
     def create(self, stage_id: int, data: SeatGroupCreate) -> SeatGroupResponse:
-        seat_group = SeatGroup(**data.model_dump(), stage_id=stage_id)
-        self.db.add(seat_group)
-        self.db.commit()
-        self.db.refresh(seat_group)
-        return SeatGroupResponse.model_validate(seat_group)
+        return super().create(data, stage_id=stage_id)
 
     def update(self, seat_group_id: int, data: SeatGroupUpdate) -> SeatGroupResponse:
-        seat_group = self.read_by_id(seat_group_id)
-        for key, value in data.model_dump().items():
-            if value is not None:
-                setattr(seat_group, key, value)
-        self.db.commit()
-        self.db.refresh(seat_group)
-        return SeatGroupResponse.model_validate(seat_group)
+        return super().update(seat_group_id, data)
