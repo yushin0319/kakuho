@@ -53,11 +53,10 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
           )
       );
       setSnack({ message: "正常に保存されました", severity: "success" });
+      reloadData();
     } catch (e) {
       console.error(e);
       setSnack({ message: "保存中にエラーが発生しました", severity: "error" });
-    } finally {
-      reloadData();
     }
   };
 

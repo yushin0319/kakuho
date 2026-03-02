@@ -68,7 +68,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // ログアウト関数（Cookie削除APIを呼び出し、即座にローカル状態をクリア）
   const logout = () => {
-    apiLogout().catch(console.error);
+    apiLogout().catch(() => {
+      setSnack({ message: "サーバーへのログアウト通知に失敗しました", severity: "warning" });
+    });
     setUser(null);
     setIsAuthenticated(false);
   };

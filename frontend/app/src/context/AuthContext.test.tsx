@@ -207,6 +207,53 @@ describe("AuthContext", () => {
     expect(mockApiLogout).toHaveBeenCalled();
   });
 
+  it("ログアウト時にAPIが失敗してもクライアント側ステートはクリアされる", async () => {
+    const user = userEvent.setup();
+    mockGetCurrentUser.mockResolvedValue(mockUser);
+    mockApiLogout.mockRejectedValueOnce(new Error("logout failed"));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
+    });
+
+    await user.click(screen.getByText("ログアウト"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("authenticated")).toHaveTextContent("false");
+      expect(screen.getByTestId("user")).toHaveTextContent("null");
+    });
+  });
+
+  it("ログアウトAPI失敗時にwarning Snackを表示する", async () => {
+    const user = userEvent.setup();
+    mockGetCurrentUser.mockResolvedValue(mockUser);
+    mockApiLogout.mockRejectedValueOnce(new Error("logout failed"));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
+    });
+
+    await user.click(screen.getByText("ログアウト"));
+
+    await waitFor(() => {
+      expect(mockSetSnack).toHaveBeenCalledWith(
+        expect.objectContaining({ severity: "warning" })
+      );
+    });
+  });
+
   it("ユーザー設定時にスナック通知が表示される", async () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 

@@ -18,6 +18,11 @@ vi.mock("./ReservationSummary", () => ({
   default: () => <div data-testid="reservation-summary">予約サマリー</div>,
 }));
 
+const mockSetSnack = vi.fn();
+vi.mock("../context/SnackContext", () => ({
+  useSnack: () => ({ setSnack: mockSetSnack }),
+}));
+
 const mockDetail = {
   reservation: {
     id: 1,
@@ -95,5 +100,39 @@ describe("ReservationDeleter", () => {
     );
     await user.click(screen.getByRole("button", { name: "削除" }));
     expect(vi.mocked(deleteReservation)).toHaveBeenCalledWith(1);
+  });
+
+  it("削除成功時に onClose が呼ばれる", async () => {
+    const user = userEvent.setup();
+    render(
+      <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
+      { wrapper: TestWrapper }
+    );
+    await user.click(screen.getByRole("button", { name: "削除" }));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it("削除失敗時に onClose が呼ばれない", async () => {
+    vi.mocked(deleteReservation).mockRejectedValueOnce(new Error("delete failed"));
+    const user = userEvent.setup();
+    render(
+      <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
+      { wrapper: TestWrapper }
+    );
+    await user.click(screen.getByRole("button", { name: "削除" }));
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("削除失敗時にエラーSnackbarを表示する", async () => {
+    vi.mocked(deleteReservation).mockRejectedValueOnce(new Error("delete failed"));
+    const user = userEvent.setup();
+    render(
+      <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
+      { wrapper: TestWrapper }
+    );
+    await user.click(screen.getByRole("button", { name: "削除" }));
+    expect(mockSetSnack).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: "error" })
+    );
   });
 });
