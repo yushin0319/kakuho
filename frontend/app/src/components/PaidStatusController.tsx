@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { useAppData } from "../context/AppData";
+import { useSnack } from "../context/SnackContext";
 import { updateReservation } from "../services/api/reservation";
 import ReservationSummary from "./ReservationSummary";
 
@@ -19,6 +20,7 @@ const PaidStatusController = ({
   onClose,
 }: PaidStatusControllerProps) => {
   const { reservations, reloadData } = useAppData();
+  const { setSnack } = useSnack();
 
   // 該当する予約を直接取得
   const reservation = reservations.find(
@@ -32,11 +34,12 @@ const PaidStatusController = ({
         user_id: reservation.user.id,
         is_paid: !reservation.reservation.is_paid,
       });
+      onClose();
     } catch (error) {
       console.error("Failed to update reservation:", error);
+      setSnack({ message: "更新に失敗しました", severity: "error" });
     } finally {
       reloadData();
-      onClose();
     }
   };
 

@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ReservationDetail, useAppData } from "../context/AppData";
+import { useSnack } from "../context/SnackContext";
 import { deleteReservation } from "../services/api/reservation";
 import ReservationSummary from "./ReservationSummary";
 
@@ -20,16 +21,18 @@ const ReservationDeleter = ({
   onClose,
 }: ReservationDeleterProps) => {
   const { reloadData } = useAppData();
+  const { setSnack } = useSnack();
   const { reservation } = item;
 
   const handleDeleteConfirm = async () => {
     try {
       await deleteReservation(reservation.id);
+      onClose();
     } catch (error) {
       console.error("Failed to delete reservation:", error);
+      setSnack({ message: "削除に失敗しました", severity: "error" });
     } finally {
       reloadData();
-      onClose();
     }
   };
 
