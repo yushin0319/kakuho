@@ -1,23 +1,23 @@
 // app/src/pages/Register.tsx
-import { Box, Button, Container, Typography } from "@mui/material";
-import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import ValidatedForm from "../components/ValidatedForm";
-import { useAuth } from "../context/AuthContext";
+import { Box, Button, Container, Typography } from '@mui/material';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import ValidatedForm from '../components/ValidatedForm';
+import { useAuth } from '../context/AuthContext';
 
 const Register = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const { signup } = useAuth(); // AuthContextのsignup関数を取得
 
   // React Hook Formの設定
   const methods = useForm({
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      email: "",
-      password: "",
-      nickname: "",
+      email: '',
+      password: '',
+      nickname: '',
     },
   });
 
@@ -32,13 +32,13 @@ const Register = () => {
       // 新規登録処理を実行
       const currentUser = await signup({ email, password, nickname });
       if (currentUser.is_admin) {
-        navigate("/check-in-list");
+        navigate('/check-in-list');
       } else {
-        navigate("/booking");
+        navigate('/booking');
       }
-    } catch (error) {
+    } catch (_error) {
       setError(
-        "登録に失敗しました。入力内容をご確認の上、再度お試しください。"
+        '登録に失敗しました。入力内容をご確認の上、再度お試しください。',
       );
     }
   };
@@ -60,8 +60,8 @@ const Register = () => {
           <Box
             sx={{
               mt: 2,
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               gap: 2,
             }}
           >

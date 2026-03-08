@@ -10,21 +10,21 @@ import {
   MenuItem,
   TextField,
   Typography,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { ReservationDetail, useAppData } from "../context/AppData";
-import { useAuth } from "../context/AuthContext";
-import { useNewItemContext } from "../context/NewItemContext";
-import { useSnack } from "../context/SnackContext";
-import { createReservation } from "../services/api/reservation";
-import {
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { type ReservationDetail, useAppData } from '../context/AppData';
+import { useAuth } from '../context/AuthContext';
+import { useNewItemContext } from '../context/NewItemContext';
+import { useSnack } from '../context/SnackContext';
+import { createReservation } from '../services/api/reservation';
+import type {
   EventResponse,
   StageResponse,
   TicketTypeResponse,
-} from "../services/interfaces";
-import { NumComma, toJST } from "../services/utils";
-import ReservationSummary from "./ReservationSummary";
+} from '../services/interfaces';
+import { NumComma, toJST } from '../services/utils';
+import ReservationSummary from './ReservationSummary';
 
 interface ReservationCreaterProps {
   event: EventResponse;
@@ -34,7 +34,7 @@ interface ReservationCreaterProps {
 
 // 予約作成フォームの入力値
 interface ReservationCreaterForm {
-  ticketType: number | "";
+  ticketType: number | '';
   numAttendees: number;
 }
 
@@ -49,7 +49,7 @@ const ReservationCreater = ({
     TicketTypeResponse[]
   >([]);
   const [maxAvailable, setMaxAvailable] = useState<number>(1);
-  const [phase, setPhase] = useState<"form" | "summary">("form");
+  const [phase, setPhase] = useState<'form' | 'summary'>('form');
   const { addNewItem } = useNewItemContext();
   const { setSnack } = useSnack();
   const { user } = useAuth();
@@ -59,13 +59,13 @@ const ReservationCreater = ({
   const { control, handleSubmit, watch, setValue } =
     useForm<ReservationCreaterForm>({
       defaultValues: {
-        ticketType: "",
+        ticketType: '',
         numAttendees: 1,
       },
     });
 
-  const watchTicketType = watch("ticketType");
-  const watchNumAttendees = watch("numAttendees");
+  const watchTicketType = watch('ticketType');
+  const watchNumAttendees = watch('numAttendees');
 
   // 初期化処理
   useEffect(() => {
@@ -74,11 +74,11 @@ const ReservationCreater = ({
       const types: TicketTypeResponse[] = [];
       groups.forEach((group) => {
         types.push(
-          ...ticketTypes.filter((type) => type.seat_group_id === group.id)
+          ...ticketTypes.filter((type) => type.seat_group_id === group.id),
         );
       });
       setSelectableTicketTypes(types);
-      types.map((type) => {
+      types.forEach((type) => {
         if (
           groups.find((group) => group.id === type.seat_group_id)?.capacity ===
           0
@@ -86,21 +86,21 @@ const ReservationCreater = ({
           setIsSoldOut((prev) => ({ ...prev, [type.id]: true }));
         }
       });
-      setValue("ticketType", types[0]?.id || "");
+      setValue('ticketType', types[0]?.id || '');
       setMaxAvailable(
         groups.find((group) => group.id === types[0]?.seat_group_id)
-          ?.capacity || 0
+          ?.capacity || 0,
       );
     }
-  }, [stage]);
+  }, [stage, loading, seatGroups.filter, setValue, ticketTypes.filter]);
 
   // ticketTypeを変更時、availableを再計算
   useEffect(() => {
     const newTicketType = ticketTypes.find(
-      (type) => type.id === watchTicketType
+      (type) => type.id === watchTicketType,
     );
     const newSeatGroup = seatGroups.find(
-      (group) => group.id === newTicketType?.seat_group_id
+      (group) => group.id === newTicketType?.seat_group_id,
     );
     const newNumAttendees = watchNumAttendees;
 
@@ -111,7 +111,7 @@ const ReservationCreater = ({
     // 予約可能な人数を計算
     const culcMaxAvailable = Math.min(newSeatGroup.capacity, 20);
     if (newNumAttendees > culcMaxAvailable) {
-      setAlertMessage("予約可能な人数を超えています");
+      setAlertMessage('予約可能な人数を超えています');
     } else {
       setAlertMessage(null);
     }
@@ -120,8 +120,8 @@ const ReservationCreater = ({
 
   // 予約作成処理
   const onSubmit = async (data: ReservationCreaterForm) => {
-    if (data.ticketType === "" || !user) {
-      setAlertMessage("チケットタイプを選択してください");
+    if (data.ticketType === '' || !user) {
+      setAlertMessage('チケットタイプを選択してください');
       return;
     }
     setApiError(null);
@@ -132,18 +132,19 @@ const ReservationCreater = ({
       });
       addNewItem(newItem.id);
       setSnack({
-        message: "予約を作成しました",
-        severity: "success",
+        message: '予約を作成しました',
+        severity: 'success',
       });
       reloadData();
       onClose();
-    } catch (err: any) {
-      console.error("Reservation create failed:", err);
-      const detail = err?.response?.data?.detail;
+    } catch (err: unknown) {
+      console.error('Reservation create failed:', err);
+      const detail = (err as { response?: { data?: { detail?: unknown } } })
+        ?.response?.data?.detail;
       setApiError(
-        typeof detail === "string"
+        typeof detail === 'string'
           ? detail
-          : "予約作成に失敗しました。しばらく経ってから再度お試しください。"
+          : '予約作成に失敗しました。しばらく経ってから再度お試しください。',
       );
     }
   };
@@ -159,14 +160,14 @@ const ReservationCreater = ({
     >
       <DialogTitle
         sx={{
-          backgroundColor: "primary.main",
-          color: "white",
+          backgroundColor: 'primary.main',
+          color: 'white',
         }}
       >
         <Typography variant="h6" component="div">
-          {phase === "form"
-            ? "券種と人数を選択して下さい"
-            : "予約してよろしいですか？"}
+          {phase === 'form'
+            ? '券種と人数を選択して下さい'
+            : '予約してよろしいですか？'}
         </Typography>
       </DialogTitle>
       <DialogContent
@@ -176,17 +177,17 @@ const ReservationCreater = ({
       >
         {alertMessage && <Alert severity="error">{alertMessage}</Alert>}
         {apiError && <Alert severity="error">{apiError}</Alert>}
-        {phase === "form" ? (
+        {phase === 'form' ? (
           <Box>
             <Box
               sx={{
                 m: 2,
-                textAlign: "center",
+                textAlign: 'center',
               }}
             >
               <Typography variant="body2">{event.name}</Typography>
               <Typography variant="body1">
-                {toJST(stage.start_time, "dateTime")}
+                {toJST(stage.start_time, 'dateTime')}
               </Typography>
             </Box>
             <Grid container spacing={2} sx={{ m: 2 }}>
@@ -200,10 +201,10 @@ const ReservationCreater = ({
                       {...field}
                       value={
                         selectableTicketTypes.find(
-                          (type) => type.id === watchTicketType
+                          (type) => type.id === watchTicketType,
                         )
                           ? watchTicketType
-                          : ""
+                          : ''
                       }
                       fullWidth
                     >
@@ -214,7 +215,7 @@ const ReservationCreater = ({
                           disabled={isSoldOut[ticketType.id]}
                         >
                           {ticketType.type_name} - {NumComma(ticketType.price)}
-                          円{isSoldOut[ticketType.id] && "（完売）"}
+                          円{isSoldOut[ticketType.id] && '（完売）'}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -268,27 +269,29 @@ const ReservationCreater = ({
               {
                 event: event,
                 stage: stage,
+                // biome-ignore lint/style/noNonNullAssertion: watchTicketType is validated before this render
                 ticketType: selectableTicketTypes.find(
-                  (type) => type.id === watchTicketType
+                  (type) => type.id === watchTicketType,
                 )!,
+                // biome-ignore lint/style/noNonNullAssertion: watchTicketType is validated before this render
                 seatGroup: seatGroups.find(
                   (group) =>
                     group.id ===
                     selectableTicketTypes.find(
-                      (type) => type.id === watchTicketType
-                    )?.seat_group_id
+                      (type) => type.id === watchTicketType,
+                    )?.seat_group_id,
                 )!,
                 user: user,
-              } as Omit<ReservationDetail, "reservation">
+              } as Omit<ReservationDetail, 'reservation'>
             }
             num_attendees={watchNumAttendees}
           />
         )}
       </DialogContent>
-      {phase === "form" ? (
+      {phase === 'form' ? (
         <DialogActions>
           <Button
-            onClick={() => setPhase("summary")}
+            onClick={() => setPhase('summary')}
             variant="contained"
             color="primary"
             disabled={!!alertMessage}
@@ -309,7 +312,7 @@ const ReservationCreater = ({
             確定
           </Button>
           <Button
-            onClick={() => setPhase("form")}
+            onClick={() => setPhase('form')}
             variant="outlined"
             color="primary"
           >

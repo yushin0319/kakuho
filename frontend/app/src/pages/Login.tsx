@@ -1,22 +1,22 @@
 // app/src/pages/Login.tsx
-import { Box, Button, Container, Typography } from "@mui/material";
-import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import ValidatedForm from "../components/ValidatedForm";
-import { useAuth } from "../context/AuthContext";
+import { Box, Button, Container, Typography } from '@mui/material';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import ValidatedForm from '../components/ValidatedForm';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   // React Hook Formの設定
   const methods = useForm({
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -27,13 +27,13 @@ const Login = () => {
       // ログイン処理を実行
       const currentUser = await login(email, password);
       if (currentUser.is_admin) {
-        navigate("/check-in-list");
+        navigate('/check-in-list');
       } else {
-        navigate("/booking");
+        navigate('/booking');
       }
-    } catch (error) {
+    } catch (_error) {
       setError(
-        "ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。"
+        'ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。',
       );
     }
   };
@@ -55,8 +55,8 @@ const Login = () => {
           <Box
             sx={{
               mt: 2,
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               gap: 2,
             }}
           >
@@ -86,10 +86,10 @@ const Login = () => {
       </FormProvider>
 
       <Typography variant="body2" sx={{ mt: 2 }}>
-        アカウントをお持ちでないですか？{" "}
+        アカウントをお持ちでないですか？{' '}
         <Link
           to="/register"
-          style={{ textDecoration: "none", color: "#1976d2" }}
+          style={{ textDecoration: 'none', color: '#1976d2' }}
         >
           新規登録はこちら
         </Link>

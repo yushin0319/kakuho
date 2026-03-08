@@ -9,20 +9,20 @@ import {
   Grid2 as Grid,
   MenuItem,
   TextField,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { ReservationDetail, useAppData } from "../context/AppData";
-import { useNewItemContext } from "../context/NewItemContext";
-import { useSnack } from "../context/SnackContext";
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { type ReservationDetail, useAppData } from '../context/AppData';
+import { useNewItemContext } from '../context/NewItemContext';
+import { useSnack } from '../context/SnackContext';
 import {
   createReservation,
   deleteReservation,
   updateReservation,
-} from "../services/api/reservation";
-import { StageResponse, TicketTypeResponse } from "../services/interfaces";
-import { NumComma, toJST } from "../services/utils";
-import ReservationSummary from "./ReservationSummary";
+} from '../services/api/reservation';
+import type { StageResponse, TicketTypeResponse } from '../services/interfaces';
+import { NumComma, toJST } from '../services/utils';
+import ReservationSummary from './ReservationSummary';
 
 interface ReservationChangerProps {
   reservationDetail: ReservationDetail;
@@ -40,13 +40,13 @@ const ReservationChanger = ({
   reservationDetail: { reservation, event, stage, ticketType, seatGroup, user },
   onClose,
 }: ReservationChangerProps) => {
-  const [phase, setPhase] = useState<"form" | "summary">("form");
+  const [phase, setPhase] = useState<'form' | 'summary'>('form');
   const [selectableStages, setSelectableStages] = useState<StageResponse[]>([]);
   const [selectableTicketTypes, setSelectableTicketTypes] = useState<
     TicketTypeResponse[]
   >([]);
   const [maxAvailable, setMaxAvailable] = useState<number>(
-    seatGroup.capacity + reservation.num_attendees
+    seatGroup.capacity + reservation.num_attendees,
   );
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const { addNewItem } = useNewItemContext();
@@ -72,28 +72,28 @@ const ReservationChanger = ({
       },
     });
 
-  const watchStage = watch("stage");
-  const watchTicketType = watch("ticketType");
-  const watchNumAttendees = watch("numAttendees");
+  const watchStage = watch('stage');
+  const watchTicketType = watch('ticketType');
+  const watchNumAttendees = watch('numAttendees');
 
   // 初期化処理
   useEffect(() => {
     if (!eventLoading) {
       const filteredStages = stages.filter(
-        (stage) => stage.event_id === event.id
+        (stage) => stage.event_id === event.id,
       );
       setSelectableStages(filteredStages);
       const groups = seatGroups.filter((group) => group.stage_id === stage.id);
       const types: TicketTypeResponse[] = [];
-      groups.map((group) => {
+      groups.forEach((group) => {
         const groupTypes = ticketTypes.filter(
-          (type) => type.seat_group_id === group.id
+          (type) => type.seat_group_id === group.id,
         );
         types.push(...groupTypes);
       });
       setSelectableTicketTypes(types);
-      setValue("stage", stage.id);
-      setValue("ticketType", ticketType.id);
+      setValue('stage', stage.id);
+      setValue('ticketType', ticketType.id);
 
       ticketTypes.forEach((type) => {
         if (type.seat_group_id === seatGroup.id) {
@@ -104,7 +104,8 @@ const ReservationChanger = ({
         } else {
           if (
             seatGroups.find(
-              (group) => group.id === type.seat_group_id && group.capacity === 0
+              (group) =>
+                group.id === type.seat_group_id && group.capacity === 0,
             )
           ) {
             setIsSoldOut((prev) => ({
@@ -120,15 +121,25 @@ const ReservationChanger = ({
         }
       });
     }
-  }, [eventLoading, stages, seatGroups, ticketTypes]);
+  }, [
+    eventLoading,
+    stages,
+    seatGroups,
+    ticketTypes,
+    event.id,
+    seatGroup.id,
+    setValue,
+    stage.id,
+    ticketType.id,
+  ]);
 
   // ticketTypeを変更時、availableを再計算する処理
   useEffect(() => {
     const newTicketType = ticketTypes.find(
-      (type) => type.id === watchTicketType
+      (type) => type.id === watchTicketType,
     );
     const newSeatGroup = seatGroups.find(
-      (group) => group.id === newTicketType?.seat_group_id
+      (group) => group.id === newTicketType?.seat_group_id,
     );
     const newNumAttendees = watchNumAttendees;
     if (!newSeatGroup || !newTicketType) {
@@ -141,12 +152,19 @@ const ReservationChanger = ({
 
     const culcMaxAvailable = Math.min(maxAvailable, 20);
     if (newNumAttendees > culcMaxAvailable) {
-      setAlertMessage("予約可能な人数を超えています");
+      setAlertMessage('予約可能な人数を超えています');
     } else {
       setAlertMessage(null);
     }
     setMaxAvailable(culcMaxAvailable);
-  }, [watchTicketType, watchNumAttendees, eventLoading]);
+  }, [
+    watchTicketType,
+    watchNumAttendees,
+    reservation.num_attendees,
+    seatGroup.id,
+    seatGroups.find,
+    ticketTypes.find,
+  ]);
 
   // stageを変更時、seatGroupとticketTypeを再計算する処理
   useEffect(() => {
@@ -155,12 +173,12 @@ const ReservationChanger = ({
       return;
     }
     const newSeatGroups = seatGroups.filter(
-      (group) => group.stage_id === newStage.id
+      (group) => group.stage_id === newStage.id,
     );
     const newTicketTypes: TicketTypeResponse[] = [];
-    newSeatGroups.map((group) => {
+    newSeatGroups.forEach((group) => {
       const groupTypes = ticketTypes.filter(
-        (type) => type.seat_group_id === group.id
+        (type) => type.seat_group_id === group.id,
       );
       newTicketTypes.push(...groupTypes);
     });
@@ -171,16 +189,23 @@ const ReservationChanger = ({
       newTicketTypes.find((type) => type.type_name === ticketType.type_name) ??
       newTicketTypes[0];
     setSelectableTicketTypes(newTicketTypes);
-    setValue("ticketType", newTicketType.id);
-  }, [watchStage]);
+    setValue('ticketType', newTicketType.id);
+  }, [
+    watchStage,
+    seatGroups.filter,
+    setValue,
+    stages.find,
+    ticketType.type_name,
+    ticketTypes.filter,
+  ]);
 
   // stageごとに完売しているか判定
   const isSoldOutStage = (stage: StageResponse): boolean => {
     const seatGroupsForStage = seatGroups.filter(
-      (group) => group.stage_id === stage.id
+      (group) => group.stage_id === stage.id,
     );
     const ticketTypesForStage = ticketTypes.filter((type) =>
-      seatGroupsForStage.some((group) => group.id === type.seat_group_id)
+      seatGroupsForStage.some((group) => group.id === type.seat_group_id),
     );
     return ticketTypesForStage.every((type) => isSoldOut[type.id]);
   };
@@ -198,7 +223,7 @@ const ReservationChanger = ({
         addNewItem(newItem.id);
         const type = ticketTypes.find((type) => type.id === data.ticketType);
         if (!type) {
-          throw new Error("TicketType not found");
+          throw new Error('TicketType not found');
         }
       } else {
         await updateReservation(reservation.id, {
@@ -208,14 +233,14 @@ const ReservationChanger = ({
         addNewItem(reservation.id);
       }
       setSnack({
-        message: "予約を変更しました",
-        severity: "success",
+        message: '予約を変更しました',
+        severity: 'success',
       });
     } catch (err) {
-      console.error("Reservation update failed:", err);
+      console.error('Reservation update failed:', err);
       setSnack({
-        message: "予約変更に失敗しました",
-        severity: "error",
+        message: '予約変更に失敗しました',
+        severity: 'error',
       });
     } finally {
       reloadData();
@@ -234,13 +259,13 @@ const ReservationChanger = ({
     >
       <DialogTitle
         sx={{
-          backgroundColor: "primary.main",
-          color: "white",
+          backgroundColor: 'primary.main',
+          color: 'white',
         }}
       >
-        {phase === "form"
-          ? "変更箇所を選択してください"
-          : "変更してよろしいですか？"}
+        {phase === 'form'
+          ? '変更箇所を選択してください'
+          : '変更してよろしいですか？'}
       </DialogTitle>
       <DialogContent
         sx={{
@@ -248,7 +273,7 @@ const ReservationChanger = ({
         }}
       >
         {alertMessage && <Alert severity="error">{alertMessage}</Alert>}
-        {phase === "form" ? (
+        {phase === 'form' ? (
           <Grid container spacing={2} sx={{ m: 2 }}>
             <Grid size={12}>
               <Controller
@@ -262,7 +287,7 @@ const ReservationChanger = ({
                     value={
                       selectableStages.find((stage) => stage.id === watchStage)
                         ? watchStage
-                        : ""
+                        : ''
                     }
                     fullWidth
                   >
@@ -272,8 +297,8 @@ const ReservationChanger = ({
                         value={stage.id}
                         disabled={isSoldOutStage(stage)}
                       >
-                        {toJST(stage.start_time, "dateTime")}
-                        {isSoldOutStage(stage) ? "（完売）" : ""}
+                        {toJST(stage.start_time, 'dateTime')}
+                        {isSoldOutStage(stage) ? '（完売）' : ''}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -290,10 +315,10 @@ const ReservationChanger = ({
                     {...field}
                     value={
                       selectableTicketTypes.find(
-                        (type) => type.id === watchTicketType
+                        (type) => type.id === watchTicketType,
                       )
                         ? watchTicketType
-                        : ""
+                        : ''
                     }
                     fullWidth
                   >
@@ -304,7 +329,7 @@ const ReservationChanger = ({
                         disabled={isSoldOut[ticketType.id]}
                       >
                         {ticketType.type_name} - {NumComma(ticketType.price)}円
-                        {isSoldOut[ticketType.id] ? "（完売）" : ""}
+                        {isSoldOut[ticketType.id] ? '（完売）' : ''}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -361,10 +386,10 @@ const ReservationChanger = ({
                 },
                 event,
                 stage: selectableStages.find(
-                  (stage) => stage.id === watchStage
+                  (stage) => stage.id === watchStage,
                 ),
                 ticketType: selectableTicketTypes.find(
-                  (type) => type.id === watchTicketType
+                  (type) => type.id === watchTicketType,
                 ),
                 seatGroup,
                 user,
@@ -374,12 +399,12 @@ const ReservationChanger = ({
         )}
       </DialogContent>
 
-      {phase === "form" ? (
+      {phase === 'form' ? (
         <DialogActions>
           <Button
             variant="contained"
             color="primary"
-            onClick={() => setPhase("summary")}
+            onClick={() => setPhase('summary')}
             disabled={!!alertMessage}
           >
             変更
@@ -397,7 +422,7 @@ const ReservationChanger = ({
           >
             決定
           </Button>
-          <Button variant="outlined" onClick={() => setPhase("form")}>
+          <Button variant="outlined" onClick={() => setPhase('form')}>
             キャンセル
           </Button>
         </DialogActions>

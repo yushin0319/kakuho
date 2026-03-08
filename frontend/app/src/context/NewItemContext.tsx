@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from 'react';
 
 interface NewItemContextType {
   newItems: number[];
@@ -33,7 +33,7 @@ export const NewItemProvider = ({
 export const useNewItemContext = () => {
   const context = useContext(NewItemContext);
   if (!context) {
-    throw new Error("useNewItemContext must be used within a NewItemProvider");
+    throw new Error('useNewItemContext must be used within a NewItemProvider');
   }
   return context;
 };

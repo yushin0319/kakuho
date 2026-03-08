@@ -1,9 +1,9 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
-import { useState } from "react";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { updateEvent } from "../services/api/event";
-import { EventResponse } from "../services/interfaces";
+import { Box, Button, TextField, Typography } from '@mui/material';
+import { useState } from 'react';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import { updateEvent } from '../services/api/event';
+import type { EventResponse } from '../services/interfaces';
 
 interface EventInfoManagerProps {
   event: EventResponse;
@@ -11,7 +11,7 @@ interface EventInfoManagerProps {
 
 const EventInfoManager = ({ event }: EventInfoManagerProps) => {
   const [name, setName] = useState(event.name);
-  const [description, setDescription] = useState(event.description || "");
+  const [description, setDescription] = useState(event.description || '');
   const { loading, error, reloadData } = useAppData();
   const { setSnack } = useSnack();
 
@@ -19,10 +19,10 @@ const EventInfoManager = ({ event }: EventInfoManagerProps) => {
     try {
       await updateEvent(event.id, { name, description });
       reloadData();
-      setSnack({ message: "正常に保存されました", severity: "success" });
+      setSnack({ message: '正常に保存されました', severity: 'success' });
     } catch (e) {
       console.error(e);
-      setSnack({ message: "保存中にエラーが発生しました", severity: "error" });
+      setSnack({ message: '保存中にエラーが発生しました', severity: 'error' });
     }
   };
 

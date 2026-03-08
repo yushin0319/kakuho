@@ -1,9 +1,9 @@
-import { Add, Delete } from "@mui/icons-material";
-import { Button, Card, Grid2 as Grid } from "@mui/material";
-import { FormProvider, useForm } from "react-hook-form";
-import { SeatGroupCreate, TicketTypeCreate } from "../services/interfaces";
-import CreateTicketType from "./CreateTicketType";
-import ValidatedForm from "./ValidatedForm";
+import { Add, Delete } from '@mui/icons-material';
+import { Button, Card, Grid2 as Grid } from '@mui/material';
+import { FormProvider, useForm } from 'react-hook-form';
+import type { SeatGroupCreate, TicketTypeCreate } from '../services/interfaces';
+import CreateTicketType from './CreateTicketType';
+import ValidatedForm from './ValidatedForm';
 
 interface CreateSeatGroupProps {
   id: number;
@@ -11,7 +11,7 @@ interface CreateSeatGroupProps {
   ticketTypes: TicketTypeCreate[];
   onUpdate: (
     seatGroup: SeatGroupCreate,
-    ticketTypes: TicketTypeCreate[]
+    ticketTypes: TicketTypeCreate[],
   ) => void;
   onDelete: () => void;
 }
@@ -24,13 +24,13 @@ const CreateSeatGroup = ({
 }: CreateSeatGroupProps) => {
   const methods = useForm({
     defaultValues: {
-      capacity: "0",
+      capacity: '0',
     },
   });
 
   // チケット種別の追加
   const addTicketType = () => {
-    const newTicketType: TicketTypeCreate = { type_name: "", price: 0 };
+    const newTicketType: TicketTypeCreate = { type_name: '', price: 0 };
     ticketTypes.push(newTicketType);
     onUpdate(seatGroup, ticketTypes);
   };
@@ -51,9 +51,9 @@ const CreateSeatGroup = ({
     onUpdate(
       {
         ...seatGroup,
-        capacity: parseInt(data.capacity),
+        capacity: parseInt(data.capacity, 10),
       },
-      ticketTypes
+      ticketTypes,
     );
   };
 

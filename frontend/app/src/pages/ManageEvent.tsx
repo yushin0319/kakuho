@@ -11,17 +11,17 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from "@mui/material";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import CapacityAdjuster from "../components/CapacityAdjuster";
-import EventDeleter from "../components/EventDeleter";
-import EventDuplicater from "../components/EventDuplicater";
-import EventInfoManager from "../components/EventInfoManager";
-import LoadingScreen from "../components/LoadingScreen";
-import StageManager from "../components/StageManager";
-import TicketTypeManager from "../components/TicketTypeManager";
-import { useAppData } from "../context/AppData";
+} from '@mui/material';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import CapacityAdjuster from '../components/CapacityAdjuster';
+import EventDeleter from '../components/EventDeleter';
+import EventDuplicater from '../components/EventDuplicater';
+import EventInfoManager from '../components/EventInfoManager';
+import LoadingScreen from '../components/LoadingScreen';
+import StageManager from '../components/StageManager';
+import TicketTypeManager from '../components/TicketTypeManager';
+import { useAppData } from '../context/AppData';
 
 const ManageEvent = () => {
   const { futureEvents, pastEvents, loading } = useAppData();
@@ -30,14 +30,14 @@ const ManageEvent = () => {
     anchor: HTMLElement | null;
   }>({ id: null, anchor: null });
   const [expandedAccordion, setExpandedAccordion] = useState<number | null>(
-    null
+    null,
   );
-  const [activeAction, setActiveAction] = useState<string>("");
+  const [activeAction, setActiveAction] = useState<string>('');
 
   // メニューを開く
   const handleMenuClick = (
     id: number,
-    event: React.MouseEvent<HTMLButtonElement>
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     setOpenMenu({ id, anchor: event.currentTarget });
   };
@@ -51,20 +51,20 @@ const ManageEvent = () => {
   const handleExpand = (id: number, action: string) => {
     if (openMenu.id === id) {
       setExpandedAccordion(null);
-      setActiveAction("");
+      setActiveAction('');
       setTimeout(() => {
         setExpandedAccordion(id);
         setActiveAction(action);
       }, 0);
     } else if (
       action === activeAction ||
-      (action === "" && expandedAccordion === id)
+      (action === '' && expandedAccordion === id)
     ) {
       setExpandedAccordion(null);
-      setActiveAction("");
+      setActiveAction('');
     } else {
       setExpandedAccordion(null);
-      setActiveAction("");
+      setActiveAction('');
       setTimeout(() => {
         setExpandedAccordion(id);
         setActiveAction(action);
@@ -82,7 +82,7 @@ const ManageEvent = () => {
       {futureEvents.map((event) => (
         <Card sx={{ mb: 2 }} key={event.id}>
           <Accordion key={event.id} expanded={expandedAccordion === event.id}>
-            <AccordionSummary onClick={() => handleExpand(event.id, "")}>
+            <AccordionSummary onClick={() => handleExpand(event.id, '')}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -96,14 +96,14 @@ const ManageEvent = () => {
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleExpand(event.id, "edit")}
+                    onClick={() => handleExpand(event.id, 'edit')}
                   >
                     情報変更
                   </Button>
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleExpand(event.id, "seat")}
+                    onClick={() => handleExpand(event.id, 'seat')}
                   >
                     残席調整
                   </Button>
@@ -124,7 +124,7 @@ const ManageEvent = () => {
                 <MenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleExpand(event.id, "manage-stage");
+                    handleExpand(event.id, 'manage-stage');
                   }}
                 >
                   ステージ編集
@@ -132,7 +132,7 @@ const ManageEvent = () => {
                 <MenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleExpand(event.id, "manage-ticket");
+                    handleExpand(event.id, 'manage-ticket');
                   }}
                 >
                   チケット編集
@@ -140,7 +140,7 @@ const ManageEvent = () => {
                 <MenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleExpand(event.id, "duplicate");
+                    handleExpand(event.id, 'duplicate');
                   }}
                 >
                   イベント複製
@@ -148,7 +148,7 @@ const ManageEvent = () => {
                 <MenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleExpand(event.id, "delete");
+                    handleExpand(event.id, 'delete');
                   }}
                 >
                   イベント全削除
@@ -158,17 +158,17 @@ const ManageEvent = () => {
             <AccordionDetails>
               {expandedAccordion === event.id && (
                 <Box width="100%">
-                  {activeAction === "edit" ? (
+                  {activeAction === 'edit' ? (
                     <EventInfoManager event={event} />
-                  ) : activeAction === "seat" ? (
+                  ) : activeAction === 'seat' ? (
                     <CapacityAdjuster event={event} />
-                  ) : activeAction === "manage-stage" ? (
+                  ) : activeAction === 'manage-stage' ? (
                     <StageManager event={event} />
-                  ) : activeAction === "manage-ticket" ? (
+                  ) : activeAction === 'manage-ticket' ? (
                     <TicketTypeManager event={event} />
-                  ) : activeAction === "duplicate" ? (
+                  ) : activeAction === 'duplicate' ? (
                     <EventDuplicater event={event} />
-                  ) : activeAction === "delete" ? (
+                  ) : activeAction === 'delete' ? (
                     <EventDeleter event={event} />
                   ) : (
                     <></>
@@ -185,7 +185,7 @@ const ManageEvent = () => {
       {pastEvents.map((event) => (
         <Card sx={{ mb: 2 }} key={event.id}>
           <Accordion key={event.id} expanded={expandedAccordion === event.id}>
-            <AccordionSummary onClick={() => handleExpand(event.id, "")}>
+            <AccordionSummary onClick={() => handleExpand(event.id, '')}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -199,14 +199,14 @@ const ManageEvent = () => {
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleExpand(event.id, "edit")}
+                    onClick={() => handleExpand(event.id, 'edit')}
                   >
                     情報変更
                   </Button>
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleExpand(event.id, "seat")}
+                    onClick={() => handleExpand(event.id, 'seat')}
                   >
                     残席調整
                   </Button>
@@ -227,7 +227,7 @@ const ManageEvent = () => {
                 <MenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleExpand(event.id, "manage-stage");
+                    handleExpand(event.id, 'manage-stage');
                   }}
                 >
                   ステージ編集
@@ -235,7 +235,7 @@ const ManageEvent = () => {
                 <MenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleExpand(event.id, "manage-ticket");
+                    handleExpand(event.id, 'manage-ticket');
                   }}
                 >
                   チケット編集
@@ -243,7 +243,7 @@ const ManageEvent = () => {
                 <MenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleExpand(event.id, "duplicate");
+                    handleExpand(event.id, 'duplicate');
                   }}
                 >
                   イベント複製
@@ -251,7 +251,7 @@ const ManageEvent = () => {
                 <MenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleExpand(event.id, "delete");
+                    handleExpand(event.id, 'delete');
                   }}
                 >
                   イベント全削除
@@ -261,17 +261,17 @@ const ManageEvent = () => {
             <AccordionDetails>
               {expandedAccordion === event.id && (
                 <Box width="100%">
-                  {activeAction === "edit" ? (
+                  {activeAction === 'edit' ? (
                     <EventInfoManager event={event} />
-                  ) : activeAction === "seat" ? (
+                  ) : activeAction === 'seat' ? (
                     <CapacityAdjuster event={event} />
-                  ) : activeAction === "manage-stage" ? (
+                  ) : activeAction === 'manage-stage' ? (
                     <StageManager event={event} />
-                  ) : activeAction === "manage-ticket" ? (
+                  ) : activeAction === 'manage-ticket' ? (
                     <TicketTypeManager event={event} />
-                  ) : activeAction === "duplicate" ? (
+                  ) : activeAction === 'duplicate' ? (
                     <EventDuplicater event={event} />
-                  ) : activeAction === "delete" ? (
+                  ) : activeAction === 'delete' ? (
                     <EventDeleter event={event} />
                   ) : (
                     <></>

@@ -1,17 +1,17 @@
 // app/src/pages/Booking.tsx
-import { Box, Card, CardContent, Container, Typography } from "@mui/material";
-import { useState } from "react";
-import Calendar from "../components/Calendar";
-import LoadingScreen from "../components/LoadingScreen";
-import { useAppData } from "../context/AppData";
-import { EventResponse } from "../services/interfaces";
-import { toJST } from "../services/utils";
+import { Box, Card, CardContent, Container, Typography } from '@mui/material';
+import { useState } from 'react';
+import Calendar from '../components/Calendar';
+import LoadingScreen from '../components/LoadingScreen';
+import { useAppData } from '../context/AppData';
+import type { EventResponse } from '../services/interfaces';
+import { toJST } from '../services/utils';
 
 const Booking = () => {
   const { futureEvents, eventStartDates, eventEndDates, loading, error } =
     useAppData();
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
-    null
+    null,
   );
 
   if (error) return <div>エラーが発生しました</div>;
@@ -35,7 +35,7 @@ const Booking = () => {
                 sx={{
                   my: 2,
                   p: 2,
-                  cursor: "pointer",
+                  cursor: 'pointer',
                 }}
               >
                 <CardContent>
@@ -46,9 +46,9 @@ const Booking = () => {
                     {eventStartDates[event.id] && eventEndDates[event.id]
                       ? `${toJST(
                           eventStartDates[event.id],
-                          "fullDate"
-                        )} - ${toJST(eventEndDates[event.id], "fullDate")}`
-                      : ""}
+                          'fullDate',
+                        )} - ${toJST(eventEndDates[event.id], 'fullDate')}`
+                      : ''}
                   </Typography>
                   <Typography
                     variant="body1"

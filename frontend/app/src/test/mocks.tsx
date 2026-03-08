@@ -1,34 +1,35 @@
 // src/test/mocks.tsx
 // テスト用のモックデータとプロバイダー
-import { vi } from "vitest";
-import { ReactNode } from "react";
-import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { UserResponse, EventResponse } from "../services/interfaces";
-import { ReservationDetail } from "../context/AppData";
-import { SnackContext } from "../context/SnackContext";
-import type { SnackContextType } from "../context/SnackContext";
+
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import type { ReactNode } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { vi } from 'vitest';
+import type { ReservationDetail } from '../context/AppData';
+import type { SnackContextType } from '../context/SnackContext';
+import { SnackContext } from '../context/SnackContext';
+import type { EventResponse, UserResponse } from '../services/interfaces';
 
 // モックユーザーデータ
 export const mockUser: UserResponse = {
   id: 1,
-  email: "test@example.com",
-  nickname: "テストユーザー",
+  email: 'test@example.com',
+  nickname: 'テストユーザー',
   is_admin: false,
 };
 
 export const mockAdminUser: UserResponse = {
   id: 2,
-  email: "admin@example.com",
-  nickname: "管理者",
+  email: 'admin@example.com',
+  nickname: '管理者',
   is_admin: true,
 };
 
 // モックイベントデータ
 export const mockEvent: EventResponse = {
   id: 1,
-  name: "テストイベント",
-  description: "テストイベントの説明",
+  name: 'テストイベント',
+  description: 'テストイベントの説明',
 };
 
 // モック予約データ
@@ -40,14 +41,14 @@ const testTheme = createTheme();
 // 基本的なラッパー（Router + Theme）
 export const TestWrapper = ({ children }: { children: ReactNode }) => (
   <BrowserRouter>
-    <ThemeProvider theme={testTheme}>
-      {children}
-    </ThemeProvider>
+    <ThemeProvider theme={testTheme}>{children}</ThemeProvider>
   </BrowserRouter>
 );
 
 // SnackContextを注入できるTestWrapper（vi.mock不要）
-export const createTestWrapper = (snackOverrides?: Partial<SnackContextType>) => {
+export const createTestWrapper = (
+  snackOverrides?: Partial<SnackContextType>,
+) => {
   const snackValue: SnackContextType = {
     snack: null,
     setSnack: vi.fn(),

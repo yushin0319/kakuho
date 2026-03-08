@@ -1,8 +1,8 @@
 // app/src/components/Layout.tsx
-import { Container } from "@mui/material";
-import { ReactNode } from "react";
-import { useLocation } from "react-router-dom";
-import Header from "./Header";
+import { Container } from '@mui/material';
+import type { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
+import Header from './Header';
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,9 +13,9 @@ const Layout = ({ children }: LayoutProps) => {
 
   // ログインページや新規登録ページかどうかを判定
   const isLoginOrRegisterPage =
-    location.pathname === "/login" ||
-    location.pathname === "/register" ||
-    location.pathname === "/";
+    location.pathname === '/login' ||
+    location.pathname === '/register' ||
+    location.pathname === '/';
 
   return (
     <Container sx={{ p: 0, m: 0 }}>

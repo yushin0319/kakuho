@@ -6,8 +6,11 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-} from "@mui/material";
-import { SeatGroupResponse, TicketTypeResponse } from "../services/interfaces";
+} from '@mui/material';
+import type {
+  SeatGroupResponse,
+  TicketTypeResponse,
+} from '../services/interfaces';
 
 const SeatGroupSelector = ({
   open,
@@ -40,7 +43,7 @@ const SeatGroupSelector = ({
               >
                 {group.ticketTypes
                   .map((tt) => `${tt.type_name} (${tt.price}円)`)
-                  .join(", ")}
+                  .join(', ')}
               </Typography>
             ))}
             <Button

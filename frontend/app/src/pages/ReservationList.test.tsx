@@ -1,9 +1,9 @@
 // src/pages/ReservationList.test.tsx
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import ReservationList from "./ReservationList";
-import { TestWrapper } from "../test/mocks";
-import { ReservationDetail } from "../context/AppData";
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import type { ReservationDetail } from '../context/AppData';
+import { TestWrapper } from '../test/mocks';
+import ReservationList from './ReservationList';
 
 // AppData モック
 const mockAppData = {
@@ -23,7 +23,7 @@ const mockAppData = {
   reloadData: vi.fn(),
 };
 
-vi.mock("../context/AppData", () => ({
+vi.mock('../context/AppData', () => ({
   useAppData: () => mockAppData,
 }));
 
@@ -34,17 +34,17 @@ const mockNewItemContext = {
   clearNewItems: vi.fn(),
 };
 
-vi.mock("../context/NewItemContext", () => ({
+vi.mock('../context/NewItemContext', () => ({
   useNewItemContext: () => mockNewItemContext,
 }));
 
 // LoadingScreen モック
-vi.mock("../components/LoadingScreen", () => ({
+vi.mock('../components/LoadingScreen', () => ({
   default: () => <div data-testid="loading-screen">Loading...</div>,
 }));
 
 // ReservationCard モック
-vi.mock("../components/ReservationCard", () => ({
+vi.mock('../components/ReservationCard', () => ({
   default: ({
     reservationDetail,
     isExpanded,
@@ -74,29 +74,29 @@ const pastDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 const createMockReservation = (
   id: number,
   eventName: string,
-  startTime: string
+  startTime: string,
 ): ReservationDetail => ({
   reservation: {
     id,
     num_attendees: 1,
     user_id: 1,
-    created_at: "2026-01-01T00:00:00",
+    created_at: '2026-01-01T00:00:00',
     ticket_type_id: 1,
     is_paid: false,
   },
-  event: { id: 1, name: eventName, description: "説明" },
+  event: { id: 1, name: eventName, description: '説明' },
   stage: { id: 1, event_id: 1, start_time: startTime, end_time: startTime },
   seatGroup: { id: 1, stage_id: 1, capacity: 100 },
-  ticketType: { id: 1, seat_group_id: 1, type_name: "一般", price: 1000 },
+  ticketType: { id: 1, seat_group_id: 1, type_name: '一般', price: 1000 },
   user: {
     id: 1,
-    email: "test@example.com",
-    nickname: "テスト",
+    email: 'test@example.com',
+    nickname: 'テスト',
     is_admin: false,
   },
 });
 
-describe("ReservationList", () => {
+describe('ReservationList', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockAppData.reservations = [];
@@ -105,85 +105,85 @@ describe("ReservationList", () => {
     mockNewItemContext.newItems = [];
   });
 
-  it("予約がない場合に空メッセージを表示する", () => {
+  it('予約がない場合に空メッセージを表示する', () => {
     render(<ReservationList />, { wrapper: TestWrapper });
 
-    expect(screen.getByText("予約がありません")).toBeInTheDocument();
+    expect(screen.getByText('予約がありません')).toBeInTheDocument();
   });
 
-  it("予約がある場合にQRコード案内を表示する", () => {
+  it('予約がある場合にQRコード案内を表示する', () => {
     mockAppData.reservations = [
-      createMockReservation(1, "テストイベント", futureDate),
+      createMockReservation(1, 'テストイベント', futureDate),
     ];
 
     render(<ReservationList />, { wrapper: TestWrapper });
 
     expect(
-      screen.getByText("タップするとQRコードが表示されます")
+      screen.getByText('タップするとQRコードが表示されます'),
     ).toBeInTheDocument();
   });
 
-  it("ローディング中にLoadingScreenを表示する", () => {
+  it('ローディング中にLoadingScreenを表示する', () => {
     mockAppData.loading = true;
 
     render(<ReservationList />, { wrapper: TestWrapper });
 
-    expect(screen.getByTestId("loading-screen")).toBeInTheDocument();
+    expect(screen.getByTestId('loading-screen')).toBeInTheDocument();
   });
 
-  it("エラー時にエラーメッセージを表示する", () => {
-    mockAppData.error = "データ取得失敗";
+  it('エラー時にエラーメッセージを表示する', () => {
+    mockAppData.error = 'データ取得失敗';
 
     render(<ReservationList />, { wrapper: TestWrapper });
 
     expect(screen.getByText(/Error: データ取得失敗/)).toBeInTheDocument();
   });
 
-  it("未来の予約を表示する", () => {
+  it('未来の予約を表示する', () => {
     mockAppData.reservations = [
-      createMockReservation(1, "未来のイベント", futureDate),
+      createMockReservation(1, '未来のイベント', futureDate),
     ];
 
     render(<ReservationList />, { wrapper: TestWrapper });
 
-    expect(screen.getByText("未来のイベント")).toBeInTheDocument();
+    expect(screen.getByText('未来のイベント')).toBeInTheDocument();
   });
 
-  it("過去のイベントセクションが表示される", () => {
+  it('過去のイベントセクションが表示される', () => {
     mockAppData.reservations = [
-      createMockReservation(1, "過去のイベント1", pastDate),
+      createMockReservation(1, '過去のイベント1', pastDate),
     ];
 
     render(<ReservationList />, { wrapper: TestWrapper });
 
-    expect(screen.getByText("過去のイベント")).toBeInTheDocument();
+    expect(screen.getByText('過去のイベント')).toBeInTheDocument();
   });
 
-  it("カードクリックで展開状態が切り替わる", async () => {
+  it('カードクリックで展開状態が切り替わる', async () => {
     const user = userEvent.setup();
     mockAppData.reservations = [
-      createMockReservation(1, "テストイベント", futureDate),
+      createMockReservation(1, 'テストイベント', futureDate),
     ];
 
     render(<ReservationList />, { wrapper: TestWrapper });
 
     // クリックして展開
-    await user.click(screen.getByTestId("reservation-card-1"));
-    expect(screen.getByTestId("expanded")).toBeInTheDocument();
+    await user.click(screen.getByTestId('reservation-card-1'));
+    expect(screen.getByTestId('expanded')).toBeInTheDocument();
 
     // 再クリックで閉じる
-    await user.click(screen.getByTestId("reservation-card-1"));
-    expect(screen.queryByTestId("expanded")).not.toBeInTheDocument();
+    await user.click(screen.getByTestId('reservation-card-1'));
+    expect(screen.queryByTestId('expanded')).not.toBeInTheDocument();
   });
 
-  it("新規予約にはnewバッジが表示される", () => {
+  it('新規予約にはnewバッジが表示される', () => {
     mockAppData.reservations = [
-      createMockReservation(1, "新規予約", futureDate),
+      createMockReservation(1, '新規予約', futureDate),
     ];
     mockNewItemContext.newItems = [1];
 
     render(<ReservationList />, { wrapper: TestWrapper });
 
-    expect(screen.getByTestId("new-badge")).toBeInTheDocument();
+    expect(screen.getByTestId('new-badge')).toBeInTheDocument();
   });
 });

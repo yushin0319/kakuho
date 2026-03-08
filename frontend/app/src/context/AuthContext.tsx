@@ -1,19 +1,19 @@
 // app/src/context/AuthContext.tsx
 import {
   createContext,
-  ReactNode,
+  type ReactNode,
   useContext,
   useEffect,
   useState,
-} from "react";
+} from 'react';
 import {
   login as apiLogin,
   logout as apiLogout,
   getCurrentUser,
-} from "../services/api/auth";
-import { signupUser } from "../services/api/user";
-import { UserCreate, UserResponse } from "../services/interfaces";
-import { useSnack } from "./SnackContext";
+} from '../services/api/auth';
+import { signupUser } from '../services/api/user';
+import type { UserCreate, UserResponse } from '../services/interfaces';
+import { useSnack } from './SnackContext';
 
 // AuthContextの型定義
 type AuthContextType = {
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setIsAuthenticated(true);
       return currentUser;
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error('Login failed:', error);
       throw error;
     }
   };
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const currentUser = await login(newUser.email, data.password);
       return currentUser;
     } catch (error) {
-      console.error("Signup failed:", error);
+      console.error('Signup failed:', error);
       throw error;
     }
   };
@@ -69,7 +69,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // ログアウト関数（Cookie削除APIを呼び出し、即座にローカル状態をクリア）
   const logout = () => {
     apiLogout().catch(() => {
-      setSnack({ message: "サーバーへのログアウト通知に失敗しました", severity: "warning" });
+      setSnack({
+        message: 'サーバーへのログアウト通知に失敗しました',
+        severity: 'warning',
+      });
     });
     setUser(null);
     setIsAuthenticated(false);
@@ -83,7 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(currentUser);
         setIsAuthenticated(true);
       } catch (error) {
-        console.error("Failed to fetch current user:", error);
+        console.error('Failed to fetch current user:', error);
       } finally {
         setLoading(false); // ローディング完了
       }
@@ -95,10 +98,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user) {
       setSnack({
         message: `こんにちは、 ${user.nickname || user.email}さん！`,
-        severity: "success",
+        severity: 'success',
       });
     }
-  }, [user]);
+  }, [user, setSnack]);
 
   return (
     <AuthContext.Provider
@@ -121,7 +124,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

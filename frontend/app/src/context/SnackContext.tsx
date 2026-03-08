@@ -1,9 +1,9 @@
-import { useState, createContext, useContext } from "react";
-import { Snackbar, Alert } from "@mui/material";
+import { Alert, Snackbar } from '@mui/material';
+import { createContext, useContext, useState } from 'react';
 
 export interface Snack {
   message: string;
-  severity: "success" | "info" | "warning" | "error";
+  severity: 'success' | 'info' | 'warning' | 'error';
 }
 
 export interface SnackContextType {
@@ -22,17 +22,17 @@ export const SnackProvider = ({ children }: { children: React.ReactNode }) => {
       <Snackbar
         open={snack !== null}
         autoHideDuration={
-          snack?.severity === "error"
+          snack?.severity === 'error'
             ? 6000
-            : snack?.severity === "warning"
+            : snack?.severity === 'warning'
               ? 5000
-              : snack?.severity === "info"
+              : snack?.severity === 'info'
                 ? 4000
                 : 3000
         }
         onClose={() => setSnack(null)}
       >
-        <Alert severity={snack?.severity} sx={{ width: "100%" }}>
+        <Alert severity={snack?.severity} sx={{ width: '100%' }}>
           {snack?.message}
         </Alert>
       </Snackbar>
@@ -44,7 +44,7 @@ export const useSnack = () => {
   const context = useContext(SnackContext);
 
   if (!context) {
-    throw new Error("useSnack must be used within a SnackProvider");
+    throw new Error('useSnack must be used within a SnackProvider');
   }
 
   return context;

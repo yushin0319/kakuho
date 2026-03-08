@@ -6,15 +6,15 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-} from "@mui/material";
-import { useState } from "react";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { deleteEvent } from "../services/api/event";
-import { deleteSeatGroup } from "../services/api/seatGroup";
-import { deleteStage } from "../services/api/stage";
-import { deleteTicketType } from "../services/api/ticketType";
-import { EventResponse } from "../services/interfaces";
+} from '@mui/material';
+import { useState } from 'react';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import { deleteEvent } from '../services/api/event';
+import { deleteSeatGroup } from '../services/api/seatGroup';
+import { deleteStage } from '../services/api/stage';
+import { deleteTicketType } from '../services/api/ticketType';
+import type { EventResponse } from '../services/interfaces';
 
 const EventDeleter = ({ event }: { event: EventResponse }) => {
   const { stages, seatGroups, ticketTypes, reservations, reloadData } =
@@ -26,29 +26,29 @@ const EventDeleter = ({ event }: { event: EventResponse }) => {
   const handleDelete = async () => {
     try {
       const filteredStages = stages.filter(
-        (stage) => stage.event_id === event.id
+        (stage) => stage.event_id === event.id,
       );
       const filteredSeatGroups = seatGroups.filter((sg) =>
-        filteredStages.some((stage) => stage.id === sg.stage_id)
+        filteredStages.some((stage) => stage.id === sg.stage_id),
       );
       const filteredTicketTypes = ticketTypes.filter((tt) =>
-        filteredSeatGroups.some((sg) => sg.id === tt.seat_group_id)
+        filteredSeatGroups.some((sg) => sg.id === tt.seat_group_id),
       );
 
       // 並列で削除
       await Promise.all(
-        filteredTicketTypes.map((tt) => deleteTicketType(tt.id))
+        filteredTicketTypes.map((tt) => deleteTicketType(tt.id)),
       );
       await Promise.all(filteredSeatGroups.map((sg) => deleteSeatGroup(sg.id)));
       await Promise.all(filteredStages.map((stage) => deleteStage(stage.id)));
 
       await deleteEvent(event.id);
 
-      setSnack({ message: "イベントを削除しました", severity: "success" });
+      setSnack({ message: 'イベントを削除しました', severity: 'success' });
       setOpen(false);
     } catch (e) {
       console.error(e);
-      setSnack({ message: "イベントの削除に失敗しました", severity: "error" });
+      setSnack({ message: 'イベントの削除に失敗しました', severity: 'error' });
     }
     reloadData();
   };

@@ -1,9 +1,9 @@
-import { Box, Button, Container, Typography } from "@mui/material";
-import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import LoadingScreen from "../components/LoadingScreen";
-import { useAppData } from "../context/AppData";
-import { useAuth } from "../context/AuthContext";
+import { Box, Button, Container, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import LoadingScreen from '../components/LoadingScreen';
+import { useAppData } from '../context/AppData';
+import { useAuth } from '../context/AuthContext';
 
 const DemoLogin = () => {
   const navigate = useNavigate();
@@ -14,8 +14,8 @@ const DemoLogin = () => {
     try {
       await login(email, password);
     } catch (error) {
-      console.error("Quick login failed:", error);
-      alert("ログインに失敗しました。");
+      console.error('Quick login failed:', error);
+      alert('ログインに失敗しました。');
     }
   };
 
@@ -23,30 +23,30 @@ const DemoLogin = () => {
     if (loading) return;
     if (user) {
       if (user.is_admin) {
-        navigate("/check-in-list");
+        navigate('/check-in-list');
       } else {
         if (reservations.length > 0) {
-          navigate("/my-reservations");
+          navigate('/my-reservations');
         } else {
-          navigate("/booking");
+          navigate('/booking');
         }
       }
     }
-  }, [loading, reservations]);
+  }, [loading, reservations, navigate, user]);
 
   if (loading) return <LoadingScreen />;
 
   return (
-    <Container sx={{ mt: 5, textAlign: "center", justifyItems: "center" }}>
+    <Container sx={{ mt: 5, textAlign: 'center', justifyItems: 'center' }}>
       <Box
         display="flex"
         gap={2}
-        sx={{ alignItems: "center", mb: 2, px: "auto" }}
+        sx={{ alignItems: 'center', mb: 2, px: 'auto' }}
       >
         <img
           src="logo.png"
           alt="Logo"
-          style={{ width: "60px", height: "auto" }}
+          style={{ width: '60px', height: 'auto' }}
         />
         <Typography variant="h4">Kakuho</Typography>
       </Box>
@@ -54,7 +54,7 @@ const DemoLogin = () => {
       <Typography variant="caption" color="text.secondary">
         Your Event Management System
       </Typography>
-      <Typography variant="body1" sx={{ mt: 5, color: "text.secondary" }}>
+      <Typography variant="body1" sx={{ mt: 5, color: 'text.secondary' }}>
         体験モード
       </Typography>
       <Box display="flex" justifyContent="center" flexDirection="column">
@@ -69,20 +69,20 @@ const DemoLogin = () => {
       <Box
         sx={{
           mt: 3,
-          display: "flex",
-          flexDirection: "column",
+          display: 'flex',
+          flexDirection: 'column',
           gap: 2,
-          alignItems: "center",
+          alignItems: 'center',
         }}
       >
         {/* 管理者ログインボタン */}
-        <Box display="flex" gap={2} sx={{ width: "100%" }}>
+        <Box display="flex" gap={2} sx={{ width: '100%' }}>
           <Button
             variant="outlined"
             color="error"
             fullWidth
             onClick={() =>
-              handleQuickLogin("admin@example.com", "adminpassword")
+              handleQuickLogin('admin@example.com', 'adminpassword')
             }
             sx={{
               py: 3,
@@ -97,12 +97,12 @@ const DemoLogin = () => {
             color="primary"
             fullWidth
             onClick={() =>
-              handleQuickLogin("sample@example.com", "userpassword")
+              handleQuickLogin('sample@example.com', 'userpassword')
             }
             sx={{
               py: 3,
               px: 4,
-              whiteSpace: "nowrap",
+              whiteSpace: 'nowrap',
             }}
           >
             <Typography variant="h6">一般ユーザー</Typography>
@@ -113,9 +113,9 @@ const DemoLogin = () => {
       {/* 通常のログインページへのリンク */}
       <Typography
         variant="body2"
-        sx={{ mt: 4, color: "text.secondary", textAlign: "center" }}
+        sx={{ mt: 4, color: 'text.secondary', textAlign: 'center' }}
       >
-        <Link to="/login" style={{ textDecoration: "none", color: "#1976d2" }}>
+        <Link to="/login" style={{ textDecoration: 'none', color: '#1976d2' }}>
           通常のログイン画面へ
         </Link>
       </Typography>

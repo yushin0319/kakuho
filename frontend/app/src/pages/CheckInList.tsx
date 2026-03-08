@@ -1,9 +1,9 @@
 // app/src/pages/ManageList.tsx
-import { Container, Typography } from "@mui/material";
-import { useState } from "react";
-import CheckInEvent from "../components/CheckInEvent";
-import LoadingScreen from "../components/LoadingScreen";
-import { useAppData } from "../context/AppData";
+import { Container, Typography } from '@mui/material';
+import { useState } from 'react';
+import CheckInEvent from '../components/CheckInEvent';
+import LoadingScreen from '../components/LoadingScreen';
+import { useAppData } from '../context/AppData';
 
 const CheckInList = () => {
   const { futureEvents, pastEvents, loading, error } = useAppData();

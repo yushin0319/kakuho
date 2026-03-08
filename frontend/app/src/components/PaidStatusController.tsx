@@ -4,11 +4,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-} from "@mui/material";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { updateReservation } from "../services/api/reservation";
-import ReservationSummary from "./ReservationSummary";
+} from '@mui/material';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import { updateReservation } from '../services/api/reservation';
+import ReservationSummary from './ReservationSummary';
 
 interface PaidStatusControllerProps {
   reservationId: number;
@@ -24,7 +24,7 @@ const PaidStatusController = ({
 
   // 該当する予約を直接取得
   const reservation = reservations.find(
-    (res) => res.reservation.id === reservationId
+    (res) => res.reservation.id === reservationId,
   );
 
   const handlePaidStatusChange = async () => {
@@ -36,8 +36,8 @@ const PaidStatusController = ({
       });
       onClose();
     } catch (error) {
-      console.error("Failed to update reservation:", error);
-      setSnack({ message: "更新に失敗しました", severity: "error" });
+      console.error('Failed to update reservation:', error);
+      setSnack({ message: '更新に失敗しました', severity: 'error' });
     } finally {
       reloadData();
     }
@@ -61,16 +61,16 @@ const PaidStatusController = ({
       <DialogTitle
         sx={{
           backgroundColor: reservation.reservation.is_paid
-            ? "error.main"
-            : "primary.main",
+            ? 'error.main'
+            : 'primary.main',
           color: reservation.reservation.is_paid
-            ? "error.contrastText"
-            : "white",
+            ? 'error.contrastText'
+            : 'white',
         }}
       >
         {reservation.reservation.is_paid
-          ? "未受付に戻しますか？"
-          : "下記の予約を受付いたします"}
+          ? '未受付に戻しますか？'
+          : '下記の予約を受付いたします'}
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <ReservationSummary item={reservation} />
@@ -78,14 +78,14 @@ const PaidStatusController = ({
       <DialogActions>
         <Button
           variant="contained"
-          color={reservation.reservation.is_paid ? "error" : "primary"}
+          color={reservation.reservation.is_paid ? 'error' : 'primary'}
           onClick={handlePaidStatusChange}
         >
-          {reservation.reservation.is_paid ? "受付取消" : "受付完了"}
+          {reservation.reservation.is_paid ? '受付取消' : '受付完了'}
         </Button>
         <Button
           variant="outlined"
-          color={reservation.reservation.is_paid ? "error" : "primary"}
+          color={reservation.reservation.is_paid ? 'error' : 'primary'}
           onClick={onClose}
         >
           キャンセル

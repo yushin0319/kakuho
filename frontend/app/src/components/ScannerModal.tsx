@@ -6,12 +6,12 @@ import {
   DialogActions,
   DialogContent,
   Typography,
-} from "@mui/material";
-import { useState } from "react";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import PaidStatusController from "./PaidStatusController";
-import QrReader from "./QrReader";
+} from '@mui/material';
+import { useState } from 'react';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import PaidStatusController from './PaidStatusController';
+import QrReader from './QrReader';
 
 interface ScannerModalProps {
   stageId: number;
@@ -19,7 +19,7 @@ interface ScannerModalProps {
 }
 
 const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
-  const [scanResult, setScanResult] = useState<string>("");
+  const [scanResult, setScanResult] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isPaying, setIsPaying] = useState<boolean>(false);
   const { reservations } = useAppData();
@@ -27,38 +27,38 @@ const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
 
   // 予約情報を取得
   const handleQrScanResult = (result: string) => {
-    if (!result.startsWith("Kakuho-")) {
+    if (!result.startsWith('Kakuho-')) {
       setSnack({
-        message: "このQRコードは有効ではありません",
-        severity: "error",
+        message: 'このQRコードは有効ではありません',
+        severity: 'error',
       });
       return;
     }
 
-    const scannedId = result.replace("Kakuho-", "");
+    const scannedId = result.replace('Kakuho-', '');
     setScanResult(scannedId);
 
     const reservation = reservations.find(
-      (res) => res.reservation.id === parseInt(scannedId, 10)
+      (res) => res.reservation.id === parseInt(scannedId, 10),
     );
 
     if (!reservation) {
       setSnack({
-        message: "ご予約が見つかりません",
-        severity: "error",
+        message: 'ご予約が見つかりません',
+        severity: 'error',
       });
       return;
     }
 
     if (reservation.stage.id !== stageId) {
       setSnack({
-        message: "このQRコードは他のステージのものです",
-        severity: "error",
+        message: 'このQRコードは他のステージのものです',
+        severity: 'error',
       });
     } else if (reservation.reservation.is_paid) {
       setSnack({
-        message: "このご予約はお支払い済です",
-        severity: "error",
+        message: 'このご予約はお支払い済です',
+        severity: 'error',
       });
     } else {
       setIsPaying(true);
@@ -66,7 +66,7 @@ const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
   };
 
   const handleClose = () => {
-    setScanResult("");
+    setScanResult('');
     onClose();
   };
 
@@ -76,17 +76,17 @@ const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
         <Typography variant="body1">QRコードをスキャンしてください</Typography>
         <Box
           sx={{
-            height: "240px",
-            overflow: "hidden",
+            height: '240px',
+            overflow: 'hidden',
           }}
         >
           {isLoading && (
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
               }}
             >
               <CircularProgress />
@@ -103,7 +103,7 @@ const ScannerModal = ({ stageId, onClose }: ScannerModalProps) => {
             reservationId={parseInt(scanResult, 10)}
             onClose={() => {
               setIsPaying(false);
-              setScanResult("");
+              setScanResult('');
             }}
           />
         )}

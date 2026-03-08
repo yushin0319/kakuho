@@ -1,8 +1,8 @@
-import { Box, Button } from "@mui/material";
-import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import { ja } from "date-fns/locale/ja";
-import { useState } from "react";
+import { Box, Button } from '@mui/material';
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { ja } from 'date-fns/locale/ja';
+import { useState } from 'react';
 
 const ValidatedTimePicker = ({
   name,
@@ -29,15 +29,15 @@ const ValidatedTimePicker = ({
       dateAdapter={AdapterDateFns}
       adapterLocale={ja}
       localeText={{
-        cancelButtonLabel: "キャンセル",
-        okButtonLabel: "OK",
+        cancelButtonLabel: 'キャンセル',
+        okButtonLabel: 'OK',
       }}
     >
       <Box
         display="flex"
         justifyContent="space-around"
         sx={{
-          width: "100%",
+          width: '100%',
         }}
       >
         <TimePicker
@@ -47,7 +47,7 @@ const ValidatedTimePicker = ({
           onChange={(time) => setSelectedTime(time)}
           slotProps={{
             textField: {
-              variant: "standard",
+              variant: 'standard',
               inputProps: {
                 readOnly: true,
               },

@@ -1,10 +1,10 @@
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Box, Card, Collapse, IconButton, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useAppData } from "../context/AppData";
-import { EventResponse } from "../services/interfaces";
-import CheckInStage from "./CheckInStage";
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Box, Card, Collapse, IconButton, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useAppData } from '../context/AppData';
+import type { EventResponse } from '../services/interfaces';
+import CheckInStage from './CheckInStage';
 
 interface CheckInEventProps {
   event: EventResponse;
@@ -26,7 +26,7 @@ const CheckInEvent = ({ event, isOpen, toggle }: CheckInEventProps) => {
     setOpenStageIds((prevIds) =>
       prevIds.includes(id)
         ? prevIds.filter((stageId) => stageId !== id)
-        : [...prevIds, id]
+        : [...prevIds, id],
     );
   };
 
@@ -41,17 +41,17 @@ const CheckInEvent = ({ event, isOpen, toggle }: CheckInEventProps) => {
       {/* イベントヘッダー */}
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          cursor: "pointer",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
         }}
         onClick={toggle}
       >
         <Typography
           variant="body1"
           sx={{
-            width: "100%",
+            width: '100%',
             m: 1,
           }}
         >
@@ -70,7 +70,7 @@ const CheckInEvent = ({ event, isOpen, toggle }: CheckInEventProps) => {
             .sort(
               (a, b) =>
                 new Date(a.start_time).getTime() -
-                new Date(b.start_time).getTime()
+                new Date(b.start_time).getTime(),
             )
             .map((stage) => (
               <CheckInStage

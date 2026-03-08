@@ -1,9 +1,9 @@
 // src/components/ValidatedForm.test.tsx
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { FormProvider, useForm } from "react-hook-form";
-import { ReactNode } from "react";
-import ValidatedForm from "./ValidatedForm";
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import ValidatedForm from './ValidatedForm';
 
 // react-hook-form の FormProvider ラッパー
 const FormWrapper = ({
@@ -44,105 +44,103 @@ const FormWithSubmit = ({
   return <Wrapper />;
 };
 
-describe("ValidatedForm", () => {
-  it("ラベル付きのテキストフィールドをレンダリングする", () => {
+describe('ValidatedForm', () => {
+  it('ラベル付きのテキストフィールドをレンダリングする', () => {
     render(
       <FormWrapper>
         <ValidatedForm name="test" label="テスト入力" />
-      </FormWrapper>
+      </FormWrapper>,
     );
-    expect(screen.getByLabelText("テスト入力")).toBeInTheDocument();
+    expect(screen.getByLabelText('テスト入力')).toBeInTheDocument();
   });
 
-  it("デフォルト値を表示する", () => {
+  it('デフォルト値を表示する', () => {
     render(
-      <FormWrapper defaultValues={{ title: "初期値" }}>
+      <FormWrapper defaultValues={{ title: '初期値' }}>
         <ValidatedForm name="title" label="タイトル" fieldType="title" />
-      </FormWrapper>
+      </FormWrapper>,
     );
-    expect(screen.getByLabelText("タイトル")).toHaveValue("初期値");
+    expect(screen.getByLabelText('タイトル')).toHaveValue('初期値');
   });
 
-  it("disabled属性が適用される", () => {
+  it('disabled属性が適用される', () => {
     render(
       <FormWrapper>
         <ValidatedForm name="test" label="無効フィールド" disabled />
-      </FormWrapper>
+      </FormWrapper>,
     );
-    expect(screen.getByLabelText("無効フィールド")).toBeDisabled();
+    expect(screen.getByLabelText('無効フィールド')).toBeDisabled();
   });
 
-  it("passwordタイプはtype=passwordになる", () => {
+  it('passwordタイプはtype=passwordになる', () => {
     render(
       <FormWrapper>
         <ValidatedForm name="pass" label="パスワード" fieldType="password" />
-      </FormWrapper>
+      </FormWrapper>,
     );
-    expect(screen.getByLabelText("パスワード")).toHaveAttribute(
-      "type",
-      "password"
+    expect(screen.getByLabelText('パスワード')).toHaveAttribute(
+      'type',
+      'password',
     );
   });
 
-  it("emailタイプはtype=emailになる", () => {
+  it('emailタイプはtype=emailになる', () => {
     render(
       <FormWrapper>
         <ValidatedForm name="mail" label="メール" fieldType="email" />
-      </FormWrapper>
+      </FormWrapper>,
     );
-    expect(screen.getByLabelText("メール")).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText('メール')).toHaveAttribute('type', 'email');
   });
 
-  it("descriptionタイプはmultilineになる", () => {
+  it('descriptionタイプはmultilineになる', () => {
     render(
       <FormWrapper>
         <ValidatedForm name="desc" label="説明" fieldType="description" />
-      </FormWrapper>
+      </FormWrapper>,
     );
     // multiline TextFieldはtextareaをレンダリングする
-    const textarea = screen.getByLabelText("説明");
-    expect(textarea.tagName).toBe("TEXTAREA");
+    const textarea = screen.getByLabelText('説明');
+    expect(textarea.tagName).toBe('TEXTAREA');
   });
 
-  describe("バリデーション", () => {
-    it("titleが空の場合エラーメッセージを表示する", async () => {
+  describe('バリデーション', () => {
+    it('titleが空の場合エラーメッセージを表示する', async () => {
       const onSubmit = vi.fn();
       render(
         <FormWithSubmit onSubmit={onSubmit}>
           <ValidatedForm name="title" label="タイトル" fieldType="title" />
-        </FormWithSubmit>
+        </FormWithSubmit>,
       );
 
-      await userEvent.click(screen.getByText("送信"));
+      await userEvent.click(screen.getByText('送信'));
 
       await waitFor(() => {
-        expect(
-          screen.getByText("名前を入力してください")
-        ).toBeInTheDocument();
+        expect(screen.getByText('名前を入力してください')).toBeInTheDocument();
       });
       expect(onSubmit).not.toHaveBeenCalled();
     });
 
-    it("emailが不正な形式の場合エラーメッセージを表示する", async () => {
+    it('emailが不正な形式の場合エラーメッセージを表示する', async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
       render(
         <FormWithSubmit onSubmit={onSubmit}>
           <ValidatedForm name="email" label="メール" fieldType="email" />
-        </FormWithSubmit>
+        </FormWithSubmit>,
       );
 
-      await user.type(screen.getByLabelText("メール"), "invalid-email");
-      await user.click(screen.getByText("送信"));
+      await user.type(screen.getByLabelText('メール'), 'invalid-email');
+      await user.click(screen.getByText('送信'));
 
       await waitFor(() => {
         expect(
-          screen.getByText("正しいメールアドレス形式で入力してください")
+          screen.getByText('正しいメールアドレス形式で入力してください'),
         ).toBeInTheDocument();
       });
     });
 
-    it("passwordが8文字未満の場合エラーメッセージを表示する", async () => {
+    it('passwordが8文字未満の場合エラーメッセージを表示する', async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
       render(
@@ -152,35 +150,35 @@ describe("ValidatedForm", () => {
             label="パスワード"
             fieldType="password"
           />
-        </FormWithSubmit>
+        </FormWithSubmit>,
       );
 
-      await user.type(screen.getByLabelText("パスワード"), "abc");
-      await user.click(screen.getByText("送信"));
+      await user.type(screen.getByLabelText('パスワード'), 'abc');
+      await user.click(screen.getByText('送信'));
 
       await waitFor(() => {
         expect(
-          screen.getByText("パスワードは8文字以上で入力してください")
+          screen.getByText('パスワードは8文字以上で入力してください'),
         ).toBeInTheDocument();
       });
     });
 
-    it("正しい入力であれば送信が成功する", async () => {
+    it('正しい入力であれば送信が成功する', async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
       render(
         <FormWithSubmit onSubmit={onSubmit}>
           <ValidatedForm name="email" label="メール" fieldType="email" />
-        </FormWithSubmit>
+        </FormWithSubmit>,
       );
 
-      await user.type(screen.getByLabelText("メール"), "test@example.com");
-      await user.click(screen.getByText("送信"));
+      await user.type(screen.getByLabelText('メール'), 'test@example.com');
+      await user.click(screen.getByText('送信'));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
-          { email: "test@example.com" },
-          expect.anything()
+          { email: 'test@example.com' },
+          expect.anything(),
         );
       });
     });

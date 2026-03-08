@@ -5,11 +5,11 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-} from "@mui/material";
-import { ReservationDetail, useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { deleteReservation } from "../services/api/reservation";
-import ReservationSummary from "./ReservationSummary";
+} from '@mui/material';
+import { type ReservationDetail, useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import { deleteReservation } from '../services/api/reservation';
+import ReservationSummary from './ReservationSummary';
 
 interface ReservationDeleterProps {
   reservationDetail: ReservationDetail;
@@ -29,8 +29,8 @@ const ReservationDeleter = ({
       await deleteReservation(reservation.id);
       onClose();
     } catch (error) {
-      console.error("Failed to delete reservation:", error);
-      setSnack({ message: "削除に失敗しました", severity: "error" });
+      console.error('Failed to delete reservation:', error);
+      setSnack({ message: '削除に失敗しました', severity: 'error' });
     } finally {
       reloadData();
     }
@@ -40,8 +40,8 @@ const ReservationDeleter = ({
     <Dialog open onClose={onClose} onClick={(e) => e.stopPropagation()}>
       <DialogTitle
         sx={{
-          backgroundColor: "error.main",
-          color: "error.contrastText",
+          backgroundColor: 'error.main',
+          color: 'error.contrastText',
         }}
       >
         <Typography variant="h6" component="div">

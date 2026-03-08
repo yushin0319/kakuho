@@ -1,11 +1,12 @@
 // src/context/AuthContext.test.tsx
-import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { AuthProvider, useAuth } from "./AuthContext";
-import { mockUser } from "../test/mocks";
-import { SnackContext } from "./SnackContext";
-import type { SnackContextType } from "./SnackContext";
+
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import type React from 'react';
+import { mockUser } from '../test/mocks';
+import { AuthProvider, useAuth } from './AuthContext';
+import type { SnackContextType } from './SnackContext';
+import { SnackContext } from './SnackContext';
 
 // API モック
 const mockApiLogin = vi.fn();
@@ -13,13 +14,13 @@ const mockApiLogout = vi.fn().mockResolvedValue(undefined);
 const mockGetCurrentUser = vi.fn();
 const mockSignupUser = vi.fn();
 
-vi.mock("../services/api/auth", () => ({
+vi.mock('../services/api/auth', () => ({
   login: (...args: unknown[]) => mockApiLogin(...args),
   logout: (...args: unknown[]) => mockApiLogout(...args),
   getCurrentUser: () => mockGetCurrentUser(),
 }));
 
-vi.mock("../services/api/user", () => ({
+vi.mock('../services/api/user', () => ({
   signupUser: (...args: unknown[]) => mockSignupUser(...args),
 }));
 
@@ -35,7 +36,7 @@ const renderWithProviders = (ui: React.ReactNode) =>
   render(
     <SnackContext.Provider value={getSnackValue()}>
       <AuthProvider>{ui}</AuthProvider>
-    </SnackContext.Provider>
+    </SnackContext.Provider>,
   );
 
 // テスト用コンシューマーコンポーネント
@@ -44,7 +45,7 @@ const TestConsumer = () => {
 
   const handleLogin = async () => {
     try {
-      await login("test@example.com", "password123");
+      await login('test@example.com', 'password123');
     } catch {
       // エラーは無視（テストで確認）
     }
@@ -53,9 +54,9 @@ const TestConsumer = () => {
   const handleSignup = async () => {
     try {
       await signup({
-        email: "new@example.com",
-        password: "newpass123",
-        nickname: "新規ユーザー",
+        email: 'new@example.com',
+        password: 'newpass123',
+        nickname: '新規ユーザー',
       });
     } catch {
       // エラーは無視
@@ -64,9 +65,11 @@ const TestConsumer = () => {
 
   return (
     <div>
-      <div data-testid="loading">{loading ? "true" : "false"}</div>
-      <div data-testid="authenticated">{isAuthenticated ? "true" : "false"}</div>
-      <div data-testid="user">{user ? user.email : "null"}</div>
+      <div data-testid="loading">{loading ? 'true' : 'false'}</div>
+      <div data-testid="authenticated">
+        {isAuthenticated ? 'true' : 'false'}
+      </div>
+      <div data-testid="user">{user ? user.email : 'null'}</div>
       <button onClick={handleLogin}>ログイン</button>
       <button onClick={handleSignup}>新規登録</button>
       <button onClick={logout}>ログアウト</button>
@@ -74,83 +77,86 @@ const TestConsumer = () => {
   );
 };
 
-describe("AuthContext", () => {
+describe('AuthContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // デフォルト: 初期ロード時に未認証
-    mockGetCurrentUser.mockRejectedValue(new Error("Not authenticated"));
+    mockGetCurrentUser.mockRejectedValue(new Error('Not authenticated'));
   });
 
-  it("useAuthがAuthProvider外で使われた場合エラーをスローする", () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  it('useAuthがAuthProvider外で使われた場合エラーをスローする', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => render(<TestConsumer />)).toThrow(
-      "useAuth must be used within an AuthProvider"
+      'useAuth must be used within an AuthProvider',
     );
 
     consoleSpy.mockRestore();
   });
 
-  it("初期状態ではloadingがtrueで、認証チェック後にfalseになる", async () => {
+  it('初期状態ではloadingがtrueで、認証チェック後にfalseになる', async () => {
     renderWithProviders(<TestConsumer />);
 
     // 初期ロード完了後
     await waitFor(() => {
-      expect(screen.getByTestId("loading")).toHaveTextContent("false");
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
-    expect(screen.getByTestId("authenticated")).toHaveTextContent("false");
-    expect(screen.getByTestId("user")).toHaveTextContent("null");
+    expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
+    expect(screen.getByTestId('user')).toHaveTextContent('null');
   });
 
-  it("初期ロード時にトークンが有効ならユーザー情報を取得する", async () => {
+  it('初期ロード時にトークンが有効ならユーザー情報を取得する', async () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
     renderWithProviders(<TestConsumer />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
-      expect(screen.getByTestId("user")).toHaveTextContent("test@example.com");
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
+      expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
     });
   });
 
-  it("ログイン成功時にユーザー情報が設定される", async () => {
+  it('ログイン成功時にユーザー情報が設定される', async () => {
     const user = userEvent.setup();
-    mockApiLogin.mockResolvedValue("token123");
+    mockApiLogin.mockResolvedValue('token123');
     mockGetCurrentUser
-      .mockRejectedValueOnce(new Error("Not authenticated")) // 初期ロード
+      .mockRejectedValueOnce(new Error('Not authenticated')) // 初期ロード
       .mockResolvedValue(mockUser); // ログイン後
 
     renderWithProviders(<TestConsumer />);
 
     // 初期ロード完了待ち
     await waitFor(() => {
-      expect(screen.getByTestId("loading")).toHaveTextContent("false");
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
 
-    await user.click(screen.getByText("ログイン"));
+    await user.click(screen.getByText('ログイン'));
 
     await waitFor(() => {
-      expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
-      expect(screen.getByTestId("user")).toHaveTextContent("test@example.com");
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
+      expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
     });
 
-    expect(mockApiLogin).toHaveBeenCalledWith("test@example.com", "password123");
+    expect(mockApiLogin).toHaveBeenCalledWith(
+      'test@example.com',
+      'password123',
+    );
   });
 
-  it("ログイン失敗時にエラーがスローされる", async () => {
+  it('ログイン失敗時にエラーがスローされる', async () => {
     const user = userEvent.setup();
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    mockApiLogin.mockRejectedValue(new Error("Invalid credentials"));
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockApiLogin.mockRejectedValue(new Error('Invalid credentials'));
 
     const ErrorTestConsumer = () => {
       const { login } = useAuth();
-      const [error, setError] = useState("");
+      const [error, setError] = useState('');
 
       const handleLogin = async () => {
         try {
-          await login("test@example.com", "wrong");
-        } catch (e) {
-          setError("ログイン失敗");
+          await login('test@example.com', 'wrong');
+        } catch (_e) {
+          setError('ログイン失敗');
         }
       };
 
@@ -163,22 +169,22 @@ describe("AuthContext", () => {
     };
 
     // useState をインポートに追加
-    const { useState } = await import("react");
+    const { useState } = await import('react');
 
     renderWithProviders(<ErrorTestConsumer />);
 
     await waitFor(() => {});
 
-    await user.click(screen.getByText("ログイン"));
+    await user.click(screen.getByText('ログイン'));
 
     await waitFor(() => {
-      expect(screen.getByTestId("error")).toHaveTextContent("ログイン失敗");
+      expect(screen.getByTestId('error')).toHaveTextContent('ログイン失敗');
     });
 
     consoleSpy.mockRestore();
   });
 
-  it("ログアウト時にユーザー情報がクリアされる", async () => {
+  it('ログアウト時にユーザー情報がクリアされる', async () => {
     const user = userEvent.setup();
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
@@ -186,67 +192,67 @@ describe("AuthContext", () => {
 
     // ログイン状態になるまで待機
     await waitFor(() => {
-      expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
     });
 
-    await user.click(screen.getByText("ログアウト"));
+    await user.click(screen.getByText('ログアウト'));
 
     await waitFor(() => {
-      expect(screen.getByTestId("authenticated")).toHaveTextContent("false");
-      expect(screen.getByTestId("user")).toHaveTextContent("null");
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
+      expect(screen.getByTestId('user')).toHaveTextContent('null');
     });
 
     expect(mockApiLogout).toHaveBeenCalled();
   });
 
-  it("ログアウト時にAPIが失敗してもクライアント側ステートはクリアされる", async () => {
+  it('ログアウト時にAPIが失敗してもクライアント側ステートはクリアされる', async () => {
     const user = userEvent.setup();
     mockGetCurrentUser.mockResolvedValue(mockUser);
-    mockApiLogout.mockRejectedValueOnce(new Error("logout failed"));
+    mockApiLogout.mockRejectedValueOnce(new Error('logout failed'));
 
     renderWithProviders(<TestConsumer />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
     });
 
-    await user.click(screen.getByText("ログアウト"));
+    await user.click(screen.getByText('ログアウト'));
 
     await waitFor(() => {
-      expect(screen.getByTestId("authenticated")).toHaveTextContent("false");
-      expect(screen.getByTestId("user")).toHaveTextContent("null");
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
+      expect(screen.getByTestId('user')).toHaveTextContent('null');
     });
   });
 
-  it("ログアウトAPI失敗時にwarning Snackを表示する", async () => {
+  it('ログアウトAPI失敗時にwarning Snackを表示する', async () => {
     const user = userEvent.setup();
     mockGetCurrentUser.mockResolvedValue(mockUser);
-    mockApiLogout.mockRejectedValueOnce(new Error("logout failed"));
+    mockApiLogout.mockRejectedValueOnce(new Error('logout failed'));
 
     renderWithProviders(<TestConsumer />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
     });
 
-    await user.click(screen.getByText("ログアウト"));
+    await user.click(screen.getByText('ログアウト'));
 
     await waitFor(() => {
       expect(mockSetSnack).toHaveBeenCalledWith(
-        expect.objectContaining({ severity: "warning" })
+        expect.objectContaining({ severity: 'warning' }),
       );
     });
   });
 
-  it("ユーザー設定時にスナック通知が表示される", async () => {
+  it('ユーザー設定時にスナック通知が表示される', async () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
     renderWithProviders(<TestConsumer />);
 
     await waitFor(() => {
       expect(mockSetSnack).toHaveBeenCalledWith({
-        message: "こんにちは、 テストユーザーさん！",
-        severity: "success",
+        message: 'こんにちは、 テストユーザーさん！',
+        severity: 'success',
       });
     });
   });

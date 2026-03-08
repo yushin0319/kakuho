@@ -1,8 +1,8 @@
-import { Delete } from "@mui/icons-material";
-import { Box, Grid2 as Grid, IconButton } from "@mui/material";
-import { FormProvider, useForm } from "react-hook-form";
-import { TicketTypeCreate } from "../services/interfaces";
-import ValidatedForm from "./ValidatedForm";
+import { Delete } from '@mui/icons-material';
+import { Box, Grid2 as Grid, IconButton } from '@mui/material';
+import { FormProvider, useForm } from 'react-hook-form';
+import type { TicketTypeCreate } from '../services/interfaces';
+import ValidatedForm from './ValidatedForm';
 
 interface CreateTicketTypeProps {
   ticketType: TicketTypeCreate;
@@ -18,7 +18,7 @@ const CreateTicketType = ({
   const methods = useForm({
     defaultValues: {
       type_name: ticketType.type_name,
-      price: "0",
+      price: '0',
     },
   });
 
@@ -33,7 +33,7 @@ const CreateTicketType = ({
     <FormProvider {...methods}>
       <Box
         sx={{
-          border: "1px solid #ddd",
+          border: '1px solid #ddd',
           borderRadius: 1,
           py: 2,
           px: 1,
