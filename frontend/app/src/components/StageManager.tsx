@@ -120,11 +120,11 @@ const StageManager = ({ event }: { event: EventResponse }) => {
   function handleAddStage() {
     if (isValid()) {
       const newDateTime = new Date(
-        selectedDate?.getFullYear(),
-        selectedDate?.getMonth(),
-        selectedDate?.getDate(),
-        selectedTime?.getHours(),
-        selectedTime?.getMinutes(),
+        selectedDate!.getFullYear(),
+        selectedDate!.getMonth(),
+        selectedDate!.getDate(),
+        selectedTime!.getHours(),
+        selectedTime!.getMinutes(),
       );
       setCreatingStage(newDateTime);
     }
@@ -160,17 +160,17 @@ const StageManager = ({ event }: { event: EventResponse }) => {
   };
 
   // ステージのパターンが複数あるか確認
-  const onlyOnePattern = (): boolean => {
+  function onlyOnePattern(): boolean {
     const keys = Object.keys(seatDict);
     if (keys.length > 1) {
       return false;
     } else {
       return true;
     }
-  };
+  }
 
   // ステージ作成
-  const addStage = async (key: string) => {
+  async function addStage(key: string) {
     if (!creatingStage) return;
     const newStage = await createStage(event.id, {
       start_time: toJST(creatingStage, 'ISO8601'),
@@ -192,7 +192,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
 
     reloadData();
     setSnack({ message: 'ステージを追加しました', severity: 'success' });
-  };
+  }
 
   // ステージ削除
   const removeStage = async (id: number) => {

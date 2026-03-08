@@ -3,7 +3,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
   Collapse,
-  Grid2 as Grid,
+  Grid,
   IconButton,
   LinearProgress,
   Typography,

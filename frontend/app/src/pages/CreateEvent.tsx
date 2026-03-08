@@ -8,7 +8,7 @@ import {
   Chip,
   Container,
   Divider,
-  Grid2 as Grid,
+  Grid,
   Typography,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';

@@ -1,5 +1,5 @@
 import { Delete } from '@mui/icons-material';
-import { Box, Grid2 as Grid, IconButton } from '@mui/material';
+import { Box, Grid, IconButton } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { TicketTypeCreate } from '../services/interfaces';
 import ValidatedForm from './ValidatedForm';

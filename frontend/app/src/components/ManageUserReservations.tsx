@@ -3,7 +3,7 @@ import {
   Card,
   CardContent,
   Divider,
-  Grid2 as Grid,
+  Grid,
   Table,
   TableBody,
   TableCell,

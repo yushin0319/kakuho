@@ -1,4 +1,4 @@
-import { Box, Grid2 as Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import type { ReservationDetail } from '../context/AppData';
 import { NumComma, toJST } from '../services/utils';
 

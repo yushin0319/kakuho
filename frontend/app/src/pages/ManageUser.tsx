@@ -127,7 +127,7 @@ const ManageUser = () => {
         render={({ field }) => (
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel htmlFor="event-select">イベント</InputLabel>
-            <Select {...field} inputProps={{ id: 'event-select' }}>
+            <Select {...field} slotProps={{ input: { id: 'event-select' } }}>
               <MenuItem value="">すべてのイベント</MenuItem>
               {futureEvents.map((event) => (
                 <MenuItem key={event.id} value={event.id}>
@@ -160,7 +160,7 @@ const ManageUser = () => {
               disabled={!selectedEvent}
               sx={{ opacity: selectedEvent ? 1 : 0.3 }}
               {...field}
-              inputProps={{ id: 'stage-select' }}
+              slotProps={{ input: { id: 'stage-select' } }}
             >
               <MenuItem value="">すべてのステージ</MenuItem>
               {selectableStages.map((stage) => (
