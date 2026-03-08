@@ -62,6 +62,15 @@ def make_seat_group(db, stage_id, capacity=10):
     return sg
 
 
+def make_ticket_type(db, seat_group_id, type_name="一般"):
+    """チケット種別を作成"""
+    tt = TicketType(seat_group_id=seat_group_id, type_name=type_name, price=1000)
+    db.add(tt)
+    db.commit()
+    db.refresh(tt)
+    return tt
+
+
 class TestStageEndpoints:
     """ステージエンドポイントのテスト"""
 
@@ -119,7 +128,7 @@ class TestStageEndpoints:
         resp = client.post(
             f"/events/{event.id}/stages", json=stage_data, headers=headers
         )
-        assert resp.status_code == 400
+        assert resp.status_code == 409
 
     def test_get_stage_by_id(self, client, db):
         event = make_event(db)
@@ -231,3 +240,36 @@ class TestSeatGroupEndpoints:
         headers = auth_headers(client)
         resp = client.delete(f"/seat_groups/{sg.id}", headers=headers)
         assert resp.status_code == 204
+
+
+class TestTicketTypeEndpoints:
+    """チケット種別エンドポイントのテスト"""
+
+    def test_create_ticket_type_duplicate_name_returns_409(self, client, db):
+        """同一 SeatGroup 内で type_name が重複すると 409 を返す"""
+        make_user(db, is_admin=True)
+        event = make_event(db)
+        stage = make_stage(db, event.id)
+        sg = make_seat_group(db, stage.id)
+        headers = auth_headers(client)
+        ticket_data = {"type_name": "一般", "price": 1000}
+
+        client.post(f"/seat_groups/{sg.id}/ticket_types", json=ticket_data, headers=headers)
+        resp = client.post(f"/seat_groups/{sg.id}/ticket_types", json=ticket_data, headers=headers)
+
+        assert resp.status_code == 409
+
+    def test_create_ticket_type_same_name_different_seat_group_is_ok(self, client, db):
+        """異なる SeatGroup 間では同じ type_name が使える"""
+        make_user(db, is_admin=True)
+        event = make_event(db)
+        stage = make_stage(db, event.id)
+        sg1 = make_seat_group(db, stage.id)
+        sg2 = make_seat_group(db, stage.id)
+        headers = auth_headers(client)
+        ticket_data = {"type_name": "一般", "price": 1000}
+
+        client.post(f"/seat_groups/{sg1.id}/ticket_types", json=ticket_data, headers=headers)
+        resp = client.post(f"/seat_groups/{sg2.id}/ticket_types", json=ticket_data, headers=headers)
+
+        assert resp.status_code == 200
