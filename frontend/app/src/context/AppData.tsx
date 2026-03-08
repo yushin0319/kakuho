@@ -109,35 +109,41 @@ export const AppDataProvider = ({
       ticketTypesData.sort((a, b) => a.type_name.localeCompare(b.type_name));
       setTicketTypes(ticketTypesData);
 
-      // EventStartDatesの生成
+      // EventStartDates/EndDates の生成（O(n)）
+      const stagesByEvent = new Map<number, StageResponse[]>();
+      stagesData.forEach((stage) => {
+        const arr = stagesByEvent.get(stage.event_id) ?? [];
+        arr.push(stage);
+        stagesByEvent.set(stage.event_id, arr);
+      });
       const newStartDates: Record<number, Date> = {};
       const newEndDates: Record<number, Date> = {};
       eventsData.forEach((event) => {
         let start_date = new Date(3000, 1, 1);
         let end_date = new Date(1000, 1, 1);
-
-        stagesData.forEach((stage) => {
-          if (stage.event_id === event.id) {
-            const stageStartDate = new Date(stage.start_time);
-            const stageEndDate = new Date(stage.end_time);
-
-            if (stageStartDate < start_date) start_date = stageStartDate;
-            if (stageEndDate > end_date) end_date = stageEndDate;
-          }
+        (stagesByEvent.get(event.id) ?? []).forEach((stage) => {
+          const stageStartDate = new Date(stage.start_time);
+          const stageEndDate = new Date(stage.end_time);
+          if (stageStartDate < start_date) start_date = stageStartDate;
+          if (stageEndDate > end_date) end_date = stageEndDate;
         });
-
         newStartDates[event.id] = start_date;
         newEndDates[event.id] = end_date;
       });
       setEventStartDates(newStartDates);
       setEventEndDates(newEndDates);
 
-      // SeatGroupNamesの生成
+      // SeatGroupNames の生成（O(n)）
+      const ticketTypesBySeatGroup = new Map<number, TicketTypeResponse[]>();
+      ticketTypesData.forEach((tt) => {
+        const arr = ticketTypesBySeatGroup.get(tt.seat_group_id) ?? [];
+        arr.push(tt);
+        ticketTypesBySeatGroup.set(tt.seat_group_id, arr);
+      });
       const nameMap = Object.fromEntries(
         seatGroupsData.map((sg) => [
           sg.id,
-          ticketTypesData
-            .filter((tt) => tt.seat_group_id === sg.id)
+          (ticketTypesBySeatGroup.get(sg.id) ?? [])
             .map((tt) => tt.type_name)
             .sort(),
         ])
