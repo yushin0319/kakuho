@@ -6,7 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid2 as Grid,
+  Grid,
   MenuItem,
   TextField,
 } from '@mui/material';

@@ -1,5 +1,5 @@
 import { Add, Delete } from '@mui/icons-material';
-import { Button, Card, Grid2 as Grid } from '@mui/material';
+import { Button, Card, Grid } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { SeatGroupCreate, TicketTypeCreate } from '../services/interfaces';
 import CreateTicketType from './CreateTicketType';

@@ -6,7 +6,7 @@ import {
   CardActions,
   CardContent,
   Collapse,
-  Grid2 as Grid,
+  Grid,
   Typography,
 } from '@mui/material';
 import { QRCodeSVG } from 'qrcode.react';

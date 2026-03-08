@@ -4,7 +4,7 @@ import {
   Button,
   Chip,
   Divider,
-  Grid2 as Grid,
+  Grid,
   Slider,
   Typography,
 } from '@mui/material';
