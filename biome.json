@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["frontend/app/src/**"]
+    "includes": ["frontend/app/src/**/*.{js,jsx,ts,tsx}"]
   },
   "formatter": {
     "enabled": true,
@@ -19,7 +19,7 @@
     "rules": {
       "recommended": true,
       "a11y": {
-        "useButtonType": "off"
+        "useButtonType": "warn"
       },
       "suspicious": {
         "noArrayIndexKey": "warn"
