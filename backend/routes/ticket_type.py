@@ -1,6 +1,7 @@
 # backend/routes/ticket_type.py
 import logging
 from fastapi import Depends, APIRouter, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from config import get_db
 from schemas import TicketTypeCreate, TicketTypeUpdate, TicketTypeResponse
@@ -65,13 +66,11 @@ def create_ticket_type(
     ticket_type_crud = CrudTicketType(db)
     if seat_group_crud.read_by_id(seat_group_id) is None:
         raise HTTPException(status_code=404, detail="SeatGroup not found")
-    existing_ticket_type = ticket_type_crud.read_by_seat_group_id(seat_group_id)
-    for t in existing_ticket_type:
-        if t.type_name == ticket_type.type_name:
-            raise HTTPException(status_code=400, detail="Type name already exists")
     try:
         created_ticket_type = ticket_type_crud.create(seat_group_id, ticket_type)
         return created_ticket_type
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Type name already exists")
     except HTTPException:
         raise
     except Exception as e:

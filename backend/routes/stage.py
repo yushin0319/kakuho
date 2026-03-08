@@ -1,6 +1,7 @@
 # backend/routes/stage.py
 import logging
 from fastapi import Depends, APIRouter, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from config import get_db
 from schemas import StageCreate, StageUpdate, StageResponse
@@ -57,13 +58,11 @@ def create_stage(
     stage_crud = CrudStage(db)
     if event_crud.read_by_id(event_id) is None:
         raise HTTPException(status_code=404, detail="Event not found")
-    existing_stage = stage_crud.read_by_event_id(event_id)
-    for s in existing_stage:
-        if s.start_time == stage.start_time:
-            raise HTTPException(status_code=400, detail="Start time already exists")
     try:
         created_stage = stage_crud.create(event_id, stage)
         return created_stage
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Start time already exists")
     except HTTPException:
         raise
     except Exception as e:
