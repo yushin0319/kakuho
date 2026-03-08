@@ -27,14 +27,10 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
       - name: Install backend deps
-        run: |
-          cd backend
-          pip install poetry
-          poetry install --no-root
+        run: uv sync --group dev
+        working-directory: backend
       - name: Run backend tests
         env:
           # CI専用テスト値（本番とは無関係）
@@ -46,9 +42,8 @@ jobs:
           ADMIN_EMAIL: admin@test.com
           ADMIN_PASSWORD: testpassword
           CORS_ORIGINS: http://localhost
-        run: |
-          cd backend
-          poetry run python -m pytest tests/ -v
+        run: uv run python -m pytest tests/ -v
+        working-directory: backend
 
   frontend-test:
     runs-on: ubuntu-latest
