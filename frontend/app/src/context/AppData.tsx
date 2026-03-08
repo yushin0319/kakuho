@@ -1,6 +1,14 @@
 // app/src/context/AppData.tsx
 import type React from 'react';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useAuth } from '../context/AuthContext';
 import { fetchEvents } from '../services/api/event';
 import {
@@ -71,7 +79,8 @@ export const AppDataProvider = ({
   const [error, setError] = useState<string | null>(null);
   const loading = tasks > 0;
 
-  const loadData = async () => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: user is intentionally the only trigger
+  const loadData = useCallback(async () => {
     if (!user) return; // ログインしていない場合はスキップ
     setError(null);
 
@@ -183,7 +192,8 @@ export const AppDataProvider = ({
     } finally {
       setTasks((prev) => prev - 1);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const reloadData = () => {
     loadData();
@@ -206,13 +216,19 @@ export const AppDataProvider = ({
     }
   }, [user, loadData]);
 
+  const seatGroupNamesRef = useRef(seatGroupNames);
+  seatGroupNamesRef.current = seatGroupNames;
+
   useEffect(() => {
     if (Object.keys(seatGroupNames).length === 0) return;
-    const seats = [...seatGroups].sort((a, b) =>
-      seatGroupNames[b.id][0].localeCompare(seatGroupNames[a.id][0]),
+    setSeatGroups((prev) =>
+      [...prev].sort((a, b) =>
+        (seatGroupNamesRef.current[b.id]?.[0] ?? '').localeCompare(
+          seatGroupNamesRef.current[a.id]?.[0] ?? '',
+        ),
+      ),
     );
-    setSeatGroups(seats);
-  }, [seatGroupNames, seatGroups]);
+  }, [seatGroupNames]);
 
   const futureEvents = useMemo(
     () =>
