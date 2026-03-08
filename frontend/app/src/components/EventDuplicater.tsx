@@ -1,15 +1,15 @@
-import { Box, Button, Typography } from "@mui/material";
-import { FormProvider, useForm } from "react-hook-form";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { createEvent } from "../services/api/event";
-import { createSeatGroup } from "../services/api/seatGroup";
-import { createStage } from "../services/api/stage";
-import { createTicketType } from "../services/api/ticketType";
-import { EventResponse } from "../services/interfaces";
-import { addTime, toJST, toJSTDate } from "../services/utils";
-import LoadingScreen from "./LoadingScreen";
-import ValidatedDatePicker from "./ValidatedDatePicker";
+import { Box, Button, Typography } from '@mui/material';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import { createEvent } from '../services/api/event';
+import { createSeatGroup } from '../services/api/seatGroup';
+import { createStage } from '../services/api/stage';
+import { createTicketType } from '../services/api/ticketType';
+import type { EventResponse } from '../services/interfaces';
+import { addTime, toJST, toJSTDate } from '../services/utils';
+import LoadingScreen from './LoadingScreen';
+import ValidatedDatePicker from './ValidatedDatePicker';
 
 const EventDuplicater = ({ event }: { event: EventResponse }) => {
   const {
@@ -30,6 +30,7 @@ const EventDuplicater = ({ event }: { event: EventResponse }) => {
 
   const { handleSubmit } = methods;
 
+  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form handleSubmit callback type is complex
   const handleDuplicate = handleSubmit(async (data: any) => {
     try {
       const normalizeDate = (date: Date) => {
@@ -41,15 +42,15 @@ const EventDuplicater = ({ event }: { event: EventResponse }) => {
       const diff =
         Math.floor(
           normalizeDate(toJSTDate(data.startDate)).getTime() /
-            (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24),
         ) -
         Math.floor(
           normalizeDate(toJSTDate(eventStartDates[event.id])).getTime() /
-            (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24),
         );
 
       const newEvent = await createEvent({
-        name: event.name + "のコピー",
+        name: `${event.name}のコピー`,
         description: event.description,
       });
       // ステージの複製
@@ -58,16 +59,16 @@ const EventDuplicater = ({ event }: { event: EventResponse }) => {
         .map(async (stage) => {
           const newStage = await createStage(newEvent.id, {
             start_time: toJST(
-              addTime(new Date(stage.start_time + "Z"), {
+              addTime(new Date(`${stage.start_time}Z`), {
                 days: diff,
               }),
-              "ISO8601"
+              'ISO8601',
             ),
             end_time: toJST(
-              addTime(new Date(stage.end_time + "Z"), {
+              addTime(new Date(`${stage.end_time}Z`), {
                 days: diff,
               }),
-              "ISO8601"
+              'ISO8601',
             ),
           });
 
@@ -93,7 +94,7 @@ const EventDuplicater = ({ event }: { event: EventResponse }) => {
                   createTicketType(newSeatGroup.id, {
                     type_name: ticketType.type_name,
                     price: ticketType.price,
-                  })
+                  }),
                 );
 
               await Promise.all(ticketTypePromises); // チケットタイプを並列に処理
@@ -105,10 +106,10 @@ const EventDuplicater = ({ event }: { event: EventResponse }) => {
       await Promise.all(stagePromises); // ステージを並列に処理
 
       reloadData();
-      setSnack({ message: "イベントを複製しました", severity: "success" });
+      setSnack({ message: 'イベントを複製しました', severity: 'success' });
     } catch (e) {
       console.error(e);
-      setSnack({ message: "複製中にエラーが発生しました", severity: "error" });
+      setSnack({ message: '複製中にエラーが発生しました', severity: 'error' });
     }
   });
 

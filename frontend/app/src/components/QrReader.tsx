@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useZxing } from "react-zxing";
+import { useEffect } from 'react';
+import { useZxing } from 'react-zxing';
 
 interface QrReaderProps {
   onResult: (result: string) => void;
@@ -23,14 +23,14 @@ const QrReader = ({ onResult, onReady }: QrReaderProps) => {
       }
     };
     openCamera();
-  }, []);
+  }, [onReady, ref.current]);
 
   return (
     <video
       ref={ref}
       style={{
-        width: "100%",
-        height: "100%",
+        width: '100%',
+        height: '100%',
       }}
       autoPlay
       muted

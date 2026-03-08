@@ -1,15 +1,15 @@
-import api from "./api";
-import { handleApiRequest } from "./utils";
-import {
+import type {
   EventCreate,
-  EventUpdate,
   EventResponse,
   EventTimeResponse,
-} from "../interfaces";
+  EventUpdate,
+} from '../interfaces';
+import api from './api';
+import { handleApiRequest } from './utils';
 
 // 1. イベント一覧を取得
 export const fetchEvents = async (): Promise<EventResponse[]> => {
-  return handleApiRequest(api.get("/events"));
+  return handleApiRequest(api.get('/events'));
 };
 
 // 2. 単一のイベントを取得
@@ -19,22 +19,22 @@ export const fetchEvent = async (id: number): Promise<EventResponse> => {
 
 // 3. イベントの開始・終了時間を取得
 export const fetchEventTime = async (
-  id: number
+  id: number,
 ): Promise<EventTimeResponse> => {
   return handleApiRequest(api.get(`/events/${id}/duration`));
 };
 
 // 4. イベントを作成（管理者のみ）
 export const createEvent = async (
-  data: EventCreate
+  data: EventCreate,
 ): Promise<EventResponse> => {
-  return handleApiRequest(api.post("/events", data));
+  return handleApiRequest(api.post('/events', data));
 };
 
 // 5. イベントを更新（管理者のみ）
 export const updateEvent = async (
   id: number,
-  data: EventUpdate
+  data: EventUpdate,
 ): Promise<EventResponse> => {
   return handleApiRequest(api.put(`/events/${id}`, data));
 };

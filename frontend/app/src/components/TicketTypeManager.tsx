@@ -3,7 +3,7 @@ import {
   Delete,
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
-} from "@mui/icons-material";
+} from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -12,21 +12,21 @@ import {
   IconButton,
   Tooltip,
   Typography,
-} from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { createSeatGroup, deleteSeatGroup } from "../services/api/seatGroup";
+} from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import { createSeatGroup, deleteSeatGroup } from '../services/api/seatGroup';
 import {
   createTicketType,
   deleteTicketType,
   updateTicketType,
-} from "../services/api/ticketType";
-import { EventResponse, TicketTypeResponse } from "../services/interfaces";
-import { toJST } from "../services/utils";
-import LoadingScreen from "./LoadingScreen";
-import ValidatedForm from "./ValidatedForm";
+} from '../services/api/ticketType';
+import type { EventResponse, TicketTypeResponse } from '../services/interfaces';
+import { toJST } from '../services/utils';
+import LoadingScreen from './LoadingScreen';
+import ValidatedForm from './ValidatedForm';
 
 const TicketTypeManager = ({ event }: { event: EventResponse }) => {
   const [openId, setOpenId] = useState<number | null>(null);
@@ -54,61 +54,67 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
 
   const filteredStages = useMemo(
     () => stages.filter((stage) => stage.event_id === event.id),
-    [stages, event.id]
+    [stages, event.id],
   );
 
   const filteredSeatGroups = useMemo(
     () =>
       seatGroups.filter((seatGroup) =>
-        filteredStages.some((stage) => stage.id === seatGroup.stage_id)
+        filteredStages.some((stage) => stage.id === seatGroup.stage_id),
       ),
-    [seatGroups, filteredStages]
+    [seatGroups, filteredStages],
   );
 
   const filteredTicketTypes = useMemo(
     () =>
       ticketTypes.filter((ticketType) =>
         filteredSeatGroups.some(
-          (seatGroup) => seatGroup.id === ticketType.seat_group_id
-        )
+          (seatGroup) => seatGroup.id === ticketType.seat_group_id,
+        ),
       ),
-    [ticketTypes, filteredSeatGroups]
+    [ticketTypes, filteredSeatGroups],
   );
 
   // 予約の存在チェック
   useEffect(() => {
-    const hasReservations = filteredTicketTypes.reduce(
-      (acc, ticketType) =>
-        reservations.some(
-          (reservation) => reservation.ticketType.id === ticketType.id
-        )
-          ? { ...acc, [ticketType.id]: true }
-          : acc,
-      {}
+    const hasReservations = filteredTicketTypes.reduce<Record<number, boolean>>(
+      (acc, ticketType) => {
+        if (
+          reservations.some(
+            (reservation) => reservation.ticketType.id === ticketType.id,
+          )
+        ) {
+          acc[ticketType.id] = true;
+        }
+        return acc;
+      },
+      {},
     );
     setHasReservations(hasReservations);
   }, [filteredTicketTypes, reservations]);
 
   useEffect(() => {
-    const ticketTypeValues = filteredTicketTypes.reduce(
-      (acc, type) => ({ ...acc, [type.id]: type }),
-      {}
-    );
-    setValue("ticketTypes", ticketTypeValues);
-  }, [filteredSeatGroups, filteredTicketTypes]);
+    const ticketTypeValues = filteredTicketTypes.reduce<
+      Record<number, TicketTypeResponse>
+    >((acc, type) => {
+      acc[type.id] = type;
+      return acc;
+    }, {});
+    setValue('ticketTypes', ticketTypeValues);
+  }, [filteredTicketTypes, setValue]);
 
-  const watchTicketTypes = watch("ticketTypes");
+  const watchTicketTypes = watch('ticketTypes');
 
   // チケットタイプの更新
   const handleSave = async (id: number, data: TicketTypeResponse) => {
     // 指定したフィールドをバリデーション
-    const isValid = await trigger("ticketTypes");
+    const isValid = await trigger('ticketTypes');
     const existing = ticketTypes
       .filter((tt) => tt.seat_group_id === data.seat_group_id && tt.id !== id)
       .find((tt) => tt.type_name === data.type_name);
 
     if (!isValid || existing) {
-      setSnack({ message: "入力内容に誤りがあります", severity: "error" });
+      setSnack({ message: '入力内容に誤りがあります', severity: 'error' });
       return; // バリデーションエラーなら中断
     }
 
@@ -116,8 +122,8 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
       await updateTicketType(id, data);
       reloadData();
     } catch (error) {
-      console.error("Error updating ticket type:", error);
-      setSnack({ message: "保存中にエラーが発生しました", severity: "error" });
+      console.error('Error updating ticket type:', error);
+      setSnack({ message: '保存中にエラーが発生しました', severity: 'error' });
     }
   };
 
@@ -133,14 +139,14 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
     }
     reloadData();
     setSnack({
-      message: "券種を削除しました",
-      severity: "success",
+      message: '券種を削除しました',
+      severity: 'success',
     });
   };
 
   // ticketTypeの新規作成
   const handleAddTicketType = async (seatGroupId: number) => {
-    let newName = "券名";
+    let newName = '券名';
     let count = 1;
     while (
       Object.values(watchTicketTypes).some((tt) => tt.type_name === newName)
@@ -154,14 +160,14 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
     });
     reloadData();
     setSnack({
-      message: "券種を追加しました",
-      severity: "success",
+      message: '券種を追加しました',
+      severity: 'success',
     });
   };
 
   // seatGroup & ticketTypeの新規作成
   const handleAddSeatGroup = async (stageId: number) => {
-    let newName = "特別席";
+    let newName = '特別席';
     let count = 1;
     while (
       Object.values(watchTicketTypes).some((tt) => tt.type_name === newName)
@@ -177,8 +183,8 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
     });
     reloadData();
     setSnack({
-      message: "特別席を追加しました",
-      severity: "success",
+      message: '特別席を追加しました',
+      severity: 'success',
     });
   };
 
@@ -209,7 +215,7 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
                 sx={{
                   mt: 1,
                   mb: 1,
-                  border: "1px solid #ddd",
+                  border: '1px solid #ddd',
                   borderRadius: 2,
                   p: 1,
                 }}
@@ -225,11 +231,11 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
                   <Typography
                     variant="h6"
                     sx={{
-                      fontWeight: "bold",
-                      color: "text.secondary",
+                      fontWeight: 'bold',
+                      color: 'text.secondary',
                     }}
                   >
-                    {toJST(stage.start_time, "dateTime")}
+                    {toJST(stage.start_time, 'dateTime')}
                   </Typography>
                   <IconButton size="small">
                     {openId === stage.id ? (
@@ -282,8 +288,8 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
                                 <Tooltip
                                   title={
                                     hasReservations[tt.id]
-                                      ? "予約が存在するため削除できません"
-                                      : ""
+                                      ? '予約が存在するため削除できません'
+                                      : ''
                                   }
                                 >
                                   <span>
@@ -308,8 +314,8 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
                             <Typography
                               variant="body1"
                               sx={{
-                                fontWeight: "bold",
-                                color: "text.secondary",
+                                fontWeight: 'bold',
+                                color: 'text.secondary',
                               }}
                             >
                               空席：{sg.capacity}席
@@ -324,7 +330,7 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
                               券種追加
                             </Button>
                           </Box>
-                          <Divider sx={{ width: "100%", mt: 2 }} />
+                          <Divider sx={{ width: '100%', mt: 2 }} />
                         </Box>
                       ))}
                   </Box>

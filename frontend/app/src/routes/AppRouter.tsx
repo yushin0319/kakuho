@@ -1,16 +1,16 @@
 // app/src/routes/AppRouter.tsx
-import { useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
-import Booking from "../pages/Booking";
-import CheckInList from "../pages/CheckInList";
-import CreateEvent from "../pages/CreateEvent";
-import DemoLogin from "../pages/DemoLogin";
-import Login from "../pages/Login";
-import ManageEvent from "../pages/ManageEvent";
-import ManageUser from "../pages/ManageUser";
-import Register from "../pages/Register";
-import ReservationList from "../pages/ReservationList";
-import PrivateRoute from "./PrivateRoute";
+import { useEffect } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import Booking from '../pages/Booking';
+import CheckInList from '../pages/CheckInList';
+import CreateEvent from '../pages/CreateEvent';
+import DemoLogin from '../pages/DemoLogin';
+import Login from '../pages/Login';
+import ManageEvent from '../pages/ManageEvent';
+import ManageUser from '../pages/ManageUser';
+import Register from '../pages/Register';
+import ReservationList from '../pages/ReservationList';
+import PrivateRoute from './PrivateRoute';
 
 // ページ遷移時にページトップにスクロールする
 const ScrollToTop = () => {
@@ -18,7 +18,7 @@ const ScrollToTop = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, []);
 
   return null;
 };

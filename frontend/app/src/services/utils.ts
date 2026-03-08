@@ -1,5 +1,5 @@
 // app/src/services/utils.ts
-import { format, toZonedTime } from "date-fns-tz";
+import { format, toZonedTime } from 'date-fns-tz';
 
 /**
  * JSTの日時を取得し、フォーマットする
@@ -8,35 +8,35 @@ import { format, toZonedTime } from "date-fns-tz";
  * @returns 表示用のフォーマットされた日時
  */
 
-type FormatType = "fullDate" | "monthDate" | "time" | "dateTime" | "ISO8601";
+type FormatType = 'fullDate' | 'monthDate' | 'time' | 'dateTime' | 'ISO8601';
 
 export const toJST = (
   date: Date | string | undefined | null,
-  formatType: FormatType
+  formatType: FormatType,
 ): string => {
-  if (!date) return "";
-  if (typeof date === "string") date = new Date(`${date}Z`);
-  const jstDate = toZonedTime(new Date(date), "Asia/Tokyo");
+  if (!date) return '';
+  if (typeof date === 'string') date = new Date(`${date}Z`);
+  const jstDate = toZonedTime(new Date(date), 'Asia/Tokyo');
   const formats = {
-    fullDate: "yyyy/M/d (E)",
-    monthDate: "M/d (E)",
-    time: "HH:mm",
-    dateTime: "M/d (E) HH:mm",
+    fullDate: 'yyyy/M/d (E)',
+    monthDate: 'M/d (E)',
+    time: 'HH:mm',
+    dateTime: 'M/d (E) HH:mm',
     ISO8601: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
   };
   const dayOfWeekMap = {
-    Sun: "日",
-    Mon: "月",
-    Tue: "火",
-    Wed: "水",
-    Thu: "木",
-    Fri: "金",
-    Sat: "土",
+    Sun: '日',
+    Mon: '月',
+    Tue: '火',
+    Wed: '水',
+    Thu: '木',
+    Fri: '金',
+    Sat: '土',
   };
   const formatted = format(jstDate, formats[formatType]);
   return formatted.replace(
     /(Sun|Mon|Tue|Wed|Thu|Fri|Sat)/,
-    (matched) => dayOfWeekMap[matched as keyof typeof dayOfWeekMap]
+    (matched) => dayOfWeekMap[matched as keyof typeof dayOfWeekMap],
   );
 };
 
@@ -47,8 +47,8 @@ export const toJST = (
  */
 
 export const toJSTDate = (date: Date | string): Date => {
-  if (typeof date === "string") date = new Date(`${date}Z`);
-  return toZonedTime(new Date(date), "Asia/Tokyo");
+  if (typeof date === 'string') date = new Date(`${date}Z`);
+  return toZonedTime(new Date(date), 'Asia/Tokyo');
 };
 
 /**
@@ -63,16 +63,16 @@ export const toJSTDate = (date: Date | string): Date => {
 
 export const addTime = (
   date: Date,
-  { years = 0, months = 0, days = 0, hours = 0 }
+  { years = 0, months = 0, days = 0, hours = 0 },
 ): Date => {
   return new Date(
     date.getFullYear() + years,
     date.getMonth() + months,
     date.getDate() + days,
-    date.getHours() + hours
+    date.getHours() + hours,
   );
 };
 
 export const NumComma = (num: number): string => {
-  return new Intl.NumberFormat("ja-JP").format(num);
+  return new Intl.NumberFormat('ja-JP').format(num);
 };

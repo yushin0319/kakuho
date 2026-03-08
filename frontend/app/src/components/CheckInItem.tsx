@@ -1,5 +1,5 @@
 // app/src/components/ManageItem.tsx
-import SettingsIcon from "@mui/icons-material/Settings";
+import SettingsIcon from '@mui/icons-material/Settings';
 import {
   Box,
   Checkbox,
@@ -7,13 +7,13 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from "@mui/material";
-import { useState } from "react";
-import { ReservationDetail } from "../context/AppData";
-import { NumComma } from "../services/utils";
-import PaidStatusController from "./PaidStatusController";
-import ReservationChanger from "./ReservationChanger";
-import ReservationDeleter from "./ReservationDeleter";
+} from '@mui/material';
+import { useState } from 'react';
+import type { ReservationDetail } from '../context/AppData';
+import { NumComma } from '../services/utils';
+import PaidStatusController from './PaidStatusController';
+import ReservationChanger from './ReservationChanger';
+import ReservationDeleter from './ReservationDeleter';
 
 const CheckInItem = ({ data }: { data: ReservationDetail }) => {
   const [isChanging, setIsChanging] = useState(false);
@@ -35,9 +35,9 @@ const CheckInItem = ({ data }: { data: ReservationDetail }) => {
   return (
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         px: 1,
       }}
     >
@@ -50,11 +50,11 @@ const CheckInItem = ({ data }: { data: ReservationDetail }) => {
       />
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          textAlign: "left",
-          width: "100%",
-          cursor: reservation.is_paid ? "default" : "pointer",
+          display: 'flex',
+          flexDirection: 'column',
+          textAlign: 'left',
+          width: '100%',
+          cursor: reservation.is_paid ? 'default' : 'pointer',
           opacity: reservation.is_paid ? 0.6 : 1,
         }}
         onClick={reservation.is_paid ? undefined : handlePaying}
@@ -63,10 +63,10 @@ const CheckInItem = ({ data }: { data: ReservationDetail }) => {
           <Typography
             variant="body2"
             sx={{
-              fontWeight: "bold",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
             {user.nickname || user.email}
@@ -74,8 +74,8 @@ const CheckInItem = ({ data }: { data: ReservationDetail }) => {
         </Box>
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
+            display: 'flex',
+            justifyContent: 'space-between',
           }}
         >
           <Typography variant="caption" color="textSecondary">

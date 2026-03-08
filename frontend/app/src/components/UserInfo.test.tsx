@@ -1,14 +1,14 @@
 // src/components/UserInfo.test.tsx
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import UserInfo from "./UserInfo";
-import { createTestWrapper, mockUser } from "../test/mocks";
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { createTestWrapper, mockUser } from '../test/mocks';
+import UserInfo from './UserInfo';
 
 const mockSetUser = vi.fn();
 const mockLogout = vi.fn();
 const mockSetSnack = vi.fn();
 
-vi.mock("../context/AuthContext", () => ({
+vi.mock('../context/AuthContext', () => ({
   useAuth: () => ({
     user: mockUser,
     setUser: mockSetUser,
@@ -20,16 +20,16 @@ vi.mock("../context/AuthContext", () => ({
   }),
 }));
 
-vi.mock("../services/api/user", () => ({
+vi.mock('../services/api/user', () => ({
   updateUser: vi.fn().mockResolvedValue({
     id: 1,
-    email: "updated@example.com",
-    nickname: "更新ユーザー",
+    email: 'updated@example.com',
+    nickname: '更新ユーザー',
     is_admin: false,
   }),
 }));
 
-describe("UserInfo", () => {
+describe('UserInfo', () => {
   const defaultProps = {
     onClose: vi.fn(),
   };
@@ -40,87 +40,87 @@ describe("UserInfo", () => {
     wrapper = createTestWrapper({ setSnack: mockSetSnack });
   });
 
-  it("ダイアログタイトルを表示する", () => {
+  it('ダイアログタイトルを表示する', () => {
     render(<UserInfo {...defaultProps} />, { wrapper });
-    expect(screen.getByText("ユーザー情報")).toBeInTheDocument();
+    expect(screen.getByText('ユーザー情報')).toBeInTheDocument();
   });
 
-  it("サマリーフェーズでニックネームを表示する", () => {
+  it('サマリーフェーズでニックネームを表示する', () => {
     render(<UserInfo {...defaultProps} />, { wrapper });
-    expect(screen.getByText("テストユーザー")).toBeInTheDocument();
+    expect(screen.getByText('テストユーザー')).toBeInTheDocument();
   });
 
-  it("サマリーフェーズでメールアドレスを表示する", () => {
+  it('サマリーフェーズでメールアドレスを表示する', () => {
     render(<UserInfo {...defaultProps} />, { wrapper });
-    expect(screen.getByText("test@example.com")).toBeInTheDocument();
+    expect(screen.getByText('test@example.com')).toBeInTheDocument();
   });
 
-  it("サマリーフェーズで編集ボタンを表示する", () => {
+  it('サマリーフェーズで編集ボタンを表示する', () => {
     render(<UserInfo {...defaultProps} />, { wrapper });
-    expect(screen.getByText("編集")).toBeInTheDocument();
+    expect(screen.getByText('編集')).toBeInTheDocument();
   });
 
-  it("サマリーフェーズでログアウトボタンを表示する", () => {
+  it('サマリーフェーズでログアウトボタンを表示する', () => {
     render(<UserInfo {...defaultProps} />, { wrapper });
-    expect(screen.getByText("ログアウト")).toBeInTheDocument();
+    expect(screen.getByText('ログアウト')).toBeInTheDocument();
   });
 
-  it("編集ボタンクリックでフォームフェーズに切り替わる", async () => {
+  it('編集ボタンクリックでフォームフェーズに切り替わる', async () => {
     const user = userEvent.setup();
     render(<UserInfo {...defaultProps} />, { wrapper });
 
-    await user.click(screen.getByText("編集"));
+    await user.click(screen.getByText('編集'));
 
     // フォームフェーズではニックネームとメールの入力欄が表示される
-    expect(screen.getByLabelText("ニックネーム")).toBeInTheDocument();
-    expect(screen.getByLabelText("メールアドレス")).toBeInTheDocument();
+    expect(screen.getByLabelText('ニックネーム')).toBeInTheDocument();
+    expect(screen.getByLabelText('メールアドレス')).toBeInTheDocument();
   });
 
-  it("フォームフェーズでキャンセルするとサマリーに戻る", async () => {
+  it('フォームフェーズでキャンセルするとサマリーに戻る', async () => {
     const user = userEvent.setup();
     render(<UserInfo {...defaultProps} />, { wrapper });
 
-    await user.click(screen.getByText("編集"));
-    expect(screen.getByLabelText("ニックネーム")).toBeInTheDocument();
+    await user.click(screen.getByText('編集'));
+    expect(screen.getByLabelText('ニックネーム')).toBeInTheDocument();
 
-    await user.click(screen.getByText("キャンセル"));
+    await user.click(screen.getByText('キャンセル'));
     // サマリーフェーズに戻る
-    expect(screen.getByText("テストユーザー")).toBeInTheDocument();
-    expect(screen.getByText("編集")).toBeInTheDocument();
+    expect(screen.getByText('テストユーザー')).toBeInTheDocument();
+    expect(screen.getByText('編集')).toBeInTheDocument();
   });
 
-  it("ログアウトボタンクリックで確認ダイアログが表示される", async () => {
+  it('ログアウトボタンクリックで確認ダイアログが表示される', async () => {
     const user = userEvent.setup();
     render(<UserInfo {...defaultProps} />, { wrapper });
 
-    await user.click(screen.getByText("ログアウト"));
+    await user.click(screen.getByText('ログアウト'));
 
     await waitFor(() => {
       expect(
-        screen.getByText("ログアウトしてよろしいですか？")
+        screen.getByText('ログアウトしてよろしいですか？'),
       ).toBeInTheDocument();
     });
   });
 
-  it("確認ダイアログでOKを押すとログアウトが実行される", async () => {
+  it('確認ダイアログでOKを押すとログアウトが実行される', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
     render(<UserInfo onClose={onClose} />, { wrapper });
 
-    await user.click(screen.getByText("ログアウト"));
+    await user.click(screen.getByText('ログアウト'));
 
     await waitFor(() => {
       expect(
-        screen.getByText("ログアウトしてよろしいですか？")
+        screen.getByText('ログアウトしてよろしいですか？'),
       ).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText("OK"));
+    await user.click(screen.getByText('OK'));
 
     expect(mockLogout).toHaveBeenCalled();
     expect(mockSetSnack).toHaveBeenCalledWith({
-      message: "ログアウトしました",
-      severity: "info",
+      message: 'ログアウトしました',
+      severity: 'info',
     });
     expect(onClose).toHaveBeenCalled();
   });

@@ -1,13 +1,13 @@
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import QrCodeIcon from "@mui/icons-material/QrCode";
-import { Box, Button, Collapse, IconButton, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useAppData } from "../context/AppData";
-import { StageResponse } from "../services/interfaces";
-import { toJST } from "../services/utils";
-import CheckInSeatGroup from "./CheckInSeatGroup";
-import ScannerModal from "./ScannerModal";
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import QrCodeIcon from '@mui/icons-material/QrCode';
+import { Box, Button, Collapse, IconButton, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useAppData } from '../context/AppData';
+import type { StageResponse } from '../services/interfaces';
+import { toJST } from '../services/utils';
+import CheckInSeatGroup from './CheckInSeatGroup';
+import ScannerModal from './ScannerModal';
 
 interface CheckInStageProps {
   stage: StageResponse;
@@ -30,7 +30,7 @@ const CheckInStage = ({ stage, isOpen, toggle }: CheckInStageProps) => {
     setOpenSeatGroupIds((prevIds) =>
       prevIds.includes(id)
         ? prevIds.filter((groupId) => groupId !== id)
-        : [...prevIds, id]
+        : [...prevIds, id],
     );
   };
 
@@ -48,7 +48,7 @@ const CheckInStage = ({ stage, isOpen, toggle }: CheckInStageProps) => {
       sx={{
         mt: 2,
         mb: 1,
-        border: "1px solid #ddd",
+        border: '1px solid #ddd',
         borderRadius: 2,
         py: 1,
       }}
@@ -57,10 +57,10 @@ const CheckInStage = ({ stage, isOpen, toggle }: CheckInStageProps) => {
       <Box
         sx={{
           px: 8,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          cursor: "pointer",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
         }}
         onClick={toggle}
       >
@@ -70,9 +70,9 @@ const CheckInStage = ({ stage, isOpen, toggle }: CheckInStageProps) => {
           fontWeight="bold"
           sx={{ ml: 1 }}
         >
-          {toJST(stage.start_time, "dateTime")}
+          {toJST(stage.start_time, 'dateTime')}
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton size="small">
             {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </IconButton>

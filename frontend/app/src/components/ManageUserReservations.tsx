@@ -13,20 +13,20 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
-import { useAppData } from "../context/AppData";
-import { toJST } from "../services/utils";
+} from '@mui/material';
+import { useAppData } from '../context/AppData';
+import { toJST } from '../services/utils';
 
 const ManageUserReservations = ({ userId }: { userId: number }) => {
   const { reservations } = useAppData();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const userReservations = reservations.filter((res) => res.user.id === userId);
 
   if (userReservations.length === 0) {
     return (
-      <Box sx={{ textAlign: "center", p: 2 }}>
+      <Box sx={{ textAlign: 'center', p: 2 }}>
         <Typography variant="body2" color="text.secondary">
           現在、予約はありません。
         </Typography>
@@ -44,8 +44,8 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
             sx={{
               mb: 2,
               borderLeft: reservation.is_paid
-                ? "4px solid #80cbc4"
-                : "4px solid #f44336",
+                ? '4px solid #80cbc4'
+                : '4px solid #f44336',
             }}
           >
             <CardContent>
@@ -55,7 +55,7 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
                 </Grid>
                 <Grid size={8}>
                   <Typography variant="body2" color="text.secondary">
-                    日時：{toJST(stage.start_time, "dateTime")}
+                    日時：{toJST(stage.start_time, 'dateTime')}
                   </Typography>
                 </Grid>
                 <Grid size={4}>
@@ -68,15 +68,15 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
                 </Grid>
                 <Grid size={8}>
                   <Typography variant="body2" color="secondary">
-                    予約：{toJST(reservation.created_at, "dateTime")}
+                    予約：{toJST(reservation.created_at, 'dateTime')}
                   </Typography>
                 </Grid>
                 <Grid size={4}>
                   <Typography
                     variant="body2"
-                    color={reservation.is_paid ? "secondary" : "error.main"}
+                    color={reservation.is_paid ? 'secondary' : 'error.main'}
                   >
-                    {reservation.is_paid ? "受付済" : "受付前"}
+                    {reservation.is_paid ? '受付済' : '受付前'}
                   </Typography>
                 </Grid>
               </Grid>
@@ -115,7 +115,7 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {toJST(stage.start_time, "dateTime")}
+                        {toJST(stage.start_time, 'dateTime')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -125,21 +125,21 @@ const ManageUserReservations = ({ userId }: { userId: number }) => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {toJST(reservation.created_at, "dateTime")}
+                        {toJST(reservation.created_at, 'dateTime')}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography
                         variant="body2"
                         color={
-                          reservation.is_paid ? "success.main" : "error.main"
+                          reservation.is_paid ? 'success.main' : 'error.main'
                         }
                       >
-                        {reservation.is_paid ? "受付済" : "受付前"}
+                        {reservation.is_paid ? '受付済' : '受付前'}
                       </Typography>
                     </TableCell>
                   </TableRow>
-                )
+                ),
               )}
             </TableBody>
           </Table>

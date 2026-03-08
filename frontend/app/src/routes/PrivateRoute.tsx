@@ -1,9 +1,9 @@
 // app/src/routes/PrivateRoute.tsx
 // Login していない場合はログインページにリダイレクトする
-import React from "react";
-import { Navigate } from "react-router-dom";
-import LoadingScreen from "../components/LoadingScreen";
-import { useAuth } from "../context/AuthContext";
+import type React from 'react';
+import { Navigate } from 'react-router-dom';
+import LoadingScreen from '../components/LoadingScreen';
+import { useAuth } from '../context/AuthContext';
 
 interface PrivateRouteProps {
   children: React.ReactNode;

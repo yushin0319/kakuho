@@ -1,6 +1,6 @@
 // app/src/pages/CreateEvent.tsx
 
-import { Add } from "@mui/icons-material";
+import { Add } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -10,16 +10,16 @@ import {
   Divider,
   Grid2 as Grid,
   Typography,
-} from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import ConfirmEvent from "../components/ConfirmEvent";
-import CreateSeatGroup from "../components/CreateSeatGroup";
-import ValidatedDatePicker from "../components/ValidatedDatePicker";
-import ValidatedForm from "../components/ValidatedForm";
-import ValidatedTimePicker from "../components/ValidatedTimePicker";
-import { SeatGroupCreate, TicketTypeCreate } from "../services/interfaces";
-import { addTime, toJST } from "../services/utils";
+} from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import ConfirmEvent from '../components/ConfirmEvent';
+import CreateSeatGroup from '../components/CreateSeatGroup';
+import ValidatedDatePicker from '../components/ValidatedDatePicker';
+import ValidatedForm from '../components/ValidatedForm';
+import ValidatedTimePicker from '../components/ValidatedTimePicker';
+import type { SeatGroupCreate, TicketTypeCreate } from '../services/interfaces';
+import { addTime, toJST } from '../services/utils';
 
 export type seatDict = {
   [id: number]: {
@@ -31,8 +31,8 @@ export type seatDict = {
 const CreateEvent = () => {
   const methods = useForm({
     defaultValues: {
-      title: "",
-      description: "",
+      title: '',
+      description: '',
       startDate: null,
       endDate: null,
       schedule: {} as Record<string, Date[]>,
@@ -41,7 +41,7 @@ const CreateEvent = () => {
           seatGroup: {
             capacity: 0,
           },
-          ticketTypes: [{ type_name: "一般", price: 0 }],
+          ticketTypes: [{ type_name: '一般', price: 0 }],
         },
       } as seatDict,
     },
@@ -50,16 +50,16 @@ const CreateEvent = () => {
 
   const { setValue, getValues, handleSubmit, watch } = methods;
 
-  const watchStartDate = watch("startDate");
-  const watchEndDate = watch("endDate");
-  const watchSchedule = watch("schedule");
-  const watchSeatDict = watch("seatDict");
+  const watchStartDate = watch('startDate');
+  const watchEndDate = watch('endDate');
+  const watchSchedule = watch('schedule');
+  const watchSeatDict = watch('seatDict');
 
   // 開始日から終了日までの日付リストを生成
   const eventDates = useMemo(() => {
     if (!watchStartDate || !watchEndDate) return [];
     const dates = [];
-    let currentDate = new Date(watchStartDate);
+    const currentDate = new Date(watchStartDate);
     while (currentDate <= new Date(watchEndDate)) {
       dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
@@ -69,42 +69,42 @@ const CreateEvent = () => {
 
   // 日付変更時にscheduleの更新
   useEffect(() => {
-    const now = getValues("schedule");
+    const now = getValues('schedule');
     const updated: Record<string, Date[]> = {};
     eventDates.forEach((date) => {
-      const key = toJST(date, "fullDate");
+      const key = toJST(date, 'fullDate');
       updated[key] = now[key] || [];
     });
-    setValue("schedule", updated);
-  }, [eventDates]);
+    setValue('schedule', updated);
+  }, [eventDates, getValues, setValue]);
 
   // スケジュールの追加
   const addSchedule = (date: string, time: Date) => {
-    const now = getValues("schedule");
+    const now = getValues('schedule');
     const newItem = new Date(date);
     newItem.setHours(time.getHours());
     newItem.setMinutes(time.getMinutes());
     newItem.setSeconds(0);
     const isDuplicate = now[date]?.some(
-      (t: Date) => t.getTime() === newItem.getTime()
+      (t: Date) => t.getTime() === newItem.getTime(),
     );
     if (!isDuplicate) {
       const updated = {
         ...now,
         [date]: [...(now[date] || []), newItem],
       };
-      setValue("schedule", updated);
+      setValue('schedule', updated);
     }
   };
 
   // スケジュールの削除
   const deleteSchedule = (date: string, time: Date) => {
-    const now = getValues("schedule");
+    const now = getValues('schedule');
     const updated = {
       ...now,
       [date]: now[date].filter((t: Date) => t.getTime() !== time.getTime()),
     };
-    setValue("schedule", updated);
+    setValue('schedule', updated);
   };
 
   // シートグループの追加
@@ -113,19 +113,19 @@ const CreateEvent = () => {
     const newId =
       Object.keys(seatDict).length === 0
         ? 0
-        : Math.max(...Object.keys(seatDict).map((id) => parseInt(id))) + 1;
+        : Math.max(...Object.keys(seatDict).map((id) => parseInt(id, 10))) + 1;
     seatDict[newId] = {
       seatGroup: { capacity: 0 },
-      ticketTypes: [{ type_name: "S席", price: 0 }],
+      ticketTypes: [{ type_name: 'S席', price: 0 }],
     };
-    setValue("seatDict", seatDict);
+    setValue('seatDict', seatDict);
   };
 
   // シートグループの削除
   const deleteSeatGroup = (id: number) => {
     const newSeatDict = { ...watchSeatDict };
     delete newSeatDict[id];
-    setValue("seatDict", newSeatDict);
+    setValue('seatDict', newSeatDict);
   };
 
   const onSubmit = () => {};
@@ -145,7 +145,7 @@ const CreateEvent = () => {
               fieldType="description"
               sx={{
                 mt: 2,
-                whiteSpace: "pre-wrap",
+                whiteSpace: 'pre-wrap',
               }}
             />
           </Card>
@@ -178,19 +178,19 @@ const CreateEvent = () => {
             {eventDates.map((date: Date) => (
               <Box key={date.getTime()}>
                 <Typography variant="subtitle1">
-                  {toJST(date, "fullDate")}
+                  {toJST(date, 'fullDate')}
                 </Typography>
-                {watchSchedule[toJST(date, "fullDate")] &&
-                  watchSchedule[toJST(date, "fullDate")]
+                {watchSchedule[toJST(date, 'fullDate')] &&
+                  watchSchedule[toJST(date, 'fullDate')]
                     .sort((a, b) => a.getTime() - b.getTime())
                     .map((time: Date) => (
                       <Chip
                         key={time.getTime()}
-                        label={toJST(time, "time")}
+                        label={toJST(time, 'time')}
                         variant="outlined"
                         color="primary"
                         onDelete={() =>
-                          deleteSchedule(toJST(date, "fullDate"), time)
+                          deleteSchedule(toJST(date, 'fullDate'), time)
                         }
                         sx={{ mr: 1, mb: 1 }}
                       />
@@ -198,7 +198,7 @@ const CreateEvent = () => {
                 <ValidatedTimePicker
                   name="time"
                   label="時間を追加"
-                  date={toJST(date, "fullDate")}
+                  date={toJST(date, 'fullDate')}
                   addSchedule={addSchedule}
                 />
                 <Divider sx={{ my: 2 }} />
@@ -212,18 +212,18 @@ const CreateEvent = () => {
             {Object.entries(watchSeatDict).map(([id, seatDict]) => (
               <CreateSeatGroup
                 key={id}
-                id={parseInt(id)}
+                id={parseInt(id, 10)}
                 seatGroup={seatDict.seatGroup}
                 ticketTypes={seatDict.ticketTypes}
                 onUpdate={(newSeatGroup, newTicketTypes) => {
                   const newSeatDict = { ...watchSeatDict };
-                  newSeatDict[parseInt(id)] = {
+                  newSeatDict[parseInt(id, 10)] = {
                     seatGroup: newSeatGroup,
                     ticketTypes: newTicketTypes,
                   };
-                  setValue("seatDict", newSeatDict);
+                  setValue('seatDict', newSeatDict);
                 }}
-                onDelete={() => deleteSeatGroup(parseInt(id))}
+                onDelete={() => deleteSeatGroup(parseInt(id, 10))}
               />
             ))}
             <Button onClick={addSeatGroup} startIcon={<Add />} variant="text">
@@ -242,8 +242,8 @@ const CreateEvent = () => {
           </Button>
         </form>
         <ConfirmEvent
-          title={getValues("title")}
-          description={getValues("description")}
+          title={getValues('title')}
+          description={getValues('description')}
           schedule={watchSchedule}
           seatDict={watchSeatDict}
           open={isConfirmOpen}

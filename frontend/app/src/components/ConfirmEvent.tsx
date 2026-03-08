@@ -1,5 +1,5 @@
 // app/src/components/ConfirmEvent.tsx
-import ChairIcon from "@mui/icons-material/Chair";
+import ChairIcon from '@mui/icons-material/Chair';
 import {
   Box,
   Button,
@@ -14,16 +14,16 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from "@mui/material";
-import { useState } from "react";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { seatDict } from "../pages/CreateEvent";
-import { createEvent } from "../services/api/event";
-import { createSeatGroup } from "../services/api/seatGroup";
-import { createStage } from "../services/api/stage";
-import { createTicketType } from "../services/api/ticketType";
-import { addTime, toJST } from "../services/utils";
+} from '@mui/material';
+import { useState } from 'react';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import type { seatDict } from '../pages/CreateEvent';
+import { createEvent } from '../services/api/event';
+import { createSeatGroup } from '../services/api/seatGroup';
+import { createStage } from '../services/api/stage';
+import { createTicketType } from '../services/api/ticketType';
+import { addTime, toJST } from '../services/utils';
 
 interface ConfirmEventProps {
   title: string;
@@ -50,22 +50,22 @@ const ConfirmEvent = ({
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const { setSnack } = useSnack();
 
-  if (!title.trim()) errors.push("イベント名を入力してください");
-  if (!description.trim()) errors.push("詳細説明を入力してください");
+  if (!title.trim()) errors.push('イベント名を入力してください');
+  if (!description.trim()) errors.push('詳細説明を入力してください');
   if (Object.values(schedule).every((times) => times.length === 0))
-    errors.push("ステージを1つ以上選択してください");
+    errors.push('ステージを1つ以上選択してください');
   if (Object.values(seatDict).length === 0)
-    errors.push("チケット種別を1つ以上入力してください");
+    errors.push('チケット種別を1つ以上入力してください');
   Object.values(seatDict).forEach(({ seatGroup, ticketTypes }) => {
-    if (!seatGroup.capacity) warnings.push("座席数が0のチケットがあります");
+    if (!seatGroup.capacity) warnings.push('座席数が0のチケットがあります');
     if (ticketTypes.length === 0)
       warnings.push(
-        "座席数のみ入力されているものがあります（チケット追加が必要です）"
+        '座席数のみ入力されているものがあります（チケット追加が必要です）',
       );
     ticketTypes.forEach((ticketType) => {
       if (!ticketType.type_name.trim())
-        errors.push("未入力のチケット名があります");
-      if (!ticketType.price) warnings.push("価格が0円のチケットがあります");
+        errors.push('未入力のチケット名があります');
+      if (!ticketType.price) warnings.push('価格が0円のチケットがあります');
     });
   });
 
@@ -82,8 +82,8 @@ const ConfirmEvent = ({
       const stagePromises = Object.values(schedule)
         .flat()
         .map((time) => {
-          const start_time = toJST(time, "ISO8601");
-          const end_time = toJST(addTime(time, { hours: 2 }), "ISO8601");
+          const start_time = toJST(time, 'ISO8601');
+          const end_time = toJST(addTime(time, { hours: 2 }), 'ISO8601');
           return createStage(eventId, { start_time, end_time });
         });
 
@@ -94,7 +94,7 @@ const ConfirmEvent = ({
         for (const seats of Object.values(seatDict)) {
           const fetchedSeatGroup = await createSeatGroup(
             stage.id,
-            seats.seatGroup
+            seats.seatGroup,
           );
           const seatGroupId = fetchedSeatGroup.id;
 
@@ -107,15 +107,15 @@ const ConfirmEvent = ({
 
       // 処理がすべて成功した場合
       setSnack({
-        message: "イベントを作成しました",
-        severity: "success",
+        message: 'イベントを作成しました',
+        severity: 'success',
       });
     } catch (error) {
       // エラー処理
-      console.error("Failed to create event:", error);
+      console.error('Failed to create event:', error);
       setSnack({
-        message: "イベントの作成に失敗しました",
-        severity: "error",
+        message: 'イベントの作成に失敗しました',
+        severity: 'error',
       });
     } finally {
       setIsCreating(false);
@@ -151,7 +151,7 @@ const ConfirmEvent = ({
             イベント名
           </Typography>
           <Typography variant="h6" component="div" fontWeight="bold">
-            {title || "未設定"}
+            {title || '未設定'}
           </Typography>
         </Box>
 
@@ -160,7 +160,7 @@ const ConfirmEvent = ({
             詳細説明
           </Typography>
           <Typography variant="body1" whiteSpace="pre-line">
-            {description || "未設定"}
+            {description || '未設定'}
           </Typography>
         </Box>
 
@@ -170,8 +170,8 @@ const ConfirmEvent = ({
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ width: "50%" }}>日付</TableCell>
-                  <TableCell sx={{ width: "50%" }}>時間</TableCell>
+                  <TableCell sx={{ width: '50%' }}>日付</TableCell>
+                  <TableCell sx={{ width: '50%' }}>時間</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -185,11 +185,11 @@ const ConfirmEvent = ({
                         <TableCell>
                           {times.map((time) => (
                             <Typography
-                              key={toJST(time, "time")}
+                              key={toJST(time, 'time')}
                               component="span"
                             >
                               <Chip
-                                label={toJST(time, "time")}
+                                label={toJST(time, 'time')}
                                 sx={{ margin: 0.5 }}
                               />
                             </Typography>
@@ -210,8 +210,8 @@ const ConfirmEvent = ({
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ width: "50%" }}>チケット種別</TableCell>
-                    <TableCell sx={{ width: "50%" }}>価格</TableCell>
+                    <TableCell sx={{ width: '50%' }}>チケット種別</TableCell>
+                    <TableCell sx={{ width: '50%' }}>価格</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -224,7 +224,7 @@ const ConfirmEvent = ({
                 </TableBody>
               </Table>
               <Box p={2} display="flex" alignItems="center">
-                <ChairIcon sx={{ color: "primary.main", mr: 1 }} />
+                <ChairIcon sx={{ color: 'primary.main', mr: 1 }} />
                 <Typography variant="body1" component="div">
                   {seatGroup.capacity}席
                 </Typography>

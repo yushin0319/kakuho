@@ -1,29 +1,24 @@
 // app/src/context/AppData.tsx
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { useAuth } from "../context/AuthContext";
-import { fetchEvents } from "../services/api/event";
+import type React from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { fetchEvents } from '../services/api/event';
 import {
   fetchReservations,
   fetchUserReservations,
-} from "../services/api/reservation";
-import { fetchSeatGroups } from "../services/api/seatGroup";
-import { fetchStages } from "../services/api/stage";
-import { fetchTicketTypes } from "../services/api/ticketType";
-import { fetchUsers } from "../services/api/user";
-import {
+} from '../services/api/reservation';
+import { fetchSeatGroups } from '../services/api/seatGroup';
+import { fetchStages } from '../services/api/stage';
+import { fetchTicketTypes } from '../services/api/ticketType';
+import { fetchUsers } from '../services/api/user';
+import type {
   EventResponse,
   ReservationResponse,
   SeatGroupResponse,
   StageResponse,
   TicketTypeResponse,
   UserResponse,
-} from "../services/interfaces";
+} from '../services/interfaces';
 
 export interface ReservationDetail {
   reservation: ReservationResponse;
@@ -66,7 +61,7 @@ export const AppDataProvider = ({
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [reservations, setReservations] = useState<ReservationDetail[]>([]);
   const [eventStartDates, setEventStartDates] = useState<Record<number, Date>>(
-    {}
+    {},
   );
   const [eventEndDates, setEventEndDates] = useState<Record<number, Date>>({});
   const [seatGroupNames, setSeatGroupNames] = useState<
@@ -146,7 +141,7 @@ export const AppDataProvider = ({
           (ticketTypesBySeatGroup.get(sg.id) ?? [])
             .map((tt) => tt.type_name)
             .sort(),
-        ])
+        ]),
       );
       setSeatGroupNames(nameMap);
       // ReservationsDetailの構築
@@ -168,7 +163,7 @@ export const AppDataProvider = ({
         const user = userMap.get(res.user_id);
 
         if (!ticketType || !seatGroup || !stage || !event || !user) {
-          throw new Error("Invalid reservation data");
+          throw new Error('Invalid reservation data');
         }
 
         return {
@@ -183,7 +178,7 @@ export const AppDataProvider = ({
 
       setReservations(reservationDetails);
     } catch (e) {
-      setError("データの取得に失敗しました");
+      setError('データの取得に失敗しました');
       console.error(e);
     } finally {
       setTasks((prev) => prev - 1);
@@ -209,15 +204,15 @@ export const AppDataProvider = ({
     } else {
       loadData();
     }
-  }, [user]);
+  }, [user, loadData]);
 
   useEffect(() => {
     if (Object.keys(seatGroupNames).length === 0) return;
     const seats = [...seatGroups].sort((a, b) =>
-      seatGroupNames[b.id][0].localeCompare(seatGroupNames[a.id][0])
+      seatGroupNames[b.id][0].localeCompare(seatGroupNames[a.id][0]),
     );
     setSeatGroups(seats);
-  }, [seatGroupNames]);
+  }, [seatGroupNames, seatGroups]);
 
   const futureEvents = useMemo(
     () =>
@@ -226,9 +221,9 @@ export const AppDataProvider = ({
         .sort(
           (a, b) =>
             new Date(eventStartDates[a.id]).getTime() -
-            new Date(eventStartDates[b.id]).getTime()
+            new Date(eventStartDates[b.id]).getTime(),
         ),
-    [events, eventStartDates]
+    [events, eventStartDates],
   );
 
   const pastEvents = useMemo(
@@ -238,9 +233,9 @@ export const AppDataProvider = ({
         .sort(
           (a, b) =>
             new Date(eventStartDates[b.id]).getTime() -
-            new Date(eventStartDates[a.id]).getTime()
+            new Date(eventStartDates[a.id]).getTime(),
         ),
-    [events, eventStartDates]
+    [events, eventStartDates],
   );
 
   return (
@@ -270,7 +265,7 @@ export const AppDataProvider = ({
 export const useAppData = () => {
   const context = useContext(AppDataContext);
   if (!context) {
-    throw new Error("useAppData must be used within an AppDataProvider");
+    throw new Error('useAppData must be used within an AppDataProvider');
   }
   return context;
 };

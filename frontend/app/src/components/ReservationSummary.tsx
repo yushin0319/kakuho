@@ -1,6 +1,6 @@
-import { Box, Grid2 as Grid, Typography } from "@mui/material";
-import { ReservationDetail } from "../context/AppData";
-import { NumComma, toJST } from "../services/utils";
+import { Box, Grid2 as Grid, Typography } from '@mui/material';
+import type { ReservationDetail } from '../context/AppData';
+import { NumComma, toJST } from '../services/utils';
 
 type ReservationSummaryProps =
   | {
@@ -8,7 +8,7 @@ type ReservationSummaryProps =
       num_attendees?: never;
     }
   | {
-      item: Omit<ReservationDetail, "reservation">;
+      item: Omit<ReservationDetail, 'reservation'>;
       num_attendees: number;
     };
 
@@ -18,7 +18,7 @@ const ReservationSummary = ({
 }: ReservationSummaryProps) => {
   const { event, user, ticketType, stage } = item;
   const attendees =
-    "reservation" in item ? item.reservation.num_attendees : num_attendees;
+    'reservation' in item ? item.reservation.num_attendees : num_attendees;
 
   return (
     <Box sx={{ p: 2 }}>
@@ -27,9 +27,9 @@ const ReservationSummary = ({
           <Grid size={12} textAlign="right">
             <Typography
               sx={{
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
               }}
             >
               {event.name}
@@ -42,10 +42,10 @@ const ReservationSummary = ({
             <Typography
               variant="h6"
               sx={{
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                fontWeight: "bold",
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                fontWeight: 'bold',
               }}
             >
               {user.nickname || user.email}
@@ -61,8 +61,8 @@ const ReservationSummary = ({
               日時
             </Typography>
             <Typography variant="h6">
-              {toJST(stage.start_time, "fullDate")}{" "}
-              {toJST(stage.start_time, "time")}
+              {toJST(stage.start_time, 'fullDate')}{' '}
+              {toJST(stage.start_time, 'time')}
             </Typography>
           </Grid>
           <Grid
@@ -98,7 +98,7 @@ const ReservationSummary = ({
               合計金額
             </Typography>
             <Typography variant="h6">
-              {attendees ? NumComma(ticketType.price * attendees) : "-"}円
+              {attendees ? NumComma(ticketType.price * attendees) : '-'}円
             </Typography>
           </Grid>
         </Grid>

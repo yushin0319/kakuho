@@ -1,4 +1,4 @@
-import ChairIcon from "@mui/icons-material/Chair";
+import ChairIcon from '@mui/icons-material/Chair';
 import {
   Box,
   Button,
@@ -7,13 +7,13 @@ import {
   Grid2 as Grid,
   Slider,
   Typography,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { updateSeatGroup } from "../services/api/seatGroup";
-import { EventResponse } from "../services/interfaces";
-import { toJST } from "../services/utils";
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import { updateSeatGroup } from '../services/api/seatGroup';
+import type { EventResponse } from '../services/interfaces';
+import { toJST } from '../services/utils';
 
 interface CapacityAdjusterProps {
   event: EventResponse;
@@ -21,7 +21,7 @@ interface CapacityAdjusterProps {
 
 const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
   const [newCapacities, setNewCapacities] = useState<Record<number, number>>(
-    {}
+    {},
   );
   const { stages, seatGroups, seatGroupNames, error, reloadData } =
     useAppData();
@@ -31,7 +31,7 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
   // 席数の初期化
   useEffect(() => {
     setNewCapacities(
-      Object.fromEntries(seatGroups.map((sg) => [sg.id, sg.capacity]))
+      Object.fromEntries(seatGroups.map((sg) => [sg.id, sg.capacity])),
     );
   }, [seatGroups]);
 
@@ -49,14 +49,14 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
           .map((sg) =>
             updateSeatGroup(sg.id, {
               capacity: newCapacities[sg.id],
-            })
-          )
+            }),
+          ),
       );
-      setSnack({ message: "正常に保存されました", severity: "success" });
+      setSnack({ message: '正常に保存されました', severity: 'success' });
       reloadData();
     } catch (e) {
       console.error(e);
-      setSnack({ message: "保存中にエラーが発生しました", severity: "error" });
+      setSnack({ message: '保存中にエラーが発生しました', severity: 'error' });
     }
   };
 
@@ -89,8 +89,8 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
             <Divider
               sx={{
                 mb: 1,
-                backgroundColor: "primary.main",
-                width: "100%",
+                backgroundColor: 'primary.main',
+                width: '100%',
               }}
             />
             <Box
@@ -100,19 +100,19 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
               justifyContent="space-between"
             >
               <Typography variant="h6">
-                {toJST(stage.start_time, "dateTime")}
+                {toJST(stage.start_time, 'dateTime')}
               </Typography>
               <Button
-                variant={changingStage === stage.id ? "contained" : "outlined"}
+                variant={changingStage === stage.id ? 'contained' : 'outlined'}
                 color="primary"
                 onClick={() => {
                   setChangingStage((prev) =>
-                    prev === stage.id ? null : stage.id
+                    prev === stage.id ? null : stage.id,
                   );
                   if (changingStage === stage.id) handleSave();
                 }}
               >
-                {changingStage === stage.id ? "保存" : "変更"}
+                {changingStage === stage.id ? '保存' : '変更'}
               </Button>
             </Box>
             {seatGroups
@@ -128,7 +128,7 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
                       alignItems="center"
                       justifyContent="center"
                     >
-                      <ChairIcon sx={{ color: "primary.main", mr: 1 }} />
+                      <ChairIcon sx={{ color: 'primary.main', mr: 1 }} />
                       <Typography sx={{ mr: 1 }}>
                         {newCapacities[sg.id]}
                       </Typography>

@@ -1,4 +1,11 @@
-import { Box, Button, Card, Chip, Grid2 as Grid, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  Chip,
+  Grid2 as Grid,
+  Typography,
+} from '@mui/material';
 import {
   addDays,
   addMonths,
@@ -9,13 +16,13 @@ import {
   startOfMonth,
   startOfWeek,
   subMonths,
-} from "date-fns";
-import { ja } from "date-fns/locale";
-import { useEffect, useMemo, useState } from "react";
-import { useAppData } from "../context/AppData";
-import { EventResponse, StageResponse } from "../services/interfaces";
-import { toJST, toJSTDate } from "../services/utils";
-import ReservationCreater from "./ReservationCreater";
+} from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { useEffect, useMemo, useState } from 'react';
+import { useAppData } from '../context/AppData';
+import type { EventResponse, StageResponse } from '../services/interfaces';
+import { toJST, toJSTDate } from '../services/utils';
+import ReservationCreater from './ReservationCreater';
 
 // カレンダー範囲を取得するヘルパー関数
 function getCalendarDays(targetDate: Date): Date[] {
@@ -71,12 +78,10 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
   }, [selectableStages]);
 
   const isPrevDisabled =
-    minStageMonth !== null &&
-    startOfMonth(currentDate) <= minStageMonth;
+    minStageMonth !== null && startOfMonth(currentDate) <= minStageMonth;
 
   const isNextDisabled =
-    maxStageMonth !== null &&
-    startOfMonth(currentDate) >= maxStageMonth;
+    maxStageMonth !== null && startOfMonth(currentDate) >= maxStageMonth;
 
   // 週のうち最大ステージ数のある日のステージ数を取得する
   const weeksMax = (day: Date) => {
@@ -87,7 +92,7 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
 
       const date = addDays(firstDayOfWeek, i);
       selectableStages.forEach((stage) => {
-        if (toJST(stage.start_time, "fullDate") === toJST(date, "fullDate")) {
+        if (toJST(stage.start_time, 'fullDate') === toJST(date, 'fullDate')) {
           max++;
         }
       });
@@ -129,10 +134,10 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
         <Typography
           variant="h6"
           sx={{
-            fontWeight: "bold",
+            fontWeight: 'bold',
           }}
         >
-          {format(currentDate, "yyyy年M月", { locale: ja })}
+          {format(currentDate, 'yyyy年M月', { locale: ja })}
         </Typography>
         <Button
           onClick={handleNextMonth}
@@ -146,22 +151,22 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
       {/* 曜日ヘッダー */}
       <Card
         sx={{
-          backgroundColor: "white",
+          backgroundColor: 'white',
         }}
       >
         <Grid container spacing={1} textAlign="center">
-          {["月", "火", "水", "木", "金", "土", "日"].map((day) => (
+          {['月', '火', '水', '木', '金', '土', '日'].map((day) => (
             <Grid size={12 / 7} key={day}>
               <Typography
                 variant="subtitle2"
                 fontWeight="bold"
                 sx={{
                   color:
-                    day === "土"
-                      ? "lightskyblue"
-                      : day === "日"
-                      ? "lightcoral"
-                      : "gray",
+                    day === '土'
+                      ? 'lightskyblue'
+                      : day === '日'
+                        ? 'lightcoral'
+                        : 'gray',
                 }}
               >
                 {day}
@@ -181,9 +186,9 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
         <Grid container>
           {calendarDays.map((day, index) => {
             const isCurrentMonth =
-              format(day, "M") === format(currentDate, "M");
+              format(day, 'M') === format(currentDate, 'M');
             const isToday =
-              toJST(day, "fullDate") === toJST(new Date(), "fullDate");
+              toJST(day, 'fullDate') === toJST(new Date(), 'fullDate');
             return (
               <Grid size={12 / 7} key={index}>
                 <Box
@@ -193,29 +198,29 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                   height={weeksMax(day) * 40 + 50}
                   sx={{
                     backgroundColor: isToday
-                      ? "lightyellow"
+                      ? 'lightyellow'
                       : isCurrentMonth
-                      ? "white"
-                      : "lightgray",
-                    borderLeft: isCurrentMonth ? "1px solid #f0f0f0" : "none",
-                    borderBottom: isCurrentMonth ? "1px solid #f0f0f0" : "none",
+                        ? 'white'
+                        : 'lightgray',
+                    borderLeft: isCurrentMonth ? '1px solid #f0f0f0' : 'none',
+                    borderBottom: isCurrentMonth ? '1px solid #f0f0f0' : 'none',
                   }}
                 >
-                  <Typography variant="caption">{format(day, "d")}</Typography>
+                  <Typography variant="caption">{format(day, 'd')}</Typography>
                   <Box
                     display="flex"
                     flexDirection="column"
                     justifyContent="center"
                     alignItems="center"
                     sx={{
-                      height: "100%",
+                      height: '100%',
                     }}
                   >
                     {selectableStages
                       .filter(
                         (stage) =>
-                          toJST(stage.start_time, "fullDate") ===
-                          toJST(day, "fullDate")
+                          toJST(stage.start_time, 'fullDate') ===
+                          toJST(day, 'fullDate'),
                       )
                       .sort((a, b) => a.start_time.localeCompare(b.start_time))
                       .map((stage) => {
@@ -227,12 +232,12 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                             sx={{
                               mb: 1,
                               py: 0.5,
-                              minWidth: "90%",
-                              width: "90%",
-                              backgroundColor: "secondary.main",
-                              color: "white",
+                              minWidth: '90%',
+                              width: '90%',
+                              backgroundColor: 'secondary.main',
+                              color: 'white',
                               borderRadius: 1,
-                              flexDirection: "column",
+                              flexDirection: 'column',
                             }}
                             onClick={() => {
                               setSelectedStage(stage);
@@ -243,11 +248,11 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                             <Typography
                               variant="body2"
                               sx={{
-                                fontSize: "0.8rem",
-                                fontWeight: "bold",
+                                fontSize: '0.8rem',
+                                fontWeight: 'bold',
                               }}
                             >
-                              {toJST(stage.start_time, "time")}
+                              {toJST(stage.start_time, 'time')}
                             </Typography>
                             {/* Min-KK-10: 完売バッジ */}
                             {soldOut && (
@@ -257,8 +262,8 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                                 color="error"
                                 sx={{
                                   height: 16,
-                                  fontSize: "0.65rem",
-                                  pointerEvents: "none",
+                                  fontSize: '0.65rem',
+                                  pointerEvents: 'none',
                                 }}
                               />
                             )}

@@ -8,13 +8,13 @@ import {
   Collapse,
   Grid2 as Grid,
   Typography,
-} from "@mui/material";
-import { QRCodeSVG } from "qrcode.react";
-import { useEffect, useState } from "react";
-import { ReservationDetail } from "../context/AppData";
-import { NumComma, toJST } from "../services/utils";
-import ReservationChanger from "./ReservationChanger";
-import ReservationDeleter from "./ReservationDeleter";
+} from '@mui/material';
+import { QRCodeSVG } from 'qrcode.react';
+import { useEffect, useState } from 'react';
+import type { ReservationDetail } from '../context/AppData';
+import { NumComma, toJST } from '../services/utils';
+import ReservationChanger from './ReservationChanger';
+import ReservationDeleter from './ReservationDeleter';
 
 interface ReservationCardProps {
   reservationDetail: ReservationDetail;
@@ -58,37 +58,37 @@ const ReservationCard = ({
     <Card
       onClick={onCardClick}
       sx={{
-        position: "relative",
-        backgroundColor: highlight ? "lightblue" : "white",
+        position: 'relative',
+        backgroundColor: highlight ? 'lightblue' : 'white',
         borderRadius: 2,
         p: 2,
         my: 2,
-        cursor: "pointer",
-        transition: "background-color 0.3s",
+        cursor: 'pointer',
+        transition: 'background-color 0.3s',
       }}
     >
       {/* 点線デザイン */}
       <Box
         sx={{
-          position: "absolute",
+          position: 'absolute',
           top: 0,
           right: 0,
-          width: "3%",
-          height: "100%",
-          backgroundColor: reservation.is_paid ? "background.default" : "white",
+          width: '3%',
+          height: '100%',
+          backgroundColor: reservation.is_paid ? 'background.default' : 'white',
         }}
       >
         <Box
           sx={{
-            position: "absolute",
-            top: "5%",
-            transform: "translateX(-10%)",
-            width: "5px",
-            height: "90%",
+            position: 'absolute',
+            top: '5%',
+            transform: 'translateX(-10%)',
+            width: '5px',
+            height: '90%',
             backgroundImage:
-              "radial-gradient(circle, gray 2px, transparent 2px)", // 点線の穴
-            backgroundSize: "2px 12px", // 点線間隔
-            backgroundRepeat: "repeat-y",
+              'radial-gradient(circle, gray 2px, transparent 2px)', // 点線の穴
+            backgroundSize: '2px 12px', // 点線間隔
+            backgroundRepeat: 'repeat-y',
           }}
         />
       </Box>
@@ -100,23 +100,23 @@ const ReservationCard = ({
         </Typography>
         <Box
           sx={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "space-around",
-            alignItems: "center",
+            display: 'flex',
+            width: '100%',
+            justifyContent: 'space-around',
+            alignItems: 'center',
           }}
         >
           <Typography variant="body1" color="secondary">
-            {toJST(stage.start_time, "dateTime")}
+            {toJST(stage.start_time, 'dateTime')}
           </Typography>
           <Typography variant="caption" color="textSecondary">
             {new Date(stage.start_time).getTime() < Date.now()
               ? reservation.is_paid
-                ? "ご来場ありがとう！"
-                : "ステージは終了しました"
+                ? 'ご来場ありがとう！'
+                : 'ステージは終了しました'
               : `あと${Math.ceil(
                   (new Date(stage.start_time).getTime() - Date.now()) /
-                    (1000 * 60 * 60 * 24)
+                    (1000 * 60 * 60 * 24),
                 )}日`}
           </Typography>
         </Box>
@@ -140,8 +140,8 @@ const ReservationCard = ({
         </CardContent>
         <CardActions
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
+            display: 'flex',
+            justifyContent: 'space-between',
             p: 4,
           }}
         >

@@ -1,22 +1,22 @@
-import { Box, Chip, Divider, Typography } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { useAppData } from "../context/AppData";
-import { useSnack } from "../context/SnackContext";
-import { createSeatGroup, deleteSeatGroup } from "../services/api/seatGroup";
-import { createStage, deleteStage } from "../services/api/stage";
-import { createTicketType, deleteTicketType } from "../services/api/ticketType";
-import {
+import { Box, Chip, Divider, Typography } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useAppData } from '../context/AppData';
+import { useSnack } from '../context/SnackContext';
+import { createSeatGroup, deleteSeatGroup } from '../services/api/seatGroup';
+import { createStage, deleteStage } from '../services/api/stage';
+import { createTicketType, deleteTicketType } from '../services/api/ticketType';
+import type {
   EventResponse,
   SeatGroupResponse,
   StageCreate,
   StageResponse,
   TicketTypeResponse,
-} from "../services/interfaces";
-import { addTime, toJST } from "../services/utils";
-import SeatGroupSelector from "./SeatGroupSelector";
-import ValidatedDatePicker from "./ValidatedDatePicker";
-import ValidatedTimePicker from "./ValidatedTimePicker";
+} from '../services/interfaces';
+import { addTime, toJST } from '../services/utils';
+import SeatGroupSelector from './SeatGroupSelector';
+import ValidatedDatePicker from './ValidatedDatePicker';
+import ValidatedTimePicker from './ValidatedTimePicker';
 
 const StageManager = ({ event }: { event: EventResponse }) => {
   const [open, setOpen] = useState(false);
@@ -36,7 +36,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
   // イベントに紐づくステージのみ抽出
   const filteredStages = useMemo(
     () => stages.filter((stage) => stage.event_id === event.id),
-    [stages, event.id]
+    [stages, event.id],
   );
 
   // ステージごとの予約の有無を辞書化
@@ -52,7 +52,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
   const stagesByDate = useMemo(() => {
     const dict: Record<string, StageResponse[]> = {};
     filteredStages.forEach((stage) => {
-      const date = toJST(stage.start_time, "fullDate");
+      const date = toJST(stage.start_time, 'fullDate');
       if (!dict[date]) {
         dict[date] = [];
       }
@@ -75,7 +75,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
         ticketTypes: TicketTypeResponse[];
       }[] = [];
       const seatGroupsForStage = seatGroups.filter(
-        (sg) => sg.stage_id === stage.id
+        (sg) => sg.stage_id === stage.id,
       );
       seatGroupsForStage.forEach((sg) => {
         const ticketTypesForSeatGroup = ticketTypes
@@ -84,7 +84,9 @@ const StageManager = ({ event }: { event: EventResponse }) => {
         stageDict.push({ seatGroup: sg, ticketTypes: ticketTypesForSeatGroup });
 
         const groupKey = JSON.stringify(
-          ticketTypesForSeatGroup.map((tt) => tt.type_name + tt.price).join(",")
+          ticketTypesForSeatGroup
+            .map((tt) => tt.type_name + tt.price)
+            .join(','),
         );
 
         stageKey.push(groupKey);
@@ -96,13 +98,13 @@ const StageManager = ({ event }: { event: EventResponse }) => {
       }
     });
     return dict;
-  }, [seatGroups, ticketTypes]);
+  }, [seatGroups, ticketTypes, filteredStages.forEach]);
 
   useEffect(() => {
     if (selectedTime) {
       handleAddStage();
     }
-  }, [selectedTime]);
+  }, [selectedTime, handleAddStage]);
 
   useEffect(() => {
     if (creatingStage) {
@@ -112,25 +114,26 @@ const StageManager = ({ event }: { event: EventResponse }) => {
         setOpen(true);
       }
     }
-  }, [creatingStage]);
+    // biome-ignore lint/correctness/noInvalidUseBeforeDeclaration: addStage/onlyOnePattern are arrow functions defined later in the component body
+  }, [creatingStage, addStage, onlyOnePattern, seatDict]);
 
-  const handleAddStage = () => {
+  function handleAddStage() {
     if (isValid()) {
       const newDateTime = new Date(
-        selectedDate!.getFullYear(),
-        selectedDate!.getMonth(),
-        selectedDate!.getDate(),
-        selectedTime!.getHours(),
-        selectedTime!.getMinutes()
+        selectedDate?.getFullYear(),
+        selectedDate?.getMonth(),
+        selectedDate?.getDate(),
+        selectedTime?.getHours(),
+        selectedTime?.getMinutes(),
       );
       setCreatingStage(newDateTime);
     }
-  };
+  }
 
   // ステージ開始時間のバリデーション
   const isValid = (): boolean => {
     if (!selectedDate || !selectedTime) {
-      setSnack({ message: "日付と時間を選択してください", severity: "error" });
+      setSnack({ message: '日付と時間を選択してください', severity: 'error' });
       return false;
     }
     const newDateTime = new Date(
@@ -138,17 +141,17 @@ const StageManager = ({ event }: { event: EventResponse }) => {
       selectedDate.getMonth(),
       selectedDate.getDate(),
       selectedTime.getHours(),
-      selectedTime.getMinutes()
+      selectedTime.getMinutes(),
     );
     if (
       stages.some(
         (stage) =>
-          new Date(stage.start_time).getTime() === newDateTime.getTime()
+          new Date(stage.start_time).getTime() === newDateTime.getTime(),
       )
     ) {
       setSnack({
-        message: "同じ時間帯のステージが既に存在します",
-        severity: "error",
+        message: '同じ時間帯のステージが既に存在します',
+        severity: 'error',
       });
       return false;
     } else {
@@ -170,8 +173,8 @@ const StageManager = ({ event }: { event: EventResponse }) => {
   const addStage = async (key: string) => {
     if (!creatingStage) return;
     const newStage = await createStage(event.id, {
-      start_time: toJST(creatingStage, "ISO8601"),
-      end_time: toJST(addTime(creatingStage, { hours: 2 }), "ISO8601"),
+      start_time: toJST(creatingStage, 'ISO8601'),
+      end_time: toJST(addTime(creatingStage, { hours: 2 }), 'ISO8601'),
     } as StageCreate);
 
     const selectedSeatGroup = seatDict[key];
@@ -188,20 +191,20 @@ const StageManager = ({ event }: { event: EventResponse }) => {
     }
 
     reloadData();
-    setSnack({ message: "ステージを追加しました", severity: "success" });
+    setSnack({ message: 'ステージを追加しました', severity: 'success' });
   };
 
   // ステージ削除
   const removeStage = async (id: number) => {
     const seatGroupsForStage = seatGroups.filter((sg) => sg.stage_id === id);
     const ticketTypesForStage = ticketTypes.filter((tt) =>
-      seatGroupsForStage.some((sg) => sg.id === tt.seat_group_id)
+      seatGroupsForStage.some((sg) => sg.id === tt.seat_group_id),
     );
     await Promise.all(ticketTypesForStage.map((tt) => deleteTicketType(tt.id)));
     await Promise.all(seatGroupsForStage.map((sg) => deleteSeatGroup(sg.id)));
     await deleteStage(id);
     reloadData();
-    setSnack({ message: "ステージを削除しました", severity: "success" });
+    setSnack({ message: 'ステージを削除しました', severity: 'success' });
   };
 
   return (
@@ -229,19 +232,19 @@ const StageManager = ({ event }: { event: EventResponse }) => {
               justifyContent="space-between"
             >
               <Typography variant="body2">
-                {toJST(date, "monthDate")}
+                {toJST(date, 'monthDate')}
               </Typography>
               <Box>
                 {stagesByDate[date]
                   .sort(
                     (a, b) =>
                       new Date(a.start_time).getTime() -
-                      new Date(b.start_time).getTime()
+                      new Date(b.start_time).getTime(),
                   )
                   .map((stage) => (
                     <Chip
                       key={stage.id}
-                      label={toJST(stage.start_time, "time")}
+                      label={toJST(stage.start_time, 'time')}
                       onDelete={
                         hasReservations[stage.id]
                           ? undefined
@@ -269,7 +272,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
           />
           <ValidatedTimePicker
             name="stageTime"
-            date={selectedDate ? selectedDate.toISOString() : ""}
+            date={selectedDate ? selectedDate.toISOString() : ''}
             label="ステージ時間"
             addSchedule={(_, time) => {
               setSelectedTime(time);

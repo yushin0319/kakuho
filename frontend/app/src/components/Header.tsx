@@ -5,11 +5,11 @@ import {
   Divider,
   Toolbar,
   Typography,
-} from "@mui/material";
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import UserInfo from "./UserInfo";
+} from '@mui/material';
+import { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import UserInfo from './UserInfo';
 
 const Header = () => {
   const { user } = useAuth(); // 認証情報を取得するフック
@@ -29,16 +29,16 @@ const Header = () => {
         marginBottom: 4,
       }}
     >
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         {/* ナビゲーションボタン */}
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
           {user?.is_admin ? (
             <>
               <Button
                 component={NavLink}
                 to="/check-in-list"
                 color="inherit"
-                sx={{ "&.active": { borderBottom: "2px solid white" } }}
+                sx={{ '&.active': { borderBottom: '2px solid white' } }}
               >
                 <Typography variant="caption">予約一覧</Typography>
               </Button>
@@ -47,7 +47,7 @@ const Header = () => {
                 component={NavLink}
                 to="/manage-user"
                 color="inherit"
-                sx={{ "&.active": { borderBottom: "2px solid white" } }}
+                sx={{ '&.active': { borderBottom: '2px solid white' } }}
               >
                 <Typography variant="caption">ユーザ一覧</Typography>
               </Button>
@@ -56,7 +56,7 @@ const Header = () => {
                 component={NavLink}
                 to="/manage-event"
                 color="inherit"
-                sx={{ "&.active": { borderBottom: "2px solid white" } }}
+                sx={{ '&.active': { borderBottom: '2px solid white' } }}
               >
                 <Typography variant="caption">イベント管理</Typography>
               </Button>
@@ -65,11 +65,11 @@ const Header = () => {
           ) : (
             <>
               <Button component={NavLink} to="/" color="inherit" sx={{ p: 0 }}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <img
                     src="logo.png"
                     alt="Logo"
-                    style={{ width: "35px", height: "auto" }}
+                    style={{ width: '35px', height: 'auto' }}
                   />
                 </Box>
               </Button>
@@ -88,7 +88,7 @@ const Header = () => {
         {/* ユーザー情報ボタン */}
         <Button color="inherit" onClick={handleUserClick}>
           <Typography variant="caption" color="secondary">
-            {user?.nickname || user?.email || "ゲスト"}
+            {user?.nickname || user?.email || 'ゲスト'}
           </Typography>
         </Button>
       </Toolbar>

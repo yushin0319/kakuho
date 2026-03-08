@@ -1,11 +1,11 @@
 // app/src/pages/ReservationList.tsx
-import QrCode2Icon from "@mui/icons-material/QrCode2";
-import { Alert, Box, Container, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import LoadingScreen from "../components/LoadingScreen";
-import ReservationCard from "../components/ReservationCard";
-import { useAppData } from "../context/AppData";
-import { useNewItemContext } from "../context/NewItemContext";
+import QrCode2Icon from '@mui/icons-material/QrCode2';
+import { Alert, Box, Container, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import LoadingScreen from '../components/LoadingScreen';
+import ReservationCard from '../components/ReservationCard';
+import { useAppData } from '../context/AppData';
+import { useNewItemContext } from '../context/NewItemContext';
 
 const ReservationList = () => {
   const { reservations, loading, error } = useAppData();
@@ -19,7 +19,7 @@ const ReservationList = () => {
         clearNewItems();
       }, 0);
     }
-  }, [reservations]);
+  }, [clearNewItems, newItems.length]);
 
   // カードクリック時の処理
   const handleCardClick = (id: number) => {
@@ -31,8 +31,7 @@ const ReservationList = () => {
   // Min-KK-11: 過去かつ未払いの予約
   const unpaidPastReservations = reservations.filter(
     (item) =>
-      new Date(item.stage.start_time) < new Date() &&
-      !item.reservation.is_paid
+      new Date(item.stage.start_time) < new Date() && !item.reservation.is_paid,
   );
 
   return (
@@ -53,7 +52,7 @@ const ReservationList = () => {
         </Typography>
       ) : (
         /* Min-KK-13: QR案内を視覚的に強調 */
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
           <QrCode2Icon color="primary" fontSize="small" />
           <Typography variant="body2" color="primary" fontWeight="bold">
             タップするとQRコードが表示されます
@@ -64,11 +63,10 @@ const ReservationList = () => {
         .sort(
           (a, b) =>
             new Date(a.stage.start_time).getTime() -
-            new Date(b.stage.start_time).getTime()
+            new Date(b.stage.start_time).getTime(),
         )
         .filter(
-          (item) =>
-            new Date(item.stage.start_time).getTime() >= new Date().getTime()
+          (item) => new Date(item.stage.start_time).getTime() >= Date.now(),
         )
         .map((item) => (
           <ReservationCard
@@ -80,8 +78,7 @@ const ReservationList = () => {
           />
         ))}
       {reservations.filter(
-        (item) =>
-          new Date(item.stage.start_time).getTime() < new Date().getTime()
+        (item) => new Date(item.stage.start_time).getTime() < Date.now(),
       ).length > 0 && (
         <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
           過去のイベント
@@ -92,11 +89,10 @@ const ReservationList = () => {
         .sort(
           (a, b) =>
             new Date(b.stage.start_time).getTime() -
-            new Date(a.stage.start_time).getTime()
+            new Date(a.stage.start_time).getTime(),
         )
         .filter(
-          (item) =>
-            new Date(item.stage.start_time).getTime() < new Date().getTime()
+          (item) => new Date(item.stage.start_time).getTime() < Date.now(),
         )
         .map((item) => (
           <ReservationCard

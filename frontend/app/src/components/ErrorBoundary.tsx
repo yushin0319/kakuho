@@ -1,5 +1,5 @@
-import { Component, ErrorInfo, ReactNode } from "react";
-import { Alert, Box, Button } from "@mui/material";
+import { Alert, Box, Button } from '@mui/material';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -21,18 +21,18 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error("ErrorBoundary caught:", error, info);
+    console.error('ErrorBoundary caught:', error, info);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <Box sx={{ p: 4, textAlign: "center" }}>
+        <Box sx={{ p: 4, textAlign: 'center' }}>
           <Alert severity="error" sx={{ mb: 2 }}>
             予期しないエラーが発生しました。
             {this.state.error?.message && ` (${this.state.error.message})`}
           </Alert>
-          <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
             <Button
               variant="contained"
               onClick={() => window.location.reload()}
@@ -43,7 +43,7 @@ class ErrorBoundary extends Component<Props, State> {
               variant="outlined"
               onClick={() => {
                 this.setState({ hasError: false, error: null });
-                window.location.href = "/";
+                window.location.href = '/';
               }}
             >
               トップページへ
