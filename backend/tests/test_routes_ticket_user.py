@@ -125,7 +125,7 @@ class TestTicketTypeEndpoints:
             json={"type_name": "一般", "price": 2000.0},
             headers=headers,
         )
-        assert resp.status_code == 400
+        assert resp.status_code == 409
 
     def test_get_ticket_types_by_seat_group(self, client, db):
         event = make_event(db)

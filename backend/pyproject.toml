@@ -1,36 +1,32 @@
-[tool.poetry]
+[project]
 name = "backend"
 version = "0.1.0"
 description = ""
-authors = ["yushin0319 <yushin.fudo1986@gmail.com>"]
-readme = "README.md"
+requires-python = ">=3.11,<3.15"
+dependencies = [
+    "fastapi>=0.133.0",
+    "uvicorn>=0.31.0",
+    "sqlalchemy>=2.0.35",
+    "passlib>=1.7.4",
+    "PyJWT>=2.10.0",
+    "python-multipart>=0.0.22",
+    "email-validator>=2.2.0",
+    "python-dotenv>=1.0.1",
+    "pydantic-settings>=2.0.0",
+    "psycopg2-binary>=2.9.11",
+    "alembic>=1.14.0",
+    "gunicorn>=22.0.0",
+    "slowapi>=0.1.9",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.11,<3.15"
-fastapi = "^0.133.0"
-uvicorn = "^0.31.0"
-sqlalchemy = "^2.0.35"
-passlib = "^1.7.4"
-PyJWT = "^2.10.0"
-python-multipart = "^0.0.22"
-email-validator = "^2.2.0"
-python-dotenv = "^1.0.1"
-pydantic-settings = "^2.0.0"
-psycopg2-binary = "^2.9.11"
-alembic = "^1.14.0"
-gunicorn = "^22.0.0"
-slowapi = "^0.1.9"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
-pytest-asyncio = "^0.24.0"
-httpx = "^0.27.0"
-bcrypt = "^4.0.0"
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.27.0",
+    "bcrypt>=4.0.0,<4.1.0",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
