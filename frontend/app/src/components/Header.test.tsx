@@ -1,7 +1,7 @@
 // src/components/Header.test.tsx
 import { render, screen } from "@testing-library/react";
 import Header from "./Header";
-import { TestWrapper, mockUser, mockAdminUser } from "../test/mocks";
+import { createTestWrapper, mockUser, mockAdminUser } from "../test/mocks";
 
 // Context のモック
 const mockNavigate = vi.fn();
@@ -12,10 +12,6 @@ vi.mock("react-router-dom", async () => {
     useNavigate: () => mockNavigate,
   };
 });
-
-vi.mock("../context/SnackContext", () => ({
-  useSnack: () => ({ snack: null, setSnack: vi.fn() }),
-}));
 
 const mockAuthValue = {
   isAuthenticated: true,
@@ -51,8 +47,11 @@ vi.mock("../context/AppData", () => ({
 }));
 
 describe("Header", () => {
+  let wrapper: ReturnType<typeof createTestWrapper>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    wrapper = createTestWrapper();
   });
 
   describe("一般ユーザーとして", () => {
@@ -61,22 +60,22 @@ describe("Header", () => {
     });
 
     it("ユーザー名を表示する", () => {
-      render(<Header />, { wrapper: TestWrapper });
+      render(<Header />, { wrapper });
       expect(screen.getByText("テストユーザー")).toBeInTheDocument();
     });
 
     it("予約するリンクを表示する", () => {
-      render(<Header />, { wrapper: TestWrapper });
+      render(<Header />, { wrapper });
       expect(screen.getByText("予約する")).toBeInTheDocument();
     });
 
     it("マイチケットリンクを表示する", () => {
-      render(<Header />, { wrapper: TestWrapper });
+      render(<Header />, { wrapper });
       expect(screen.getByText("マイチケット")).toBeInTheDocument();
     });
 
     it("管理者メニューを表示しない", () => {
-      render(<Header />, { wrapper: TestWrapper });
+      render(<Header />, { wrapper });
       expect(screen.queryByText("予約一覧")).not.toBeInTheDocument();
       expect(screen.queryByText("イベント管理")).not.toBeInTheDocument();
     });
@@ -88,22 +87,22 @@ describe("Header", () => {
     });
 
     it("管理者名を表示する", () => {
-      render(<Header />, { wrapper: TestWrapper });
+      render(<Header />, { wrapper });
       expect(screen.getByText("管理者")).toBeInTheDocument();
     });
 
     it("予約一覧リンクを表示する", () => {
-      render(<Header />, { wrapper: TestWrapper });
+      render(<Header />, { wrapper });
       expect(screen.getByText("予約一覧")).toBeInTheDocument();
     });
 
     it("ユーザ一覧リンクを表示する", () => {
-      render(<Header />, { wrapper: TestWrapper });
+      render(<Header />, { wrapper });
       expect(screen.getByText("ユーザ一覧")).toBeInTheDocument();
     });
 
     it("イベント管理リンクを表示する", () => {
-      render(<Header />, { wrapper: TestWrapper });
+      render(<Header />, { wrapper });
       expect(screen.getByText("イベント管理")).toBeInTheDocument();
     });
   });

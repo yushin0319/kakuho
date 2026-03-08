@@ -6,6 +6,8 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { UserResponse, EventResponse } from "../services/interfaces";
 import { ReservationDetail } from "../context/AppData";
+import { SnackContext } from "../context/SnackContext";
+import type { SnackContextType } from "../context/SnackContext";
 
 // モックユーザーデータ
 export const mockUser: UserResponse = {
@@ -43,6 +45,24 @@ export const TestWrapper = ({ children }: { children: ReactNode }) => (
     </ThemeProvider>
   </BrowserRouter>
 );
+
+// SnackContextを注入できるTestWrapper（vi.mock不要）
+export const createTestWrapper = (snackOverrides?: Partial<SnackContextType>) => {
+  const snackValue: SnackContextType = {
+    snack: null,
+    setSnack: vi.fn(),
+    ...snackOverrides,
+  };
+  return ({ children }: { children: ReactNode }) => (
+    <BrowserRouter>
+      <ThemeProvider theme={testTheme}>
+        <SnackContext.Provider value={snackValue}>
+          {children}
+        </SnackContext.Provider>
+      </ThemeProvider>
+    </BrowserRouter>
+  );
+};
 
 // モックのSnackContext
 export const mockSnackContext = {

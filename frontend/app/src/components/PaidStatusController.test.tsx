@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import PaidStatusController from "./PaidStatusController";
 import { updateReservation } from "../services/api/reservation";
-import { TestWrapper } from "../test/mocks";
+import { createTestWrapper } from "../test/mocks";
 
 const mockReloadData = vi.fn();
 vi.mock("../context/AppData", () => ({
@@ -31,21 +31,20 @@ vi.mock("./ReservationSummary", () => ({
 }));
 
 const mockSetSnack = vi.fn();
-vi.mock("../context/SnackContext", () => ({
-  useSnack: () => ({ setSnack: mockSetSnack }),
-}));
 
 describe("PaidStatusController", () => {
   const onClose = vi.fn();
+  let wrapper: ReturnType<typeof createTestWrapper>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    wrapper = createTestWrapper({ setSnack: mockSetSnack });
   });
 
   it("受付ダイアログを表示する", () => {
     render(
       <PaidStatusController reservationId={1} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     expect(screen.getByText("下記の予約を受付いたします")).toBeInTheDocument();
   });
@@ -53,7 +52,7 @@ describe("PaidStatusController", () => {
   it("予約が見つからない場合に「予約が見つかりません」を表示する", () => {
     render(
       <PaidStatusController reservationId={999} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     expect(screen.getByText("予約が見つかりません")).toBeInTheDocument();
   });
@@ -62,7 +61,7 @@ describe("PaidStatusController", () => {
     const user = userEvent.setup();
     render(
       <PaidStatusController reservationId={1} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     await user.click(screen.getByRole("button", { name: "受付完了" }));
     expect(onClose).toHaveBeenCalled();
@@ -73,7 +72,7 @@ describe("PaidStatusController", () => {
     const user = userEvent.setup();
     render(
       <PaidStatusController reservationId={1} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     await user.click(screen.getByRole("button", { name: "受付完了" }));
     expect(onClose).not.toHaveBeenCalled();
@@ -84,7 +83,7 @@ describe("PaidStatusController", () => {
     const user = userEvent.setup();
     render(
       <PaidStatusController reservationId={1} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     await user.click(screen.getByRole("button", { name: "受付完了" }));
     expect(mockSetSnack).toHaveBeenCalledWith(
