@@ -11,7 +11,7 @@ export interface SnackContextType {
   setSnack: (snack: Snack | null) => void;
 }
 
-const SnackContext = createContext<SnackContextType | null>(null);
+export const SnackContext = createContext<SnackContextType | null>(null);
 
 export const SnackProvider = ({ children }: { children: React.ReactNode }) => {
   const [snack, setSnack] = useState<Snack | null>(null);

@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import EventDeleter from "./EventDeleter";
 import { deleteEvent } from "../services/api/event";
-import { TestWrapper, mockEvent } from "../test/mocks";
+import { createTestWrapper, mockEvent } from "../test/mocks";
 
 vi.mock("../context/AppData", () => ({
   useAppData: () => ({
@@ -13,10 +13,6 @@ vi.mock("../context/AppData", () => ({
     reservations: [],
     reloadData: vi.fn(),
   }),
-}));
-
-vi.mock("../context/SnackContext", () => ({
-  useSnack: () => ({ setSnack: vi.fn() }),
 }));
 
 vi.mock("../services/api/event", () => ({
@@ -41,31 +37,31 @@ describe("EventDeleter", () => {
   });
 
   it("イベント削除の見出しを表示する", () => {
-    render(<EventDeleter event={mockEvent} />, { wrapper: TestWrapper });
+    render(<EventDeleter event={mockEvent} />, { wrapper: createTestWrapper() });
     expect(screen.getByText("イベントの削除")).toBeInTheDocument();
   });
 
   it("削除ボタンを表示する", () => {
-    render(<EventDeleter event={mockEvent} />, { wrapper: TestWrapper });
+    render(<EventDeleter event={mockEvent} />, { wrapper: createTestWrapper() });
     expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
   });
 
   it("予約がない場合は削除ボタンが有効", () => {
-    render(<EventDeleter event={mockEvent} />, { wrapper: TestWrapper });
+    render(<EventDeleter event={mockEvent} />, { wrapper: createTestWrapper() });
     const deleteButton = screen.getByRole("button", { name: "削除" });
     expect(deleteButton).not.toBeDisabled();
   });
 
   it("削除ボタンクリックで確認ダイアログが開く", async () => {
     const user = userEvent.setup();
-    render(<EventDeleter event={mockEvent} />, { wrapper: TestWrapper });
+    render(<EventDeleter event={mockEvent} />, { wrapper: createTestWrapper() });
     await user.click(screen.getByRole("button", { name: "削除" }));
     expect(screen.getByText("イベントを削除しますか？")).toBeInTheDocument();
   });
 
   it("確認ダイアログのキャンセルで「削除する」ボタンが非表示になる", async () => {
     const user = userEvent.setup();
-    render(<EventDeleter event={mockEvent} />, { wrapper: TestWrapper });
+    render(<EventDeleter event={mockEvent} />, { wrapper: createTestWrapper() });
     await user.click(screen.getByRole("button", { name: "削除" }));
     // ダイアログが開いていることを確認
     expect(screen.getByText("イベントを削除しますか？")).toBeInTheDocument();
@@ -78,7 +74,7 @@ describe("EventDeleter", () => {
 
   it("確認ダイアログの「削除する」で deleteEvent が呼ばれる", async () => {
     const user = userEvent.setup();
-    render(<EventDeleter event={mockEvent} />, { wrapper: TestWrapper });
+    render(<EventDeleter event={mockEvent} />, { wrapper: createTestWrapper() });
     await user.click(screen.getByRole("button", { name: "削除" }));
     await user.click(screen.getByRole("button", { name: "削除する" }));
     expect(vi.mocked(deleteEvent)).toHaveBeenCalledWith(mockEvent.id);

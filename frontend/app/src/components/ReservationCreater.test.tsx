@@ -2,7 +2,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ReservationCreater from "./ReservationCreater";
-import { TestWrapper, mockUser, mockEvent } from "../test/mocks";
+import { createTestWrapper, mockUser, mockEvent } from "../test/mocks";
 
 // vi.mock はホイストされるため、ファクトリ内で直接 vi.fn() を定義する
 vi.mock("../context/AppData", () => ({
@@ -16,10 +16,6 @@ vi.mock("../context/AppData", () => ({
 
 vi.mock("../context/AuthContext", () => ({
   useAuth: () => ({ user: mockUser }),
-}));
-
-vi.mock("../context/SnackContext", () => ({
-  useSnack: () => ({ setSnack: vi.fn() }),
 }));
 
 vi.mock("../context/NewItemContext", () => ({
@@ -53,7 +49,7 @@ describe("ReservationCreater", () => {
   it("フォームフェーズのダイアログタイトルを表示する", () => {
     render(
       <ReservationCreater event={mockEvent} stage={mockStage} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper: createTestWrapper() }
     );
     expect(screen.getByText("券種と人数を選択して下さい")).toBeInTheDocument();
   });
@@ -61,7 +57,7 @@ describe("ReservationCreater", () => {
   it("予約ボタンとキャンセルボタンを表示する", () => {
     render(
       <ReservationCreater event={mockEvent} stage={mockStage} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper: createTestWrapper() }
     );
     expect(screen.getByRole("button", { name: "予約" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "キャンセル" })).toBeInTheDocument();
@@ -71,7 +67,7 @@ describe("ReservationCreater", () => {
     const user = userEvent.setup();
     render(
       <ReservationCreater event={mockEvent} stage={mockStage} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper: createTestWrapper() }
     );
     await user.click(screen.getByRole("button", { name: "キャンセル" }));
     expect(onClose).toHaveBeenCalled();
@@ -81,7 +77,7 @@ describe("ReservationCreater", () => {
     const user = userEvent.setup();
     render(
       <ReservationCreater event={mockEvent} stage={mockStage} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper: createTestWrapper() }
     );
     await user.click(screen.getByRole("button", { name: "予約" }));
     expect(screen.getByText("予約してよろしいですか？")).toBeInTheDocument();
@@ -92,7 +88,7 @@ describe("ReservationCreater", () => {
     const user = userEvent.setup();
     render(
       <ReservationCreater event={mockEvent} stage={mockStage} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper: createTestWrapper() }
     );
     await user.click(screen.getByRole("button", { name: "予約" }));
     await user.click(screen.getByRole("button", { name: "キャンセル" }));

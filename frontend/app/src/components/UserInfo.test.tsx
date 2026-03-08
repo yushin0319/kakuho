@@ -2,7 +2,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UserInfo from "./UserInfo";
-import { TestWrapper, mockUser } from "../test/mocks";
+import { createTestWrapper, mockUser } from "../test/mocks";
 
 const mockSetUser = vi.fn();
 const mockLogout = vi.fn();
@@ -20,13 +20,6 @@ vi.mock("../context/AuthContext", () => ({
   }),
 }));
 
-vi.mock("../context/SnackContext", () => ({
-  useSnack: () => ({
-    snack: null,
-    setSnack: mockSetSnack,
-  }),
-}));
-
 vi.mock("../services/api/user", () => ({
   updateUser: vi.fn().mockResolvedValue({
     id: 1,
@@ -40,39 +33,41 @@ describe("UserInfo", () => {
   const defaultProps = {
     onClose: vi.fn(),
   };
+  let wrapper: ReturnType<typeof createTestWrapper>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    wrapper = createTestWrapper({ setSnack: mockSetSnack });
   });
 
   it("ダイアログタイトルを表示する", () => {
-    render(<UserInfo {...defaultProps} />, { wrapper: TestWrapper });
+    render(<UserInfo {...defaultProps} />, { wrapper });
     expect(screen.getByText("ユーザー情報")).toBeInTheDocument();
   });
 
   it("サマリーフェーズでニックネームを表示する", () => {
-    render(<UserInfo {...defaultProps} />, { wrapper: TestWrapper });
+    render(<UserInfo {...defaultProps} />, { wrapper });
     expect(screen.getByText("テストユーザー")).toBeInTheDocument();
   });
 
   it("サマリーフェーズでメールアドレスを表示する", () => {
-    render(<UserInfo {...defaultProps} />, { wrapper: TestWrapper });
+    render(<UserInfo {...defaultProps} />, { wrapper });
     expect(screen.getByText("test@example.com")).toBeInTheDocument();
   });
 
   it("サマリーフェーズで編集ボタンを表示する", () => {
-    render(<UserInfo {...defaultProps} />, { wrapper: TestWrapper });
+    render(<UserInfo {...defaultProps} />, { wrapper });
     expect(screen.getByText("編集")).toBeInTheDocument();
   });
 
   it("サマリーフェーズでログアウトボタンを表示する", () => {
-    render(<UserInfo {...defaultProps} />, { wrapper: TestWrapper });
+    render(<UserInfo {...defaultProps} />, { wrapper });
     expect(screen.getByText("ログアウト")).toBeInTheDocument();
   });
 
   it("編集ボタンクリックでフォームフェーズに切り替わる", async () => {
     const user = userEvent.setup();
-    render(<UserInfo {...defaultProps} />, { wrapper: TestWrapper });
+    render(<UserInfo {...defaultProps} />, { wrapper });
 
     await user.click(screen.getByText("編集"));
 
@@ -83,7 +78,7 @@ describe("UserInfo", () => {
 
   it("フォームフェーズでキャンセルするとサマリーに戻る", async () => {
     const user = userEvent.setup();
-    render(<UserInfo {...defaultProps} />, { wrapper: TestWrapper });
+    render(<UserInfo {...defaultProps} />, { wrapper });
 
     await user.click(screen.getByText("編集"));
     expect(screen.getByLabelText("ニックネーム")).toBeInTheDocument();
@@ -96,7 +91,7 @@ describe("UserInfo", () => {
 
   it("ログアウトボタンクリックで確認ダイアログが表示される", async () => {
     const user = userEvent.setup();
-    render(<UserInfo {...defaultProps} />, { wrapper: TestWrapper });
+    render(<UserInfo {...defaultProps} />, { wrapper });
 
     await user.click(screen.getByText("ログアウト"));
 
@@ -110,7 +105,7 @@ describe("UserInfo", () => {
   it("確認ダイアログでOKを押すとログアウトが実行される", async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
-    render(<UserInfo onClose={onClose} />, { wrapper: TestWrapper });
+    render(<UserInfo onClose={onClose} />, { wrapper });
 
     await user.click(screen.getByText("ログアウト"));
 

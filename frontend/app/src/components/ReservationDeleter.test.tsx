@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ReservationDeleter from "./ReservationDeleter";
 import { deleteReservation } from "../services/api/reservation";
-import { TestWrapper } from "../test/mocks";
+import { createTestWrapper } from "../test/mocks";
 
 // vi.mock はホイストされるため、ファクトリ内で直接 vi.fn() を定義する
 vi.mock("../context/AppData", () => ({
@@ -19,9 +19,6 @@ vi.mock("./ReservationSummary", () => ({
 }));
 
 const mockSetSnack = vi.fn();
-vi.mock("../context/SnackContext", () => ({
-  useSnack: () => ({ setSnack: mockSetSnack }),
-}));
 
 const mockDetail = {
   reservation: {
@@ -51,15 +48,17 @@ const mockDetail = {
 
 describe("ReservationDeleter", () => {
   const onClose = vi.fn();
+  let wrapper: ReturnType<typeof createTestWrapper>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    wrapper = createTestWrapper({ setSnack: mockSetSnack });
   });
 
   it("削除確認ダイアログを表示する", () => {
     render(
       <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     expect(screen.getByText("下記の予約を削除しますか？")).toBeInTheDocument();
     expect(screen.getByText("この操作は取り消せません。")).toBeInTheDocument();
@@ -68,7 +67,7 @@ describe("ReservationDeleter", () => {
   it("予約サマリーを表示する", () => {
     render(
       <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     expect(screen.getByTestId("reservation-summary")).toBeInTheDocument();
   });
@@ -76,7 +75,7 @@ describe("ReservationDeleter", () => {
   it("削除ボタンとキャンセルボタンを表示する", () => {
     render(
       <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "キャンセル" })).toBeInTheDocument();
@@ -86,7 +85,7 @@ describe("ReservationDeleter", () => {
     const user = userEvent.setup();
     render(
       <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     await user.click(screen.getByRole("button", { name: "キャンセル" }));
     expect(onClose).toHaveBeenCalled();
@@ -96,7 +95,7 @@ describe("ReservationDeleter", () => {
     const user = userEvent.setup();
     render(
       <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     await user.click(screen.getByRole("button", { name: "削除" }));
     expect(vi.mocked(deleteReservation)).toHaveBeenCalledWith(1);
@@ -106,7 +105,7 @@ describe("ReservationDeleter", () => {
     const user = userEvent.setup();
     render(
       <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     await user.click(screen.getByRole("button", { name: "削除" }));
     expect(onClose).toHaveBeenCalled();
@@ -117,7 +116,7 @@ describe("ReservationDeleter", () => {
     const user = userEvent.setup();
     render(
       <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     await user.click(screen.getByRole("button", { name: "削除" }));
     expect(onClose).not.toHaveBeenCalled();
@@ -128,7 +127,7 @@ describe("ReservationDeleter", () => {
     const user = userEvent.setup();
     render(
       <ReservationDeleter reservationDetail={mockDetail as never} onClose={onClose} />,
-      { wrapper: TestWrapper }
+      { wrapper }
     );
     await user.click(screen.getByRole("button", { name: "削除" }));
     expect(mockSetSnack).toHaveBeenCalledWith(

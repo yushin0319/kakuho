@@ -1,8 +1,11 @@
 // src/context/AuthContext.test.tsx
+import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { mockUser } from "../test/mocks";
+import { SnackContext } from "./SnackContext";
+import type { SnackContextType } from "./SnackContext";
 
 // API モック
 const mockApiLogin = vi.fn();
@@ -20,11 +23,20 @@ vi.mock("../services/api/user", () => ({
   signupUser: (...args: unknown[]) => mockSignupUser(...args),
 }));
 
-// SnackContext モック
+// SnackContext の値（実際のContextオブジェクトを使用）
 const mockSetSnack = vi.fn();
-vi.mock("./SnackContext", () => ({
-  useSnack: () => ({ snack: null, setSnack: mockSetSnack }),
-}));
+const getSnackValue = (): SnackContextType => ({
+  snack: null,
+  setSnack: mockSetSnack,
+});
+
+// AuthProvider を SnackContext.Provider でラップするヘルパー
+const renderWithProviders = (ui: React.ReactNode) =>
+  render(
+    <SnackContext.Provider value={getSnackValue()}>
+      <AuthProvider>{ui}</AuthProvider>
+    </SnackContext.Provider>
+  );
 
 // テスト用コンシューマーコンポーネント
 const TestConsumer = () => {
@@ -80,11 +92,7 @@ describe("AuthContext", () => {
   });
 
   it("初期状態ではloadingがtrueで、認証チェック後にfalseになる", async () => {
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    );
+    renderWithProviders(<TestConsumer />);
 
     // 初期ロード完了後
     await waitFor(() => {
@@ -97,11 +105,7 @@ describe("AuthContext", () => {
   it("初期ロード時にトークンが有効ならユーザー情報を取得する", async () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    );
+    renderWithProviders(<TestConsumer />);
 
     await waitFor(() => {
       expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
@@ -116,11 +120,7 @@ describe("AuthContext", () => {
       .mockRejectedValueOnce(new Error("Not authenticated")) // 初期ロード
       .mockResolvedValue(mockUser); // ログイン後
 
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    );
+    renderWithProviders(<TestConsumer />);
 
     // 初期ロード完了待ち
     await waitFor(() => {
@@ -165,11 +165,7 @@ describe("AuthContext", () => {
     // useState をインポートに追加
     const { useState } = await import("react");
 
-    render(
-      <AuthProvider>
-        <ErrorTestConsumer />
-      </AuthProvider>
-    );
+    renderWithProviders(<ErrorTestConsumer />);
 
     await waitFor(() => {});
 
@@ -186,11 +182,7 @@ describe("AuthContext", () => {
     const user = userEvent.setup();
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    );
+    renderWithProviders(<TestConsumer />);
 
     // ログイン状態になるまで待機
     await waitFor(() => {
@@ -212,11 +204,7 @@ describe("AuthContext", () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
     mockApiLogout.mockRejectedValueOnce(new Error("logout failed"));
 
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    );
+    renderWithProviders(<TestConsumer />);
 
     await waitFor(() => {
       expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
@@ -235,11 +223,7 @@ describe("AuthContext", () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
     mockApiLogout.mockRejectedValueOnce(new Error("logout failed"));
 
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    );
+    renderWithProviders(<TestConsumer />);
 
     await waitFor(() => {
       expect(screen.getByTestId("authenticated")).toHaveTextContent("true");
@@ -257,11 +241,7 @@ describe("AuthContext", () => {
   it("ユーザー設定時にスナック通知が表示される", async () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    );
+    renderWithProviders(<TestConsumer />);
 
     await waitFor(() => {
       expect(mockSetSnack).toHaveBeenCalledWith({
