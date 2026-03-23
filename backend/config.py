@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     INSERT_SAMPLE_DATA: bool = False
     ADMIN_EMAIL: str = "admin@example.com"
-    ADMIN_PASSWORD: str = "admin"
+    ADMIN_PASSWORD: str
     CORS_ORIGINS: str = "http://localhost:5173"
     RESET_DB: bool = False
 
