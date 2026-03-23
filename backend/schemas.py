@@ -79,7 +79,7 @@ class SeatGroupResponse(SeatGroupBase):
 # チケットタイプのスキーマ
 class TicketTypeBase(BaseModel):
     type_name: str = Field(..., min_length=1, max_length=50)
-    price: float
+    price: float = Field(..., ge=0)
 
 
 class TicketTypeCreate(TicketTypeBase):
@@ -100,7 +100,7 @@ class TicketTypeResponse(TicketTypeBase):
 
 # 予約のスキーマ
 class ReservationBase(BaseModel):
-    num_attendees: int
+    num_attendees: int = Field(..., ge=1)
 
 
 class ReservationCreate(ReservationBase):

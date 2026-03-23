@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
+import os
 import jwt
 from jwt.exceptions import PyJWTError as JWTError
 from pydantic import BaseModel
@@ -53,7 +54,7 @@ def login_for_access_token(
         value=f"Bearer {access_token}",
         httponly=True,
         samesite="strict",
-        secure=False,  # 開発環境。本番では True
+        secure=os.getenv("COOKIE_SECURE", "false").lower() == "true",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
     return response
