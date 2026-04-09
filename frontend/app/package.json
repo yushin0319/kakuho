@@ -20,7 +20,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^7.0.0",
-    "@mui/material": "^7.0.0",
+    "@mui/material": "^9.0.0",
     "@mui/x-date-pickers": "^8.27.2",
     "axios": "^1.15.0",
     "date-fns": "^4.1.0",
