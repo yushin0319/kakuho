@@ -54,7 +54,11 @@ const ReservationList = () => {
         /* Min-KK-13: QR案内を視覚的に強調 */
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
           <QrCode2Icon color="primary" fontSize="small" />
-          <Typography variant="body2" color="primary" fontWeight="bold">
+          <Typography
+            variant="body2"
+            color="primary"
+            sx={{ fontWeight: 'bold' }}
+          >
             タップするとQRコードが表示されます
           </Typography>
         </Box>

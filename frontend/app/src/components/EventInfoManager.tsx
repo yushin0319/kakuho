@@ -27,9 +27,9 @@ const EventInfoManager = ({ event }: EventInfoManagerProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={2}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {error && <Typography color="error">{error}</Typography>}
-      <Box display="flex" flexDirection="column">
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="body2" sx={{ mb: 2 }}>
           イベント情報の編集
         </Typography>

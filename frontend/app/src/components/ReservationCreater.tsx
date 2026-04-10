@@ -234,9 +234,11 @@ const ReservationCreater = ({
                       slotProps={{
                         select: {
                           MenuProps: {
-                            PaperProps: {
-                              style: {
-                                maxHeight: 200, // メニューの最大高さ
+                            slotProps: {
+                              paper: {
+                                style: {
+                                  maxHeight: 200, // メニューの最大高さ
+                                },
                               },
                             },
                           },

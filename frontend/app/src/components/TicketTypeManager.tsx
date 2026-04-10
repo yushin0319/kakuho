@@ -195,7 +195,13 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
   return (
     <FormProvider {...methods}>
       <form>
-        <Box display="flex" flexDirection="column" alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
           {loading && <LoadingScreen />}
           <Typography variant="body2" sx={{ mb: 2 }}>
             チケット編集
@@ -221,9 +227,11 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
                 }}
               >
                 <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-around"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-around',
+                  }}
                   onClick={() =>
                     setOpenId(openId === stage.id ? null : stage.id)
                   }
@@ -252,24 +260,28 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
                       .map((sg) => (
                         <Box
                           key={sg.id}
-                          display="flex"
-                          flexDirection="column"
-                          alignItems="center"
-                          justifyContent="space-between"
-                          sx={{ mt: 2 }}
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            mt: 2,
+                          }}
                         >
                           {filteredTicketTypes
                             .filter((tt) => tt.seat_group_id === sg.id)
                             .map((tt) => (
                               <Box
                                 key={tt.id}
-                                display="flex"
-                                alignItems="center"
-                                gap={2}
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 2,
+                                  mt: 1,
+                                }}
                                 onBlur={() =>
                                   handleSave(tt.id, watchTicketTypes[tt.id])
                                 }
-                                sx={{ mt: 1 }}
                               >
                                 <ValidatedForm
                                   name={`ticketTypes.${tt.id}.type_name`}
@@ -305,11 +317,13 @@ const TicketTypeManager = ({ event }: { event: EventResponse }) => {
                               </Box>
                             ))}
                           <Box
-                            width="100%"
-                            display="flex"
-                            alignItems="end"
-                            justifyContent="space-around"
-                            sx={{ mt: 1 }}
+                            sx={{
+                              width: '100%',
+                              display: 'flex',
+                              alignItems: 'end',
+                              justifyContent: 'space-around',
+                              mt: 1,
+                            }}
                           >
                             <Typography
                               variant="body1"

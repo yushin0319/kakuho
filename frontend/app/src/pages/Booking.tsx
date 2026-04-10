@@ -52,8 +52,7 @@ const Booking = () => {
                   </Typography>
                   <Typography
                     variant="body1"
-                    sx={{ mt: 2 }}
-                    whiteSpace="pre-line"
+                    sx={{ mt: 2, whiteSpace: 'pre-line' }}
                   >
                     {event.description}
                   </Typography>

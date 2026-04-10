@@ -54,7 +54,7 @@ const EventDeleter = ({ event }: { event: EventResponse }) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column">
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Typography variant="body2" sx={{ mb: 2 }}>
         イベントの削除
       </Typography>

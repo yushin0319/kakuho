@@ -24,7 +24,7 @@ const ReservationSummary = ({
     <Box sx={{ p: 2 }}>
       <Box sx={{ mt: 0 }}>
         <Grid container spacing={1}>
-          <Grid size={12} textAlign="right">
+          <Grid size={12} sx={{ textAlign: 'right' }}>
             <Typography
               sx={{
                 whiteSpace: 'nowrap',
@@ -92,7 +92,7 @@ const ReservationSummary = ({
               xs: 4,
               md: 2,
             }}
-            textAlign="center"
+            sx={{ textAlign: 'center' }}
           >
             <Typography variant="subtitle2" color="text.secondary">
               合計金額
