@@ -39,9 +39,13 @@ const DemoLogin = () => {
   return (
     <Container sx={{ mt: 5, textAlign: 'center', justifyItems: 'center' }}>
       <Box
-        display="flex"
-        gap={2}
-        sx={{ alignItems: 'center', mb: 2, px: 'auto' }}
+        sx={{
+          display: 'flex',
+          gap: 2,
+          alignItems: 'center',
+          mb: 2,
+          px: 'auto',
+        }}
       >
         <img
           src="logo.png"
@@ -57,7 +61,13 @@ const DemoLogin = () => {
       <Typography variant="body1" sx={{ mt: 5, color: 'text.secondary' }}>
         体験モード
       </Typography>
-      <Box display="flex" justifyContent="center" flexDirection="column">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}
+      >
         <Typography variant="caption" color="text.secondary">
           以下のボタンで、サンプルアカウントでログインします。
         </Typography>
@@ -76,7 +86,7 @@ const DemoLogin = () => {
         }}
       >
         {/* 管理者ログインボタン */}
-        <Box display="flex" gap={2} sx={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
           <Button
             variant="outlined"
             color="error"

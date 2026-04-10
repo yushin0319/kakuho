@@ -84,10 +84,12 @@ const ManageEvent = () => {
           <Accordion key={event.id} expanded={expandedAccordion === event.id}>
             <AccordionSummary onClick={() => handleExpand(event.id, '')}>
               <Box
-                display="flex"
-                flexDirection="column"
-                width="100%"
-                alignItems="center"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: '100%',
+                  alignItems: 'center',
+                }}
               >
                 <Typography variant="h5" sx={{ my: 4 }}>
                   {event.name}
@@ -157,7 +159,7 @@ const ManageEvent = () => {
             </AccordionSummary>
             <AccordionDetails>
               {expandedAccordion === event.id && (
-                <Box width="100%">
+                <Box sx={{ width: '100%' }}>
                   {activeAction === 'edit' ? (
                     <EventInfoManager event={event} />
                   ) : activeAction === 'seat' ? (
@@ -187,10 +189,12 @@ const ManageEvent = () => {
           <Accordion key={event.id} expanded={expandedAccordion === event.id}>
             <AccordionSummary onClick={() => handleExpand(event.id, '')}>
               <Box
-                display="flex"
-                flexDirection="column"
-                width="100%"
-                alignItems="center"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: '100%',
+                  alignItems: 'center',
+                }}
               >
                 <Typography variant="h5" sx={{ my: 4 }}>
                   {event.name}
@@ -260,7 +264,7 @@ const ManageEvent = () => {
             </AccordionSummary>
             <AccordionDetails>
               {expandedAccordion === event.id && (
-                <Box width="100%">
+                <Box sx={{ width: '100%' }}>
                   {activeAction === 'edit' ? (
                     <EventInfoManager event={event} />
                   ) : activeAction === 'seat' ? (

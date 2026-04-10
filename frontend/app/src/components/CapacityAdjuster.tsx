@@ -61,8 +61,8 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={2}>
-      <Box display="flex" flexDirection="column">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="body2" sx={{ mb: 2 }}>
           未予約席数の調整
         </Typography>
@@ -81,10 +81,12 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
         .map((stage) => (
           <Box
             key={stage.id}
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <Divider
               sx={{
@@ -94,10 +96,12 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
               }}
             />
             <Box
-              display="flex"
-              alignItems="center"
-              width="80%"
-              justifyContent="space-between"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '80%',
+                justifyContent: 'space-between',
+              }}
             >
               <Typography variant="h6">
                 {toJST(stage.start_time, 'dateTime')}
@@ -118,22 +122,27 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
             {seatGroups
               .filter((sg) => sg.stage_id === stage.id)
               .map((sg) => (
-                <Box key={sg.id} width="100%">
+                <Box key={sg.id} sx={{ width: '100%' }}>
                   <Divider sx={{ my: 1 }} />
                   <Grid key={sg.id} container>
                     <Grid
                       size={2}
-                      display="flex"
-                      flexDirection="column"
-                      alignItems="center"
-                      justifyContent="center"
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
                       <ChairIcon sx={{ color: 'primary.main', mr: 1 }} />
                       <Typography sx={{ mr: 1 }}>
                         {newCapacities[sg.id]}
                       </Typography>
                     </Grid>
-                    <Grid size={7} display="flex" alignItems="center">
+                    <Grid
+                      size={7}
+                      sx={{ display: 'flex', alignItems: 'center' }}
+                    >
                       <Slider
                         value={newCapacities[sg.id] || 0}
                         onChange={(_, value) =>
@@ -150,11 +159,13 @@ const CapacityAdjuster = ({ event }: CapacityAdjusterProps) => {
                     </Grid>
                     <Grid
                       size={3}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
-                      <Box mx={1} px={1}>
+                      <Box sx={{ mx: 1, px: 1 }}>
                         {seatGroupNames[sg.id]?.map((name) => (
                           <Chip key={name} label={name} sx={{ margin: 0.5 }} />
                         ))}

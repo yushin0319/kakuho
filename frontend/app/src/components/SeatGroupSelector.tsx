@@ -31,7 +31,10 @@ const SeatGroupSelector = ({
       <DialogTitle>チケット情報選択</DialogTitle>
       <DialogContent>
         {Object.keys(seatDict).map((key) => (
-          <Box display="flex" flexDirection="column" key={key} sx={{ mb: 2 }}>
+          <Box
+            key={key}
+            sx={{ display: 'flex', flexDirection: 'column', mb: 2 }}
+          >
             <Typography variant="subtitle2">
               パターン {Object.keys(seatDict).indexOf(key) + 1}
             </Typography>

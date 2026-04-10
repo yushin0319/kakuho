@@ -127,18 +127,18 @@ const ConfirmEvent = ({
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
-        <Typography variant="h6" fontWeight="bold" component="div">
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }} component="div">
           この内容でイベントを作成してもよろしいですか？
         </Typography>
         {errors.map((error, index) => (
-          <Box key={index} mt={1}>
+          <Box key={index} sx={{ mt: 1 }}>
             <Typography variant="body2" color="error">
               {error}
             </Typography>
           </Box>
         ))}
         {warnings.map((warning, index) => (
-          <Box key={index} mt={1}>
+          <Box key={index} sx={{ mt: 1 }}>
             <Typography variant="body2" color="warning">
               {warning}
             </Typography>
@@ -146,27 +146,27 @@ const ConfirmEvent = ({
         ))}
       </DialogTitle>
       <DialogContent dividers>
-        <Box mb={1}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="body2" color="text.secondary">
             イベント名
           </Typography>
-          <Typography variant="h6" component="div" fontWeight="bold">
+          <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
             {title || '未設定'}
           </Typography>
         </Box>
 
-        <Box mb={2}>
+        <Box sx={{ mb: 2 }}>
           <Typography variant="body2" color="text.secondary">
             詳細説明
           </Typography>
-          <Typography variant="body1" whiteSpace="pre-line">
+          <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
             {description || '未設定'}
           </Typography>
         </Box>
 
         {/* 日程情報 */}
         {Object.entries(schedule).some(([_, times]) => times.length > 0) && (
-          <Box mb={3}>
+          <Box sx={{ mb: 3 }}>
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -206,7 +206,7 @@ const ConfirmEvent = ({
         {/* 座席情報 */}
         <Box>
           {Object.entries(seatDict).map(([id, { seatGroup, ticketTypes }]) => (
-            <Box key={id} my={2}>
+            <Box key={id} sx={{ my: 2 }}>
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -223,7 +223,7 @@ const ConfirmEvent = ({
                   ))}
                 </TableBody>
               </Table>
-              <Box p={2} display="flex" alignItems="center">
+              <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
                 <ChairIcon sx={{ color: 'primary.main', mr: 1 }} />
                 <Typography variant="body1" component="div">
                   {seatGroup.capacity}席

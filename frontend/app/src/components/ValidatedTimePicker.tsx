@@ -34,9 +34,9 @@ const ValidatedTimePicker = ({
       }}
     >
       <Box
-        display="flex"
-        justifyContent="space-around"
         sx={{
+          display: 'flex',
+          justifyContent: 'space-around',
           width: '100%',
         }}
       >
@@ -48,8 +48,10 @@ const ValidatedTimePicker = ({
           slotProps={{
             textField: {
               variant: 'standard',
-              inputProps: {
-                readOnly: true,
+              slotProps: {
+                htmlInput: {
+                  readOnly: true,
+                },
               },
               error: false, // バリデーションエラーを適用する場合はここで調整
             },

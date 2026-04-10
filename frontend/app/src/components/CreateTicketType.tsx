@@ -42,7 +42,7 @@ const CreateTicketType = ({
         <Grid
           container
           spacing={2}
-          alignItems="center"
+          sx={{ alignItems: 'center' }}
           onBlur={methods.handleSubmit(onSubmit)}
         >
           <Grid container size={{ xs: 10, md: 11 }} spacing={1}>

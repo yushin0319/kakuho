@@ -134,7 +134,7 @@ const ReservationCard = ({
           <Typography variant="body1">
             {NumComma(ticketType.price * reservation.num_attendees)}円
           </Typography>
-          <Grid container justifyContent="center" sx={{ mt: 2 }}>
+          <Grid container sx={{ justifyContent: 'center', mt: 2 }}>
             <QRCodeSVG value={`Kakuho-${reservation.id}`} size={128} />
           </Grid>
         </CardContent>

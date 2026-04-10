@@ -209,7 +209,7 @@ const StageManager = ({ event }: { event: EventResponse }) => {
 
   return (
     <FormProvider {...methods}>
-      <Box display="flex" flexDirection="column">
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="body2" sx={{ mb: 2 }}>
           ステージ削除
         </Typography>
@@ -226,10 +226,12 @@ const StageManager = ({ event }: { event: EventResponse }) => {
           .map((date) => (
             <Box
               key={date}
-              sx={{ mb: 1 }}
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
+              sx={{
+                mb: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
             >
               <Typography variant="body2">
                 {toJST(date, 'monthDate')}
@@ -261,7 +263,14 @@ const StageManager = ({ event }: { event: EventResponse }) => {
         <Divider sx={{ my: 2 }} />
 
         {/* 新規ステージ追加 */}
-        <Box display="flex" flexDirection="column" gap={1} alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            alignItems: 'center',
+          }}
+        >
           <Typography variant="body2">新規ステージ追加</Typography>
           <ValidatedDatePicker
             name="stageDate"

@@ -123,7 +123,7 @@ const EventDuplicater = ({ event }: { event: EventResponse }) => {
         <Typography variant="caption" color="text.secondary">
           開始日を指定してイベントを複製します。
         </Typography>
-        <Box display="flex" flexDirection="column" sx={{ mb: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', mb: 2 }}>
           <ValidatedDatePicker
             name="startDate"
             label="開始日"

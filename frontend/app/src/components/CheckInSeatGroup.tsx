@@ -68,7 +68,11 @@ const CheckInSeatGroup = ({
         onClick={toggle}
       >
         <Grid size={3}>
-          <Typography variant="body2" color="primary" fontWeight="bold">
+          <Typography
+            variant="body2"
+            color="primary"
+            sx={{ fontWeight: 'bold' }}
+          >
             {seatGroupNames[seatGroup.id]?.join('/')}
           </Typography>
           <Typography variant="caption" color="text.secondary">

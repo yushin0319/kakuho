@@ -67,8 +67,7 @@ const CheckInStage = ({ stage, isOpen, toggle }: CheckInStageProps) => {
         <Typography
           variant="h6"
           color="text.secondary"
-          fontWeight="bold"
-          sx={{ ml: 1 }}
+          sx={{ fontWeight: 'bold', ml: 1 }}
         >
           {toJST(stage.start_time, 'dateTime')}
         </Typography>

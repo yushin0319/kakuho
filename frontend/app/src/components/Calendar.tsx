@@ -112,10 +112,12 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
       {/* ヘッダー */}
       <Typography variant="body1">{event.name}</Typography>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+        }}
       >
         <Button
           onClick={handlePrevMonth}
@@ -147,13 +149,13 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
           backgroundColor: 'white',
         }}
       >
-        <Grid container spacing={1} textAlign="center">
+        <Grid container spacing={1} sx={{ textAlign: 'center' }}>
           {['月', '火', '水', '木', '金', '土', '日'].map((day) => (
             <Grid size={12 / 7} key={day}>
               <Typography
                 variant="subtitle2"
-                fontWeight="bold"
                 sx={{
+                  fontWeight: 'bold',
                   color:
                     day === '土'
                       ? 'lightskyblue'
@@ -185,11 +187,11 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
             return (
               <Grid size={12 / 7} key={index}>
                 <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="flex-start"
-                  height={weeksMax(day) * 40 + 50}
                   sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    height: weeksMax(day) * 40 + 50,
                     backgroundColor: isToday
                       ? 'lightyellow'
                       : isCurrentMonth
@@ -201,11 +203,11 @@ const Calendar = ({ event, onBack }: CalendarProps) => {
                 >
                   <Typography variant="caption">{format(day, 'd')}</Typography>
                   <Box
-                    display="flex"
-                    flexDirection="column"
-                    justifyContent="center"
-                    alignItems="center"
                     sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                       height: '100%',
                     }}
                   >
