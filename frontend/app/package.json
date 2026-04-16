@@ -27,7 +27,7 @@
     "date-fns-tz": "^3.2.0",
     "globalize": "^1.7.0",
     "qrcode.react": "^4.1.0",
-    "react": "^19.0.0",
+    "react": "^19.2.5",
     "react-big-calendar": "^1.15.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.72.1",
