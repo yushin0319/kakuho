@@ -1,7 +1,7 @@
 # backend/sample_data.py
 from sqlalchemy.orm import Session
 from models import Event, Stage, SeatGroup, TicketType, Reservation, User
-from passlib.context import CryptContext
+from security import hash_password
 from datetime import datetime
 import random
 from config import (
@@ -9,9 +9,6 @@ from config import (
     ADMIN_PASSWORD,
     RESET_DB,
 )
-
-# パスワードのハッシュ化
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 # データベース初期化メソッド
@@ -45,7 +42,7 @@ def initialize_sample_data(db: Session):
     # 管理者ユーザーの確認と作成
     admin_email = ADMIN_EMAIL
     admin_password = ADMIN_PASSWORD
-    hashed_password_admin = pwd_context.hash(admin_password)
+    hashed_password_admin = hash_password(admin_password)
 
     admin = User(
         email=admin_email,
@@ -63,7 +60,7 @@ def initialize_sample_data(db: Session):
         return
 
     # サンプルユーザー作成
-    hashed_password_user = pwd_context.hash("userpassword")
+    hashed_password_user = hash_password("userpassword")
     sample_user = User(
         email="sample@example.com",
         nickname="能登 ながと",
@@ -143,12 +140,14 @@ def initialize_sample_data(db: Session):
         {"name": "", "email": "parrot_zeal@gmail.com"},
     ]
 
+    # 全ユーザー同一平文のため、ハッシュをループ外で 1 回計算して使い回す
+    shared_password_hash = hash_password("password")
     users = []
     for data in names_with_emails:
         user = User(
             email=data["email"],
             nickname=data["name"],
-            password_hash=pwd_context.hash("password"),
+            password_hash=shared_password_hash,
             is_admin=False,
         )
         users.append(user)

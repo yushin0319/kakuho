@@ -184,3 +184,66 @@ class TestSignup:
             json={"email": "short@example.com", "password": "12345"},
         )
         assert resp.status_code == 422
+
+
+class TestPasswordMigration:
+    """bcrypt ハッシュ → argon2 段階移行のテスト"""
+
+    def _create_bcrypt_user(self, db, email, password):
+        import bcrypt as _bcrypt
+        from models import User
+
+        bcrypt_hash = _bcrypt.hashpw(
+            password.encode("utf-8"), _bcrypt.gensalt(rounds=4)
+        ).decode("utf-8")
+        user = User(
+            email=email,
+            password_hash=bcrypt_hash,
+            nickname="移行テスト",
+            is_admin=False,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        assert user.password_hash.startswith("$2"), "前提: bcrypt ハッシュで作成"
+        return user
+
+    def test_bcrypt_login_succeeds_and_rehashes_to_argon2(self, client, db):
+        """bcrypt ハッシュを持つユーザーがログイン成功し、DB が argon2 に切り替わる"""
+        user = self._create_bcrypt_user(db, "migrate@example.com", "bcrypt-pass")
+        resp = login(client, email="migrate@example.com", password="bcrypt-pass")
+        assert resp.status_code == 200
+
+        db.expire(user)
+        refreshed = db.get(type(user), user.id)
+        assert refreshed.password_hash.startswith("$argon2id$"), (
+            f"再ハッシュ後は argon2 形式であること: {refreshed.password_hash[:20]}"
+        )
+
+    def test_bcrypt_user_wrong_password_does_not_rehash(self, client, db):
+        """bcrypt ハッシュユーザーで誤パスワード時は再ハッシュされない"""
+        user = self._create_bcrypt_user(db, "nochange@example.com", "correct-pass")
+        original_hash = user.password_hash
+        resp = login(client, email="nochange@example.com", password="wrong-pass")
+        assert resp.status_code == 400
+
+        db.expire(user)
+        refreshed = db.get(type(user), user.id)
+        assert refreshed.password_hash == original_hash, "失敗時はハッシュ不変"
+
+    def test_argon2_login_keeps_argon2_hash(self, client, db):
+        """argon2 ハッシュユーザーは再ハッシュ対象外（hash 値が変わらない）"""
+        create_user(db, email="argon2@example.com", password="argon2-pass")
+        from models import User
+
+        user = db.query(User).filter(User.email == "argon2@example.com").first()
+        original_hash = user.password_hash
+        assert original_hash.startswith("$argon2id$"), "前提: argon2 ハッシュで作成"
+
+        resp = login(client, email="argon2@example.com", password="argon2-pass")
+        assert resp.status_code == 200
+
+        db.expire(user)
+        refreshed = db.get(User, user.id)
+        # argon2 検証後は再ハッシュしない仕様（同一ハッシュが維持される）
+        assert refreshed.password_hash == original_hash

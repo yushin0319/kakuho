@@ -4,11 +4,7 @@ from sqlalchemy.orm import Session
 from crud.base import BaseCRUD
 from models import User
 from schemas import UserCreate, UserUpdate, UserResponse
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(
-    schemes=["bcrypt"], deprecated="auto"
-)  # パスワードハッシュ化
+from security import hash_password, needs_rehash, verify_password
 
 
 class CrudUser(BaseCRUD[User, UserResponse]):
@@ -25,12 +21,16 @@ class CrudUser(BaseCRUD[User, UserResponse]):
         user = self.read_by_email(email)
         if user is None:
             raise HTTPException(status_code=400, detail="User not found")
-        if not pwd_context.verify(password, user.password_hash):
+        if not verify_password(password, user.password_hash):
             raise HTTPException(status_code=400, detail="Incorrect password")
+        # 既存 bcrypt ハッシュは検証成功時に argon2 へ段階移行
+        if needs_rehash(user.password_hash):
+            user.password_hash = hash_password(password)
+            self.db.commit()
         return UserResponse.model_validate(user)
 
     def create(self, data: UserCreate) -> UserResponse:
-        hashed_password = pwd_context.hash(data.password)
+        hashed_password = hash_password(data.password)
         user_data = data.model_dump()
         user_data["password_hash"] = hashed_password
         del user_data["password"]
@@ -44,7 +44,7 @@ class CrudUser(BaseCRUD[User, UserResponse]):
         user = self.read_by_id(user_id)
         update_data = data.model_dump()
         if update_data.get("password") is not None:
-            update_data["password_hash"] = pwd_context.hash(update_data["password"])
+            update_data["password_hash"] = hash_password(update_data["password"])
             del update_data["password"]
         for key, value in update_data.items():
             if value is not None:

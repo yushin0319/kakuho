@@ -1,9 +1,7 @@
 # tests/helpers.py
 """テスト共通ヘルパー関数"""
-from passlib.context import CryptContext
 from models import User
-
-_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from security import hash_password
 
 
 def create_user(
@@ -12,7 +10,7 @@ def create_user(
     """テスト用ユーザーを作成（共通ヘルパー）"""
     user = User(
         email=email,
-        password_hash=_pwd_context.hash(password),
+        password_hash=hash_password(password),
         nickname=nickname,
         is_admin=is_admin,
     )
