@@ -3,9 +3,7 @@
 import pytest
 from datetime import datetime
 from models import User, Event, Stage, SeatGroup, TicketType
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from security import hash_password
 
 
 # --- ヘルパー関数 ---
@@ -15,7 +13,7 @@ def make_user(db, email="admin@test.com", is_admin=True, password="password123")
     """ユーザーを作成"""
     user = User(
         email=email,
-        password_hash=pwd_context.hash(password),
+        password_hash=hash_password(password),
         nickname="テスト",
         is_admin=is_admin,
     )

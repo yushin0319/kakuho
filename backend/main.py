@@ -16,7 +16,6 @@ from routes.ticket_type import ticket_type_router
 from routes.reservation import reservation_router
 from routes.user import user_router
 from sample_data import initialize_sample_data
-from passlib.context import CryptContext
 from contextlib import asynccontextmanager
 import logging
 import os
@@ -26,9 +25,6 @@ from slowapi.middleware import SlowAPIMiddleware
 from slowapi.errors import RateLimitExceeded
 
 logger = logging.getLogger(__name__)
-
-# パスワードのハッシュ化
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # レート制限設定（デフォルト: 60リクエスト/分 / テスト時は無効）
 _rate_limit_enabled = os.getenv("TESTING", "false").lower() != "true"

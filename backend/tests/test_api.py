@@ -2,16 +2,14 @@
 """APIエンドポイントのテスト"""
 import pytest
 from models import User
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from security import hash_password
 
 
 def create_test_user(db, email="test@example.com", is_admin=False):
     """テスト用ユーザーを作成"""
     user = User(
         email=email,
-        password_hash=pwd_context.hash("password123"),
+        password_hash=hash_password("password123"),
         nickname="テストユーザー",
         is_admin=is_admin
     )
