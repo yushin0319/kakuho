@@ -4,10 +4,11 @@
 
 ## スタック
 
-- Backend: Python 3.11+ / FastAPI / SQLAlchemy 2.x / Alembic / Pydantic / passlib / slowapi
-- Frontend: TypeScript / React 19 / Vite 8 / MUI v9 / React Hook Form / vitest
+- Backend: Python 3.11+ / FastAPI / SQLAlchemy 2.x / Alembic / pydantic-settings / **PyJWT** / **argon2-cffi + bcrypt** / slowapi / gunicorn (prod) + uvicorn (dev)
+- Frontend: TypeScript / React 19 / Vite 8 / MUI v9 (@mui/x-date-pickers) / **react-router-dom v7** / React Hook Form / axios / date-fns + date-fns-tz / Biome / vitest
+- 機能ライブラリ: **react-big-calendar**（カレンダー UI） / **react-zxing + qrcode.react**（QR スキャン・生成） / sass
 - DB: PostgreSQL 16（本番） / SQLite in-memory（テスト）
-- 認証: JWT（HttpOnly Cookie）
+- 認証: JWT（HttpOnly Cookie、PyJWT 直叩き + argon2-cffi/bcrypt でハッシュ）
 - デプロイ: Render（BE: Web Service / FE: Static Site）
 
 ## 構成
@@ -56,8 +57,9 @@ npm run build
 ## デプロイ
 
 - Render が GitHub push を検知して自動デプロイ
-- CI: `.github/workflows/test.yml`（pytest + vitest）
+- CI: `.github/workflows/ci.yml` + `test.yml`（pytest + vitest）
 - PR レビュー: `.github/workflows/gemini-review.yml`（shared-workflows）
+- Dependabot patch/minor は `dependabot-automerge.yml` で auto-merge
 
 ## 運用ルール
 
