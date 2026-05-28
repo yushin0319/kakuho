@@ -23,7 +23,7 @@
     "@mui/material": "^9.0.0",
     "@mui/x-date-pickers": "^9.3.0",
     "axios": "^1.16.1",
-    "date-fns": "^4.1.0",
+    "date-fns": "^4.3.0",
     "date-fns-tz": "^3.2.0",
     "globalize": "^1.7.0",
     "qrcode.react": "^4.1.0",
