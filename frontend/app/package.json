@@ -27,7 +27,7 @@
     "date-fns-tz": "^3.2.0",
     "globalize": "^1.7.0",
     "qrcode.react": "^4.1.0",
-    "react": "^19.2.6",
+    "react": "^19.2.7",
     "react-big-calendar": "^1.15.0",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.76.1",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.16",
     "@types/node": "^25.9.1",
-    "@types/react": "^19.2.15",
+    "@types/react": "^19.2.16",
     "@types/react-dom": "^19.0.0",
     "@types/react-big-calendar": "^1.8.12",
     "@vitejs/plugin-react": "^6.0.2",
