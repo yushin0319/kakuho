@@ -5,6 +5,12 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    # react-zxing 3.0 はバーコードスキャナー API の破壊的変更が大きく
+    # frontend-test / typecheck がメジャー bump で fail する (PR #180 で実証)。
+    # security advisory も無いため major 更新を抑止し、必要時に計画移行する。
+    ignore:
+      - dependency-name: "react-zxing"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:
