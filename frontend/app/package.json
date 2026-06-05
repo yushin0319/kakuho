@@ -32,7 +32,7 @@
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.76.1",
     "react-router-dom": "^7.17.0",
-    "react-zxing": "^2.0.2",
+    "react-zxing": "^2.2.0",
     "sass": "^1.100.0"
   },
   "devDependencies": {
