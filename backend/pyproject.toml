@@ -17,7 +17,7 @@ dependencies = [
     "psycopg2-binary>=2.9.12",
     "alembic>=1.18.4",
     "gunicorn>=26.0.0",
-    "slowapi>=0.1.9",
+    "slowapi>=0.1.10",
 ]
 
 [dependency-groups]
