@@ -3,7 +3,6 @@
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "typeRoots": ["./node_modules/@types"],
     "types": ["node", "vite/client", "vitest/globals"],
     "module": "ESNext",
     "skipLibCheck": true,
