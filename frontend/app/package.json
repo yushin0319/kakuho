@@ -33,7 +33,7 @@
     "react-hook-form": "^7.87.0",
     "react-router-dom": "^7.18.2",
     "react-zxing": "^2.2.0",
-    "sass": "^1.102.0"
+    "sass": "^1.103.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.10",
