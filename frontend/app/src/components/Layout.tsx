@@ -1,7 +1,7 @@
 // app/src/components/Layout.tsx
 import { Container } from '@mui/material';
 import type { ReactNode } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import Header from './Header';
 
 interface LayoutProps {
