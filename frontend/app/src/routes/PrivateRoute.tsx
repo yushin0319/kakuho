@@ -1,7 +1,7 @@
 // app/src/routes/PrivateRoute.tsx
 // Login していない場合はログインページにリダイレクトする
 import type React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 import LoadingScreen from '../components/LoadingScreen';
 import { useAuth } from '../context/AuthContext';
 
