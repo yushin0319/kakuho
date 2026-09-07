@@ -3,7 +3,7 @@
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import type { ReactNode } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { vi } from 'vitest';
 import type { ReservationDetail } from '../context/AppData';
 import type { SnackContextType } from '../context/SnackContext';

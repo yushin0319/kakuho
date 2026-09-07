@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import CapacityAdjuster from '../components/CapacityAdjuster';
 import EventDeleter from '../components/EventDeleter';
 import EventDuplicater from '../components/EventDuplicater';

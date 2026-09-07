@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import UserInfo from './UserInfo';
 

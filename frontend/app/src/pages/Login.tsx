@@ -2,7 +2,7 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import ValidatedForm from '../components/ValidatedForm';
 import { useAuth } from '../context/AuthContext';
 

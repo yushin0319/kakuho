@@ -1,6 +1,6 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import LoadingScreen from '../components/LoadingScreen';
 import { useAppData } from '../context/AppData';
 import { useAuth } from '../context/AuthContext';

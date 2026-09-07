@@ -1,6 +1,6 @@
 // app/src/routes/AppRouter.tsx
 import { useEffect } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router';
 import Booking from '../pages/Booking';
 import CheckInList from '../pages/CheckInList';
 import CreateEvent from '../pages/CreateEvent';
