@@ -1,7 +1,10 @@
+import os
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
+
+from dotenv import load_dotenv
 
 # モデルのMetaDataをインポート
 from models import Base  # models.py内でBaseを定義している前提
@@ -12,6 +15,18 @@ config = context.config
 # ロギング設定
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+# 接続先は alembic.ini ではなく DATABASE_URL から取る。
+# alembic.ini は public リポジトリに含まれるため認証情報を書けない。
+# backend/.env があれば読み込む（config.py の Settings と同じ .env）。
+load_dotenv()
+_database_url = os.getenv("DATABASE_URL")
+if not _database_url:
+    raise RuntimeError(
+        "DATABASE_URL が設定されていません。backend/.env に記述するか "
+        "環境変数として渡してください（例: DATABASE_URL=postgresql://.../kakuho）。"
+    )
+config.set_main_option("sqlalchemy.url", _database_url)
 
 # ターゲットとなるMetaData
 target_metadata = Base.metadata
