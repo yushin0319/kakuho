@@ -11,6 +11,15 @@ updates:
     ignore:
       - dependency-name: "react-zxing"
         update-types: ["version-update:semver-major"]
+    groups:
+      # vitest 本体と @vitest/* は peerDependencies でバージョンを厳密指定して
+      # いる ("@vitest/coverage-v8": "5.0.0" のように範囲指定ではない)。別 PR に
+      # 分かれると 1 本ずつでは必ず peer 不整合 (npm ci の ERESOLVE) になり
+      # マージできない (2026-09-10 に実際に #303/#306 の 2 分割で発生)。1 PR にまとめる。
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:
