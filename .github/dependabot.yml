@@ -20,6 +20,13 @@ updates:
         patterns:
           - "vitest"
           - "@vitest/*"
+      # react と react-dom は完全に同じ版でないと起動時に「Incompatible React
+      # versions」で落ちる。別 PR だと 1 本ずつでは必ずテストが全滅する
+      # (2026-10-22 に #366 が react だけ 19.3.1 で発生)。1 PR にまとめる。
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:
