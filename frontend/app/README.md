@@ -15,3 +15,5 @@ npm run test:run     # vitest run（単発）。npm run test は watch モード
 npm run coverage     # vitest run --coverage
 npm run lint         # biome check .
 ```
+
+API の接続先は `VITE_APP_API_URL`（未設定なら `http://127.0.0.1:8000/`、`src/config.ts`）。
